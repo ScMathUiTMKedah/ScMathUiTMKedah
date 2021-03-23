@@ -1,5 +1,5 @@
 name: "scmathkdh_online"
-title: "Math. Sc. Kedah Webnotes"
+title: "Math. Sc. UiTM Kedah"
 description: |
   Sc Math UiTM Kedah Online Classroom
 output_dir: "docs"
@@ -49,11 +49,13 @@ navbar:
       menu:
         - text: "Scheme of Work"
           href: sow_qmt181.html
-        - text: "Group Project"
+        - text: "Group Project Guidelines"
           href: project_qmt181.html
-        - text: "Class Notes"
+        - text: "Chapter 1"
           href: qmt181_notes.html
-    - text: "Past Semester Exam Questions"
+        - text: "Chapter 4"
+          href: qmt181_notes_ch4.html
+    - text: "Assessment Repository"
       menu:
         - text: "MAT111"
           href: qb_mat111.html
@@ -63,6 +65,16 @@ navbar:
           href: qb_mat402.html
         - text: "QMT181/STA104"
           href: qb_qmt181.html
+        - text: "STA404"
+          href: qb_sta404.html
+    - text: "Event"
+      menu:
+        - text: "Conferences"
+          href: conferences.html
+        - text: "Talk"
+          href: talk.html
+        - text: "Workshops"
+          href: workshops.html
     - text: "About Us"
       href: about.html
   right:
