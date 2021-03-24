@@ -77,6 +77,8 @@ navbar:
           href: workshops.html
     - text: "About Us"
       href: about.html
+    - text: "Timetable"
+      href: timetable.html
   right:
     - icon: fa-envelope fa-lg
       href: contact.html

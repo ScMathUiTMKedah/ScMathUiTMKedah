@@ -1,7 +1,7 @@
 ---
 title: "Dept of Mathematical Science Team Members"
 description: |
-  Welcome to the Department of Mathematical Sciences at Faculty of Computer and Mathematical Sciences, UiTM Kedah Branch Campus. We offers servicing courses in Mathematics and Statistics to all the faculties at UiTM Kedah. We started with  Department of Quantitative Sciences and in 2007 it has gone through a rebranding process and is now called Department of Mathematical Sciences. Currently, the Department of Mathematical Sciences consists of 17 lecturers (7 Mathematics, 9 Statistics and 1 Physics).
+  Welcome to the Department of Mathematical Sciences at Faculty of Computer and Mathematical Sciences, UiTM Kedah Branch Campus. We offers servicing courses in Mathematics and Statistics to all the faculties at UiTM Kedah. We started with  Department of Quantitative Sciences and in 2007 it has gone through a rebranding process and is now called Department of Mathematical Sciences. Currently, the Department of Mathematical Sciences consists of 22 lecturers (12 Mathematics, 9 Statistics and 1 Physics).
 output: 
   distill::distill_article:
     self_contained: true
@@ -11,12 +11,12 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-|![](images/noor_hafizah_zainal_aznam.jpg)|  
+|![](images/fazillah_bosli.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
 |:-----:|
-| **Noor Hafizah Zainal Aznam** |  
-| Course Coordinator, Senior Lecturer |    
-| Management Mathematics |
-| noorhafizah@uitm.edu.my |  
+| **Fazillah Bosli** |    
+| Course Coordinator, Senior Lecturer |   
+| Mgmt. Mathematics |  
+| fazillah@uitm.edu.my |  
 
 :::::: {style="display: flex; "}
 
@@ -79,12 +79,12 @@ a column separator -->
 :::
 
 ::: {.column width="30%"}
-|![](images/wan_hasni_sabariah.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
+|![](images/female.png)|
 |:-----:|
-| **Wan Hasni Sabariah Wan Hassan** |    
+| **Norliana Najib (Dr.)** |    
 | Senior Lecturer |    
 | Mathematics |  
-| hasni636@uitm.edu.my |  
+| @uitm.edu.my |
 :::
 
 ::: {.column width="5%"}
@@ -124,7 +124,7 @@ a column separator -->
 ::: {.column width="30%"}
 |![](images/ida_normaya.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
 |:-----:|
-| **Ida Normaya Mohd Nasir** |    
+| **Ida Normaya Mohd Nasir (Dr.)** |    
 | Senior Lecturer |    
 | Statistics |  
 | normaya@uitm.edu.my |  
@@ -193,12 +193,12 @@ a column separator -->
 :::::: {style="display: flex; "}
 
 ::: {.column width="30%"}
-|![](images/fazillah_bosli.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
+|![](images/noor_hafizah_zainal_aznam.jpg)|  
 |:-----:|
-| **Fazillah Bosli** |    
-| Senior Lecturer |   
-| Mgmt. Mathematics |  
-| fazillah@uitm.edu.my |  
+| **Noor Hafizah Zainal Aznam** |  
+| Senior Lecturer (Study Leave) |    
+| Management Mathematics |
+| noorhafizah@uitm.edu.my |  
 :::
 
 ::: {.column width="5%"}
@@ -275,4 +275,48 @@ a column separator -->
 :::
 
 ::::::  
-Link to the [Official Staff Directory at UiTM Kedah](https://kedah.uitm.edu.my/v2/index.php/directory/academic-staff/74-mathematical-science-department)  
+
+:::::: {style="display: flex; "}
+
+::: {.column width="30%"}
+|![](images/nur_alwani.png)|
+|:-----:|
+| **Siti Nur Alwani Salleh (Dr.)** |    
+| Senior Lecturer |    
+| Mathematics |  
+| sitinuralwani@uitm.edu.my |
+:::
+
+::: {.column width="5%"}
+\ 
+<!-- an empty Div (with a whitespace), serving as
+a column separator -->
+:::
+
+::: {.column width="30%"}
+|![](images/female.png)|  
+|:-----:|
+| **Syafiza Saila Samsudin** |    
+| Senior Lecturer |    
+| Mathematics |  
+| @uitm.edu.my |  
+:::
+
+::: {.column width="5%"}
+\ 
+<!-- an empty Div (with a whitespace), serving as
+a column separator -->
+:::
+
+::: {.column width="30%"}  
+|![](images/female.png)|  
+|:-----:|
+| **Norathirah Md Zin (Dr.)** |    
+| Senior Lecturer |    
+| Mathematics |  
+| @uitm.edu.my |  
+:::
+
+::::::  
+
+Link to the [Official Staff Directory at UiTM Kedah](https://kedah.uitm.edu.my/directory/academic-staff)  

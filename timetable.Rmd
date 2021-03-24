@@ -1,0 +1,35 @@
+---
+title: "TimeTable"
+description: |
+  Check your instructor timetable.  
+author: 
+  - name: "Kamarul Ariffin Mansor"
+    url: https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/
+    affiliation: Universiti Teknologi MARA
+    affiliation_url: https://kedah.uitm.edu.my/v2/index.php
+date: 3-19-2021
+output: 
+  distill::distill_article:
+    self_contained: true
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+```
+
+```{r}
+library(stringr)
+library(bsselectR)
+
+tt_plots <- paste0(list.files("images/tt", full.names = TRUE))
+names(tt_plots) <- str_replace_all(tt_plots, 
+                                      c("\\.jpg" = "", 
+                                        "images/tt/" = ""))
+
+bsselect(tt_plots, type = "img", selected = "ab-razak", 
+         live_search = TRUE, show_tick = TRUE)
+```
+
