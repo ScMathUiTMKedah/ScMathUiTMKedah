@@ -20,6 +20,9 @@ knitr::opts_chunk$set(echo = FALSE)
 # https://rstudio.github.io/distill/website.html
 ```
 
+
+### Lecturer's Timetable  
+
 ```{r}
 library(stringr)
 library(bsselectR)
@@ -33,3 +36,17 @@ bsselect(tt_plots, type = "img", selected = "ab-razak",
          live_search = TRUE, show_tick = TRUE)
 ```
 
+### Class Representatives  
+
+```{r}
+library(stringr)
+library(bsselectR)
+
+wakil_plots <- paste0(list.files("images/wakil", full.names = TRUE))
+names(wakil_plots) <- str_replace_all(wakil_plots, 
+                                      c("\\.jpg" = "", 
+                                        "images/wakil/" = ""))
+
+bsselect(wakil_plots, type = "img", selected = "AC110", 
+         live_search = TRUE, show_tick = TRUE)
+```
