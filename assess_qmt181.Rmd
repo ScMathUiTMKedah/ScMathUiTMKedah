@@ -1,0 +1,33 @@
+---
+title: "Assessment Information"
+description: |
+  Updates on the course for each semester will be displayed here. These will include the important dates for the assessment every semester.  
+  
+  Please visit this page as often as possible to keep up to date.
+output: 
+  distill::distill_article:
+    self_contained: true
+---
+
+## Assessment Date  
+
+## {.tabset}  
+
+### 20212  
+
+**Assessment 1 (Taxonomy level:C2)**  
+
+Week 7 - 21/5/2021 (Friday, 9am - 10.30am) 
+
+- Topic 1 (15 marks)  
+- Topic 2 (25 marks)  
+  - organizing qualitative data & numerical descriptive measures for ungrouped data (8 marks)  
+  - Numerical descriptive measures for grouped data (17 marks)  
+
+**Assessment 2**  
+
+Week 12 - 2 July 2021, (Friday, 9am-10.30am)  
+
+- Topic 3 (C3) - 20 marks (2 org)  
+- Topic 4 (C3) - 10 marks (1 org)  
+- Topic 5 (C3) - 10 marks (1 org)

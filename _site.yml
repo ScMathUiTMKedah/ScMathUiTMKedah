@@ -55,6 +55,8 @@ navbar:
           href: qmt181_notes.html
         - text: "Chapter 4"
           href: qmt181_notes_ch4.html
+        - text: "Assessment Dates"
+          href: "assess_qmt181.html"
     - text: "Assessment Repository"
       menu:
         - text: "MAT111"
