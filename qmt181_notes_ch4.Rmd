@@ -112,99 +112,164 @@ Arrange the data in ascending order.
 6 7 7 8 8 8 8 8 9 9 9 10 10 11 11 14 14 14  
 therefore, the mode is 8.  
 
-### Measure of position  
+## Measure of position  
+
+<aside>
+[Download Slides - Measures of Position](images/qmt181/Chapter 4 Topic 2 - MOP.pdf)
+</aside>  
 
 Box-and-whisker plot provides a useful graphical representation of the data. 
 
-#### Quartiles   
-The quartiles are descriptive measures that split the ordered data into four quarters. 
+### Quartiles   
+The quartiles are descriptive measures that split the ordered data into four quarters with three dividers. 
 
+<center>
 First quartile (Q1)  
 Second quartile (Q2)  
-Third quartile(Q3)
+Third quartile(Q3)  
+</center>
 
-Rules for obtaining the quartile values (a) If the positioning point is an integer, the numerical observation on the positioning point is chosen for the quartiles.  
+Rules for obtaining the quartile values  
 
-(b) If the point is halfway between two integers, the average of their
-    corresponding observations is selected.
+(a) If the positioning point is an integer, the numerical observation on the positioning point is chosen for the quartiles.  
+(b) If the point is halfway between two integers, the average of their corresponding observations is selected.  
+(c) If the positioning point is neither an integer nor a value  halfway between two integer, proportionate between  the two integers.  
 
-(c) 
+**Example 7**  
 
-        If the positioning point is neither an integer nor a value  halfway between two integer, proportionate between  the two integers.
+The three-year annual returns of 14 low-risk funds arranged in ascending order are given as follows.  
 
-    Example 7 The three-year annual returns of 14 low-risk funds
-    arranged in ascending order are given as follows. 9.77 11.35 12.46
-    13.80 15.47 17.48 18.37 18.47\
-    18.61 20.72 21.49 22.47 31.50 38.16 Find the first and third
-    quartiles.
+<center>
+9.77 11.35 12.46 13.80 15.47 17.48 18.37 18.47 18.61 20.72 21.49 22.47 31.50 38.16
+</center>  
 
-Position of first quartile, Q1
+Find the first and third quartiles.
 
-Position of third quartile, Q3
+*Solution*  
 
-MEASURES OF CENTRAL TENDENCY FOR GROUPED DATA MEAN For grouped data,
-each class interval is represented by the mid-point of the interval, Xi.
+Position of first quartile, Q_1  
 
-Example 8 The table shows the years of working experience for 120
-employees of Jimmy's Company. Solution: MEDIAN For grouped data, median
-is calculated as follows.
+$$
+Q_1\ position= \frac{n+1}{4} = \frac{14+1}{4} = 3.75 \\
+\\
+x_3 = 12.46\ and\ x_4 = 13.80 \\
+Q_1 = 12.46 + 0.75(13.80-12.46) = 13.465
+$$
 
-where n = sample size Lm = lower limit of the median class fm-1 =
-cumulative frequency before the median class fm = frequency of the
-median class c = median class size
+Position of third quartile, Q_3  
 
-Example 9 Using the data in example 8, compute the median Solution: Step
-1: Obtain the cumulative frequencies Step 2: Identify the class that
-contains the median and obtain the median location.
+$$
+Q_3\ position= 3(\frac{n+1}{4}) = 3(\frac{14+1}{4}) = 11.25 \\
+\\
+x_{11} = 21.49\ and\ x_{12} = 22.47 \\
+Q_1 = 21.49 + 0.25(22.47-21.49) = 21.735
+$$
 
-Step 3: Apply the formula MODE The mode can be estimated by using
-histogram. Step 1: A histogram is drawn for the data and the class with
-the highest frequency (modal class) is identify. Step 2: Two lines are
-drawn at the top of the column, one from the top right- hand corner to
-the top right-hand corner of the class before the modal class, and
-another from the top left-hand corner to the top left-hand corner of the
-column after the modal class. Step 3: At the point of intersection, a
-vertical line is drawn towards the horizontal axis of the histogram.
-Step 4: The variable value is the mode of the distribution. Mode can
-also be calculated using the formula.
+### GROUPED DATA  
 
-where L = lower boundary of the class containing mode. c = size of the
-class containing mode f0 = frequency of the class containing mode f1 =
-frequency of the class before the class containing mode f2 = frequency
-of the class after the class containing mode Example 10 Using the data
-in example 8, compute the mode. Solution: The modal class is 9 -- 12
-since the frequency of the class is the highest. Skewness Measure the
-lack of symmetry in a data distribution The relationship between mean,
-median and mode Measure of position The position of grouped data can be
-measured by the first and the third quartile denoted as Q1 and Q3
-respectively.
+#### MEAN  
 
-Method 1 The first (Q1) and third (Q3) quartiles Step 1: Obtain the
-cumulative frequencies Step 2: Identify the first and third quartile
-classes.
+For grouped data, each class interval is represented by the mid-point of the interval, X_i.
 
-Step 3: Find the first and third quartile First quartiles Where L1 =
-lower limit of the first quartile class n = number of observations fm-1
-= cumulative frequency before the first quartile class f1 = frequency of
-the first quartile class C1 = first quartile class size
+**Example 8**  
+The table shows the years of working experience for 120 employees of Jimmy's Company.  
 
-Where L3 = lower limit of the first quartile class n = number of
-observations fm-1 = cumulative frequency before the third quartile class
-f3 = frequency of the first quartile class C3 = third quartile class
-size
+*Solution:*  
 
-Example 11 Table below shows the distribution of test scores obtained by
-42 students in a Statistics class. Calculate Q1 and Q3 Step 1:
+#### MEDIAN  
 
-Step 2: Identify the location or position of the first and third
-quartiles
+For grouped data, median is calculated as follows.  
 
-Step 3: The value of Q1 and Q3 are as follows Method 2 Using Ogive
-(cumulative frequency curve) Step 1: Mark off the first and third
-quartile location on the y-axis. Step 2: From each of the quartile
-location marked on the y-axis, draw crosses the x-axis is the estimated
-quartile value.
 
-Exercise The speed of 120 cars that drove through a specific sharp
-corner on a federal road is given in the table below. Find mean, median
-and mode speed. END OF CHAPTER 3 THANK YOU
+where 
+$n$ = sample size,  
+$L_m$ = lower limit of the median class,  
+$f_{m-1}$ = cumulative frequency before the median class  
+$f_m$ = frequency of the median class and  
+$c$ = median class size  
+
+**Example 9**  
+Using the data in example 8, compute the median  
+
+*Solution*:  
+
+Step 1: Obtain the cumulative frequencies  
+
+Step 2: Identify the class that contains the median and obtain the median location.  
+
+Step 3: Apply the formula  
+
+
+#### MODE  
+The mode can be estimated by using histogram.  
+
+Step 1: A histogram is drawn for the data and the class with the highest frequency (modal class) is identify.  
+Step 2: Two lines are drawn at the top of the column, one from the top right-hand corner to the top right-hand corner of the class before the modal class, and another from the top left-hand corner to the top left-hand corner of the column after the modal class.  
+Step 3: At the point of intersection, a vertical line is drawn towards the horizontal axis of the histogram.  
+Step 4: The variable value is the mode of the distribution.  
+
+Mode can also be calculated using the formula.  
+
+
+where  
+L = lower boundary of the class containing mode.  
+c = size of the class containing mode  
+f0 = frequency of the class containing mode  
+f1 = frequency of the class before the class containing mode  
+f2 = frequency of the class after the class containing mode  
+
+**Example 10**  
+Using the data in example 8, compute the mode.  
+
+*Solution*:  
+The modal class is 9 -- 12 since the frequency of the class is the highest.  
+
+## Skewness  
+
+Measure the lack of symmetry in a data distribution The relationship between mean, median and mode Measure of position The position of grouped data can be measured by the first and the third quartile denoted as Q_1_ and Q_3_ respectively.  
+
+Method 1  
+The first (Q1) and third (Q3) quartiles  
+
+Step 1: Obtain the cumulative frequencies  
+Step 2: Identify the first and third quartile classes.  
+Step 3: Find the first and third quartile  
+        
+        First quartile, Where  
+        L1 = lower limit of the first quartile class  
+        n = number of observations
+        fm-1 = cumulative frequency before the first quartile class  
+        f1 = frequency of the first quartile class  
+        C1 = first quartile class size  
+        
+        Third quartile, where  
+        L3 = lower limit of the first quartile class  
+        n = number of observations  
+        fm-1 = cumulative frequency before the third quartile class  
+        f3 = frequency of the first quartile class  
+        C3 = third quartile class size  
+
+**Example 11**  
+Table below shows the distribution of test scores obtained by 42 students in a Statistics class. Calculate Q1 and Q3  
+
+Step 1:  
+Step 2: Identify the location or position of the first and third quartiles  
+Step 3: The value of Q1 and Q3 are as follows  
+
+Method 2 Using Ogive (cumulative frequency curve)  
+
+Step 1: Mark off the first and third quartile location on the y-axis.  
+Step 2: From each of the quartile location marked on the y-axis, draw crosses the x-axis is the estimated
+quartile value.  
+
+Exercise The speed of 120 cars that drove through a specific sharp corner on a federal road is given in the table below. Find mean, median and mode speed.  
+
+## Measures of Dispersion  
+
+<aside>
+[Download Slides - Measures of Dispersion](images/qmt181/Chapter 4 Topic 3 - MOD.pdf)  
+</aside>
+
+Measures of dispersion give us a value that can be used to describe a set of data as a whole. Just knowing the measures of central tendency value of a data set is not enough for us to describe the distribution of that data. The centralized measure does not provide information on whether the data is widely distributed or otherwise.  
+The measure of dispersion is based on the mean value. If the observed values are close to the mean of the distribution then the dispersion of the data is small and vice versa.  
+
