@@ -45,6 +45,8 @@ navbar:
           href: depreciation.html
         - text: "Chapter 10 - Income Tax"
           href: income.html
+        - text: "Assessment Dates"
+          href: assess_mat112.html
     - text: "QMT181/STA104"
       menu:
         - text: "Scheme of Work"
@@ -56,7 +58,7 @@ navbar:
         - text: "Chapter 4"
           href: qmt181_notes_ch4.html
         - text: "Assessment Dates"
-          href: "assess_qmt181.html"
+          href: assess_qmt181.html
     - text: "Assessment Repository"
       menu:
         - text: "MAT111"

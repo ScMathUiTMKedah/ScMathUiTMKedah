@@ -1,0 +1,66 @@
+---
+title: "Assessment Information"
+description: |
+  Updates on the course for each semester will be displayed here. These will include the important dates for the assessment every semester.  
+  
+  Please visit this page as often as possible to keep up to date.
+output: 
+  distill::distill_article:
+    self_contained: true
+---
+
+## Assessment Date  
+
+## {.tabset}  
+
+### 20212  
+
+**Assessment 1**  
+
+Week 9 - 9 June 2021 (Wednesday, 8:00 - 9:00 AM)  
+
+*Quiz 1 - 2%*  
+
+- 1.1 Review of Algebra  
+- 1.2 Sequence  
+
+*Test 1 - 15%*  
+
+- 2.1 Simple Interest  
+- 2.2 Bank Discount and Promissory Note  
+- 2.3 Compound Interest  
+
+***
+
+**Assessment 2**  
+
+Week 11 - 30 June 2021 (Wednesday, 8:30 - 9:00 PM)  
+
+- 2.4 Annuity (*Quiz 2 - 2%*)  
+- 3.2 Mathematics of Retailing (*Assignment - 4%*)
+
+***
+
+**Assessment 3**  
+
+Week 14 - 14 July 2021 (Wednesday, 8:30 - 9:30 PM)
+
+*Quiz 3 - 2%*  
+
+- 3.1 Trade and Cash Discount  
+
+*Test 2 - 15%*  
+
+- 3.2 Markup and Markdown  
+- 3.3 Instalment Purchase  
+- 4.1 Depreciation  
+
+***
+
+**Final Examination (60%)**  
+
+Saturday  
+7 August 2021
+9:00 AM - 12:00 PM
+
+Topics 2.1 - 4.1 [(Refer to Course Syllabus)](mat112.html)
