@@ -113,6 +113,8 @@ a column separator -->
 | Senior Lecturer |    
 | Statistics |  
 | amirah017@uitm.edu.my |  
+| <a href=amirah.html target="_blank">View Biodata</a> |  
+
 :::
 
 ::: {.column width="5%"}
@@ -143,6 +145,7 @@ a column separator -->
 | Senior Lecturer |   
 | Statistics |  
 | kartini2929@uitm.edu.my |  
+| <a href=kartini.html target="_blank">View Biodata</a> |  
 :::
 
 ::::::  
@@ -186,6 +189,7 @@ a column separator -->
 | Senior Lecturer |   
 | Statistics |  
 | azlina150@uitm.edu.my |  
+| <a href=nurazlina.html target="_blank">View Biodata</a> |  
 :::
 
 ::::::  
@@ -284,7 +288,8 @@ a column separator -->
 | **Siti Nur Alwani Salleh (Dr.)** |    
 | Senior Lecturer |    
 | Mathematics |  
-| sitinuralwani@uitm.edu.my |
+| sitinuralwani@uitm.edu.my |  
+| <a href=alwani.html target="_blank">View Biodata</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -300,6 +305,7 @@ a column separator -->
 | Senior Lecturer |    
 | Mathematics |  
 | @uitm.edu.my |  
+| <a href=syafiza.html target="_blank">View Biodata</a> |  
 :::
 
 ::: {.column width="5%"}
