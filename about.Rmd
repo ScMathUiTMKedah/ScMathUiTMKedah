@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = FALSE)
 | Course Coordinator, Senior Lecturer |   
 | Mgmt. Mathematics |  
 | fazillah@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=I7coKSJ7wWgTShTnEUhQevgsZVH+CTCOPaPYW7bOwBE=" target="_blank">View Profile</a> |  
 
 :::::: {style="display: flex; "}
 
@@ -26,7 +27,8 @@ knitr::opts_chunk$set(echo = FALSE)
 | **Rosidah Ahmad (PhD)** |    
 | Senior Lecturer |    
 | Mathematics Education |  
-| rosidah437@uitm.edu.my |
+| rosidah437@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=gFgEUoquEqEhKH9HNLld6Tm68K4l0I6ce3MS+MtyoKs=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -41,7 +43,8 @@ a column separator -->
 | **Noor Rashidah Ali** |    
 | Senior Lecturer |    
 | Statistics |  
-| norrash@uitm.edu.my |
+| norrash@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=DwTLbI9WbPMnfLG2r7F5H5iQvFvX4qHynceoo9APinQ=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -56,7 +59,8 @@ a column separator -->
 | **Shaida Farhan Zakaria** |    
 | Senior Lecturer |    
 | Mathematics |  
-| shahidafarhan@uitm.edu.my |
+| shahidafarhan@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=BspHlBJTUkFLOWB60OQ3DVsr1yuXipbeaFDcQkrMTZc=" target="_blank">View Profile</a> |  
 :::
 
 ::::::  
@@ -70,6 +74,7 @@ a column separator -->
 | Senior Lecturer |    
 | Statistics |  
 | asmahanin@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=7TW/I4R0KTD45wDX3cXxkt5jVFJZEyuCrfMbgD9e7Y8=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -84,7 +89,8 @@ a column separator -->
 | **Norliana Najib (Dr.)** |    
 | Senior Lecturer |    
 | Mathematics |  
-| @uitm.edu.my |
+| @uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=AwM/Zz3RhgiCb4jxvklNIftyjyqul8fVNrLmqwxeS2s=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -100,6 +106,7 @@ a column separator -->
 | Senior Lecturer |   
 | Mgmt. Mathematics |  
 | anis513@kedah.uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=2pQJnZ9ZjhSpC+4junrXXGXZZ1SHLihagtP5TTEl5p8=" target="_blank">View Profile</a> |  
 :::
 
 ::::::  
@@ -113,7 +120,7 @@ a column separator -->
 | Senior Lecturer |    
 | Statistics |  
 | amirah017@uitm.edu.my |  
-| <a href=amirah.html target="_blank">View Biodata</a> |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=I1bzg5Z/LbzURNc6V6s3V5Cw4rjGnv2MB2xEaGgiwHE=" target="_blank">View Profile</a> |  
 
 :::
 
@@ -130,6 +137,7 @@ a column separator -->
 | Senior Lecturer |    
 | Statistics |  
 | normaya@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=RGAZeruxsBbbu4iKM5gF+D+xzXbrTXqKbCDt2EqmV2k=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -145,7 +153,7 @@ a column separator -->
 | Senior Lecturer |   
 | Statistics |  
 | kartini2929@uitm.edu.my |  
-| <a href=kartini.html target="_blank">View Biodata</a> |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=w6bR9Tbh5Y8xOTKZijPTnHXjaePG5+q6/VCdAeGXVg0=" target="_blank">View Profile</a> |  
 :::
 
 ::::::  
@@ -159,6 +167,7 @@ a column separator -->
 | Senior Lecturer |    
 | Statistics |  
 | norashikin116@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=mxqFhTgzvi1vbH0Rw3iVep58ZXngVb4yFpi4WzcMT6U=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -170,10 +179,11 @@ a column separator -->
 ::: {.column width="30%"}
 |![](images/norin_rahayu.jpeg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
 |:-----:|
-| **Norin Rahayu Shamsuddin** |    
+| **Dr. Norin Rahayu Shamsuddin** |    
 | Senior Lecturer |    
 | Epidemiology & Statistics |  
 | norinrahayu@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=WEanYMmC98YU0mNPOF4Edzocj3thMWWLhbtoqM+5yrA=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -189,7 +199,7 @@ a column separator -->
 | Senior Lecturer |   
 | Statistics |  
 | azlina150@uitm.edu.my |  
-| <a href=nurazlina.html target="_blank">View Biodata</a> |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=CdGJDBudt6jVexAzyydxLNmmMH+HRcfxzH8xb9TLcXQ="l target="_blank">View Profile</a> |  
 :::
 
 ::::::  
@@ -203,6 +213,7 @@ a column separator -->
 | Senior Lecturer (Study Leave) |    
 | Management Mathematics |
 | noorhafizah@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=r4jTSuRVylqP2yQqUZxg4J9KBmPnvEQtu4dEMJ7I/RQ=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -218,6 +229,7 @@ a column separator -->
 | Senior Lecturer |   
 | Statistics |  
 | fairus706@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=bBQC9G6pwZP07H8UxJnlZ0ku6VARheUg+OVOElB7HTw=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -233,6 +245,7 @@ a column separator -->
 | Senior Lecturer |    
 | Physics |  
 | arazman@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=iafjCEhLtPrpYDvelAsJj4ypVRtC3zCRb2y7Rw/zFSQ=" target="_blank">View Profile</a> |  
 :::
 
 ::::::  
@@ -245,7 +258,8 @@ a column separator -->
 | **Kamarul Ariffin Mansor** |    
 | Senior Lecturer |    
 | Mathematics |  
-| ariff118@uitm.edu.my |
+| ariff118@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=jfJl92rZPRb9k0UzVrkKHc8BKRT+dbEhL8J6Qd6XU1o=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -261,6 +275,7 @@ a column separator -->
 | Senior Lecturer |    
 | Mathematics |  
 | afidaahmad@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=xs2tfNpxcB+fYe6imnMRQh2hwjBDGzCirKihlKiO3H8=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -276,6 +291,7 @@ a column separator -->
 | Senior Lecturer |    
 | Mathematics |  
 | norabaizura@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=HBRkvV2TGl/s7d7mVKPaMowvUnBmtMLGsdE3lyqpxrI=" target="_blank">View Profile</a> |  
 :::
 
 ::::::  
@@ -289,7 +305,7 @@ a column separator -->
 | Senior Lecturer |    
 | Mathematics |  
 | sitinuralwani@uitm.edu.my |  
-| <a href=alwani.html target="_blank">View Biodata</a> |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=msbj6JA6mWA9tP6kZv3TVlUENdx+5ojO8FosdMS1bhs=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -299,13 +315,13 @@ a column separator -->
 :::
 
 ::: {.column width="30%"}
-|![](images/female.png)|  
+|![](images/sya.png)|  
 |:-----:|
 | **Syafiza Saila Samsudin** |    
 | Senior Lecturer |    
 | Mathematics |  
 | @uitm.edu.my |  
-| <a href=syafiza.html target="_blank">View Biodata</a> |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=l/Xl90KpCGddU2kFj3pJ3468+IkWWrMNZiaJ7ccMBA4=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}
@@ -321,6 +337,7 @@ a column separator -->
 | Senior Lecturer |    
 | Mathematics |  
 | @uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=uDdHAVPd3yikBitFtgage4iPBLQgPSSt/LZ8HFefZQ0=" target="_blank">View Profile</a> |  
 :::
 
 ::::::  
