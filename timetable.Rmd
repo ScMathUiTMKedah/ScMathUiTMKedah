@@ -68,6 +68,34 @@ bsselect(tt_plots, type = "img", selected = "ab-razak",
   <center><embed src="./files/20214/wakil_kelas/BA111.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA111.pdf">Download PDF!</a></p></center>
 </details>
 
+<details><summary>BA118</summary>
+  <center><embed src="./files/20214/wakil_kelas/BA118.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA118.pdf">Download PDF!</a></p></center>
+</details>
+
+<details><summary>BA119</summary>
+  <center><embed src="./files/20214/wakil_kelas/BA119.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA119.pdf">Download PDF!</a></p></center>
+</details>
+
+<details><summary>BA242</summary>
+  <center><embed src="./files/20214/wakil_kelas/BA242.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA242.pdf">Download PDF!</a></p></center>
+</details>
+
+<details><summary>BA243</summary>
+  <center><embed src="./files/20214/wakil_kelas/BA243.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA243.pdf">Download PDF!</a></p></center>
+</details>
+
+<details><summary>BA244</summary>
+  <center><embed src="./files/20214/wakil_kelas/BA244.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA244.pdf">Download PDF!</a></p></center>
+</details>
+
+<details><summary>BA249</summary>
+  <center><embed src="./files/20214/wakil_kelas/BA249.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA249.pdf">Download PDF!</a></p></center>
+</details>
+
+<details><summary>BA250</summary>
+  <center><embed src="./files/20214/wakil_kelas/BA250.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/BA250.pdf">Download PDF!</a></p></center>
+</details>
+
 <details><summary>CS110</summary>
   <center><embed src="./files/20214/wakil_kelas/CS110.pdf" type="application/pdf" width="100%" height="660px" /><p>If you can't view the pdf file, click on the file's link - <a href="./files/20214/wakil_kelas/CS110.pdf">Download PDF!</a></p></center>
 </details>
