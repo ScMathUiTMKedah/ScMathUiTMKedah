@@ -22,6 +22,8 @@ navbar:
           href: mat402.html
         - text: "QMT181/STA104"
           href: qmt181.html
+        - text: "STA404"
+          href: https://scmathuitmkedah.github.io/STA404/
     - text: "MAT112/MAT402"
       icon: fa fa-laptop
       menu:
