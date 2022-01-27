@@ -22,6 +22,16 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ## Assessment 1 (Quiz)  
+
+**20214 (Oct 2021 - Feb 2022)**  
+<details>
+<summary>Assessment 1</summary>  
+<center>
+<embed src="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf" type="application/pdf" width="100%" height="970px" />
+<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf"> Download PDF!</a></p>
+</center>
+</details>  
+
 **20204 (Oct 2020 - Feb 2021)**  
 <details>
 <summary>Assessment 1</summary>  
