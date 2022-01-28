@@ -56,7 +56,35 @@ knitr::opts_chunk$set(echo = FALSE)
 **20204 (Oct 2020 - Feb 2021)** [Assessment 3](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 3 (CASE STUDY-PROJECT)/CASE STUDY/QUESTIONS.pdf) [Answers](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 3 (CASE STUDY-PROJECT)/CASE STUDY/ANSWERS.pdf)
 
 ## Assessment 4 (Final Examination)  
-**20204 (Oct 2020 - Feb 2021)** [Assessment 4](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 4 (FINAL ASSESSMENT)/QUESTIONS.pdf)
+**20204 (Oct 2020 - Feb 2021)** [Assessment 4](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 4 (FINAL ASSESSMENT)/QUESTIONS.pdf)  
+
+## Past Final Examinations (Questions and Answers)  
+**Dec 2018**  
+<details>
+<summary>Show Contents</summary>  
+<center>
+<embed src="files/Assessment Repository/STA404/Past Exams/2018 December.pdf" type="application/pdf" width="100%" height="500px" />
+<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 December.pdf"> Download PDF!</a></p>
+</center>
+</details>  
+
+**June 2018**  
+<details>
+<summary>Show Contents</summary>  
+<center>
+<embed src="files/Assessment Repository/STA404/Past Exams/2018 June.pdf" type="application/pdf" width="100%" height="500px" />
+<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 June.pdf"> Download PDF!</a></p>
+</center>
+</details>  
+
+**Jan 2018**  
+<details>
+<summary>Show Contents</summary>  
+<center>
+<embed src="files/Assessment Repository/STA404/Past Exams/2018 January.pdf" type="application/pdf" width="100%" height="500px" />
+<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 January.pdf"> Download PDF!</a></p>
+</center>
+</details>  
 
 ## Contributors {.appendix}
 Kartini Kasim  
