@@ -118,7 +118,7 @@ Show Contents
 
 <center>
 
-<embed src="files/Assessment Repository/STA404/Past Exams/2018 December.pdf" type="application/pdf" width="100%" height="500px" />
+<embed src="files/Assessment Repository/STA404/Past Exams/2018 December.pdf" type="application/pdf" width="100%" height="970px" />
 
 <p>
 
@@ -142,7 +142,7 @@ Show Contents
 
 <center>
 
-<embed src="files/Assessment Repository/STA404/Past Exams/2018 June.pdf" type="application/pdf" width="100%" height="500px" />
+<embed src="files/Assessment Repository/STA404/Past Exams/2018 June.pdf" type="application/pdf" width="100%" height="970px" />
 
 <p>
 
@@ -166,7 +166,7 @@ Show Contents
 
 <center>
 
-<embed src="files/Assessment Repository/STA404/Past Exams/2018 January.pdf" type="application/pdf" width="100%" height="500px" />
+<embed src="files/Assessment Repository/STA404/Past Exams/2018 January.pdf" type="application/pdf" width="100%" height="970px" />
 
 <p>
 
