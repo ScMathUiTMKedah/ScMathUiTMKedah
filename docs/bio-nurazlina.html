@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: BIODATA PENSYARAH  
@@ -455,7 +456,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1862,7 +1863,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2033,7 +2043,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2186,8 +2196,12 @@ Event
 <li><a href="#b.-kelayakan-akademik">B. Kelayakan Akademik</a></li>
 <li><a href="#c.-kursus-pengajaran">C. Kursus Pengajaran</a></li>
 <li><a href="#d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
-<li><a href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</a></li>
-<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
+<li><a
+href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
+Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
+Kerja</a></li>
+<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
+Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
 </ul>
 </nav>
 </div>
@@ -2210,10 +2224,16 @@ a column separator --></p>
 <p><strong>NURAZLINA BT ABDUL RASHID</strong><br />
 <em>Universiti Teknologi MARA<br />
 Kedah Branch Campus</em></p>
-<p>NURAZLINA BT ABDUL RASHID, is a senior lecturer at the Faculty of Computer Science and Mathematics, Universiti Teknologi MARA (UiTM), Kedah Branch Campus, Malaysia.</p>
-<p><strong>Total Cites:</strong> 12 , <strong>h Index:</strong> 2 , <strong>i10 Index:</strong> 0</p>
+<p>NURAZLINA BT ABDUL RASHID, is a senior lecturer at the Faculty of
+Computer Science and Mathematics, Universiti Teknologi MARA (UiTM),
+Kedah Branch Campus, Malaysia.</p>
+<p><strong>Total Cites:</strong> 15 , <strong>h Index:</strong> 2 ,
+<strong>i10 Index:</strong> 0</p>
 <center>
-<p><a href="https://scholar.google.com/citations?hl=en&amp;user=qVPi6kYAAAAJ"><img src="scholar_citations_jTX_qu0AAAAJ&amp;hl.png" width="350" height="131" /></a></p>
+<p><a
+href="https://scholar.google.com/citations?hl=en&amp;user=qVPi6kYAAAAJ"><img
+src="scholar_citations_jTX_qu0AAAAJ&amp;hl.png" width="350"
+height="131" /></a></p>
 </center>
 </div>
 </div>
@@ -2229,7 +2249,12 @@ Kedah Branch Campus</em></p>
 <li><p>Warganegara: <strong>MALAYSIA</strong></p></li>
 </ol>
 <h3 id="b.-kelayakan-akademik">B. Kelayakan Akademik</h3>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 46%" />
+<col style="width: 25%" />
+<col style="width: 27%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;">Kelulusan (Bidang)</th>
@@ -2244,7 +2269,8 @@ Kedah Branch Campus</em></p>
 <td style="text-align: center;">2010</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">IJAZAH SARJANA MUDA STATISTIK GUNAAN</td>
+<td style="text-align: center;">IJAZAH SARJANA MUDA STATISTIK
+GUNAAN</td>
 <td style="text-align: center;">UiTM </td>
 <td style="text-align: center;">2008</td>
 </tr>
@@ -2268,7 +2294,8 @@ Kedah Branch Campus</em></p>
 </tr>
 <tr class="even">
 <td style="text-align: center;">STA116</td>
-<td style="text-align: center;">INTRODUCTION TO PROBABILITY STATISTICS</td>
+<td style="text-align: center;">INTRODUCTION TO PROBABILITY
+STATISTICS</td>
 <td style="text-align: center;">CS110</td>
 </tr>
 <tr class="odd">
@@ -2290,7 +2317,8 @@ Kedah Branch Campus</em></p>
 <tbody>
 <tr class="odd">
 <td style="text-align: center;">STA404</td>
-<td style="text-align: center;">STATISTICS FOR BUSINESS AND SOCIAL SCIENCE</td>
+<td style="text-align: center;">STATISTICS FOR BUSINESS AND SOCIAL
+SCIENCE</td>
 <td style="text-align: center;"></td>
 </tr>
 </tbody>
@@ -2317,21 +2345,36 @@ Kedah Branch Campus</em></p>
 </tr>
 </tbody>
 </table>
-<h3 id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</h3>
+<h3
+id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
+Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
+Kerja</h3>
 <h4 id="pembentangan-kertas-kerja">1. Pembentangan Kertas Kerja</h4>
 <ol type="1">
-<li><p>PENYELIDIK KAJIAN SOSIAL EKONOMI PENDUDUK LUAR BANDAR NEGERI KEDAH (PASCA COVID</p></li>
-<li><p>PENULIS NOVEL GRAFIK EDISI KHAS COVID-19: KERANA TERPAKSA</p></li>
-<li><p>PENULIS NOVEL GRAFIK EDISI KHAS COVID-19: LAKSA BAKAT TERPENDAM</p></li>
-<li><p>PERUNDING BAGI PROJEK: KAJIAN PROFIL SOSAL EKONOMI DEWAN UNDANGAN NEGERI SUKA MENANTI, ALOR SETAR</p></li>
-<li><p>LAPORAN KAJIAN PROFIL SOSIAL EKONOMI DUN SUKA MENANTI ALOR SETAR</p></li>
-<li><p>COMPARISON ANALYSIS: LARGE DATA CLASSIFICATION USING PLS-DA AND DECISION TREE</p></li>
-<li><p>PERFORMANCE OF CLASSIFICATION ANALYSIS: A COMPARATIVE STUDY BETWEEN PLS-DA AND INTEGRATING PCA+LDA</p></li>
-<li><p>THE EFFECTIVENESS OF USING AskMe!STA404: ARE STUDENTS READY?</p></li>
-<li><p>PEMBANGUN BAHAN KURSUS MASSIVE OPEN LEARNING ONLINE COURSE (MOOC) STA210</p></li>
-<li><p>PENULIS LAPORAN TEKNIKAL SELF-REVIEW REPORT (SRR) BAGI FAKULTI SAINS KOMPUTER DAN MATEMATIK 2020</p></li>
-<li><p>PENULIS LAPORAN TEKNIKAL SELF-REVIEW REPORT (SRR) BAGI FAKULTI SAINS KOMPUTER DAN MATEMATIK 2019</p></li>
-<li><p>THE EFFECT OF DIFFERENT SAMPLING METHODS ON IMBALANCED DATASETS IN BANKRUPTCY</p></li>
+<li><p>PENYELIDIK KAJIAN SOSIAL EKONOMI PENDUDUK LUAR BANDAR NEGERI
+KEDAH (PASCA COVID</p></li>
+<li><p>PENULIS NOVEL GRAFIK EDISI KHAS COVID-19: KERANA
+TERPAKSA</p></li>
+<li><p>PENULIS NOVEL GRAFIK EDISI KHAS COVID-19: LAKSA BAKAT
+TERPENDAM</p></li>
+<li><p>PERUNDING BAGI PROJEK: KAJIAN PROFIL SOSAL EKONOMI DEWAN UNDANGAN
+NEGERI SUKA MENANTI, ALOR SETAR</p></li>
+<li><p>LAPORAN KAJIAN PROFIL SOSIAL EKONOMI DUN SUKA MENANTI ALOR
+SETAR</p></li>
+<li><p>COMPARISON ANALYSIS: LARGE DATA CLASSIFICATION USING PLS-DA AND
+DECISION TREE</p></li>
+<li><p>PERFORMANCE OF CLASSIFICATION ANALYSIS: A COMPARATIVE STUDY
+BETWEEN PLS-DA AND INTEGRATING PCA+LDA</p></li>
+<li><p>THE EFFECTIVENESS OF USING AskMe!STA404: ARE STUDENTS
+READY?</p></li>
+<li><p>PEMBANGUN BAHAN KURSUS MASSIVE OPEN LEARNING ONLINE COURSE (MOOC)
+STA210</p></li>
+<li><p>PENULIS LAPORAN TEKNIKAL SELF-REVIEW REPORT (SRR) BAGI FAKULTI
+SAINS KOMPUTER DAN MATEMATIK 2020</p></li>
+<li><p>PENULIS LAPORAN TEKNIKAL SELF-REVIEW REPORT (SRR) BAGI FAKULTI
+SAINS KOMPUTER DAN MATEMATIK 2019</p></li>
+<li><p>THE EFFECT OF DIFFERENT SAMPLING METHODS ON IMBALANCED DATASETS
+IN BANKRUPTCY</p></li>
 </ol>
 <h4 id="penyelidikan">2. Penyelidikan</h4>
 <table>
@@ -2351,19 +2394,22 @@ Kedah Branch Campus</em></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">GERAN PENYELIDIKAN ZAKAT NEGERI KEDAH</td>
+<td style="text-align: center;">GERAN PENYELIDIKAN ZAKAT NEGERI
+KEDAH</td>
 <td style="text-align: center;">5,000</td>
 <td style="text-align: center;">ZAWAS</td>
 <td style="text-align: center;">2021</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">GERAN PENYELIDIKAN SOSIAL EKONOMI DUN DUKA MENANTI ALOR SETAR NEGERI KEDAH</td>
+<td style="text-align: center;">GERAN PENYELIDIKAN SOSIAL EKONOMI DUN
+DUKA MENANTI ALOR SETAR NEGERI KEDAH</td>
 <td style="text-align: center;">6,000</td>
 <td style="text-align: center;">DUN SUKA MENANTI</td>
 <td style="text-align: center;">2019-2020</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">GERAN DANA KECEMERLANGAN UiTM KEDAH: PERFORMANCE OF BANKRUPTCY PREDICTION MODEL OF IMBALANCED DATASET</td>
+<td style="text-align: center;">GERAN DANA KECEMERLANGAN UiTM KEDAH:
+PERFORMANCE OF BANKRUPTCY PREDICTION MODEL OF IMBALANCED DATASET</td>
 <td style="text-align: center;">1,000</td>
 <td style="text-align: center;">UITM KEDAH</td>
 <td style="text-align: center;">2018</td>
@@ -2373,6 +2419,13 @@ Kedah Branch Campus</em></p>
 <h4 id="penerbitan">3. Penerbitan</h4>
 <h5 id="i.-buku-bab">i. Buku / Bab</h5>
 <table>
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 11%" />
+<col style="width: 13%" />
+<col style="width: 31%" />
+<col style="width: 22%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th>Judul Buku/Bab</th>
@@ -2412,14 +2465,16 @@ Kedah Branch Campus</em></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td>COMPARISON ANALYSIS: LARGE DATA CLASSIFICATION USING PLS-DA AND DECISION TREE</td>
+<td>COMPARISON ANALYSIS: LARGE DATA CLASSIFICATION USING PLS-DA AND
+DECISION TREE</td>
 <td>MATHEMATICS AND STATISTICS</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">HRPUB</td>
 <td style="text-align: center;">2020</td>
 </tr>
 <tr class="even">
-<td>PERFORMANCE OF CLASSIFICATION ANALYSIS: A COMPARATIVE STUDY BETWEEN PLS-DA AND INTEGRATING PCA+LDA</td>
+<td>PERFORMANCE OF CLASSIFICATION ANALYSIS: A COMPARATIVE STUDY BETWEEN
+PLS-DA AND INTEGRATING PCA+LDA</td>
 <td>JOURNAL MATHEMATICS AND STATISTICS</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">HRPUB</td>
@@ -2462,7 +2517,8 @@ Kedah Branch Campus</em></p>
 </tr>
 </tbody>
 </table>
-<h5 id="iii.-pembentangan-kertas-kerja">iii. Pembentangan Kertas Kerja</h5>
+<h5 id="iii.-pembentangan-kertas-kerja">iii. Pembentangan Kertas
+Kerja</h5>
 <table>
 <colgroup>
 <col style="width: 66%" />
@@ -2480,15 +2536,18 @@ Kedah Branch Campus</em></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td>PERFORMANCE OF CLASSIFICATION ANALYSIS: A COMPARATIVE STUDY BETWEEN PLS-DA AND INTEGRATING PCA+LDA</td>
+<td>PERFORMANCE OF CLASSIFICATION ANALYSIS: A COMPARATIVE STUDY BETWEEN
+PLS-DA AND INTEGRATING PCA+LDA</td>
 <td style="text-align: center;">ICMS2019</td>
 <td style="text-align: center;">UiTM KEDAH</td>
 <td style="text-align: center;">2019</td>
 </tr>
 </tbody>
 </table>
-<h3 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h3>
-<h4 id="jawatan-pentadbiran-akademik">1. Jawatan Pentadbiran / Akademik</h4>
+<h3 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
+Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h3>
+<h4 id="jawatan-pentadbiran-akademik">1. Jawatan Pentadbiran /
+Akademik</h4>
 <table>
 <thead>
 <tr class="header">
@@ -2505,8 +2564,15 @@ Kedah Branch Campus</em></p>
 </tr>
 </tbody>
 </table>
-<h4 id="jawatankuasa-di-dalamdi-luar-uitm">2. Jawatankuasa Di Dalam/Di Luar UiTM</h4>
-<table>
+<h4 id="jawatankuasa-di-dalamdi-luar-uitm">2. Jawatankuasa Di Dalam/Di
+Luar UiTM</h4>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 54%" />
+<col style="width: 14%" />
+<col style="width: 14%" />
+<col style="width: 16%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;">Nama Jawatankuasa</th>
@@ -2541,7 +2607,8 @@ Kedah Branch Campus</em></p>
 <td style="text-align: center;"></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">PENGERUSI BENGKEL PENULISAN PENERBITAN BUKU 2021</td>
+<td style="text-align: center;">PENGERUSI BENGKEL PENULISAN PENERBITAN
+BUKU 2021</td>
 <td style="text-align: center;">PENGERUSI</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
@@ -2554,8 +2621,15 @@ Kedah Branch Campus</em></p>
 </tr>
 </tbody>
 </table>
-<h4 id="sumbangan-profesionalmasyarakat">3. Sumbangan Profesional/Masyarakat</h4>
+<h4 id="sumbangan-profesionalmasyarakat">3. Sumbangan
+Profesional/Masyarakat</h4>
 <table>
+<colgroup>
+<col style="width: 45%" />
+<col style="width: 16%" />
+<col style="width: 17%" />
+<col style="width: 20%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;">Nama Badan Profesional/Kebajikan</th>
@@ -2573,7 +2647,8 @@ Kedah Branch Campus</em></p>
 </tr>
 </tbody>
 </table>
-<h4 id="keahlian-dalam-badan-profesional">4. Keahlian Dalam Badan Profesional</h4>
+<h4 id="keahlian-dalam-badan-profesional">4. Keahlian Dalam Badan
+Profesional</h4>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -2604,7 +2679,8 @@ Kedah Branch Campus</em></p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2623,8 +2699,11 @@ Kedah Branch Campus</em></p>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

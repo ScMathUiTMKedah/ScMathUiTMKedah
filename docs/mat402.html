@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: Business Mathematics MAT402</title>
@@ -454,7 +455,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1861,7 +1862,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2032,7 +2042,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2183,7 +2193,8 @@ Event
 <ul>
 <li><a href="#course-information">Course Information</a>
 <ul>
-<li><a href="#course-learning-outcomes"><em>Course Learning Outcomes</em></a></li>
+<li><a href="#course-learning-outcomes"><em>Course Learning
+Outcomes</em></a></li>
 <li><a href="#course-description"><em>Course Description</em></a></li>
 <li><a href="#syllabus-content"><em>Syllabus Content</em></a></li>
 <li><a href="#transferable-skills"><em>Transferable Skills</em></a></li>
@@ -2199,12 +2210,19 @@ Event
 <h3 id="course-learning-outcomes"><em>Course Learning Outcomes</em></h3>
 <p>At the end of the course, students should be able to:</p>
 <ol type="1">
-<li><p>Describe the concepts and mathematical terms encountered in business, finance, investment and income tax assessment. ( C2 )</p></li>
-<li><p>Solve basic mathematical problems in the specific area of business, finance, investment and income tax assessment. ( C3 )</p></li>
-<li><p>Evaluate the combination of concepts and mathematical terms involved in financing business, providing loan, installment purchase, trading or retailing. ( C6 )</p></li>
+<li><p>Describe the concepts and mathematical terms encountered in
+business, finance, investment and income tax assessment. ( C2 )</p></li>
+<li><p>Solve basic mathematical problems in the specific area of
+business, finance, investment and income tax assessment. ( C3 )</p></li>
+<li><p>Evaluate the combination of concepts and mathematical terms
+involved in financing business, providing loan, installment purchase,
+trading or retailing. ( C6 )</p></li>
 </ol>
 <h3 id="course-description"><em>Course Description</em></h3>
-<p>The course is primarily designed to develop the mathematical knowledge needed by the students to meet the demands of business operation. It is to provide a solid coverage of the most basic and frequently occurring business situations.</p>
+<p>The course is primarily designed to develop the mathematical
+knowledge needed by the students to meet the demands of business
+operation. It is to provide a solid coverage of the most basic and
+frequently occurring business situations.</p>
 <h3 id="syllabus-content"><em>Syllabus Content</em></h3>
 <ol type="1">
 <li>Sequence
@@ -2323,13 +2341,18 @@ Event
 </li>
 <li>Tax assessment for individual who is single<br />
 </li>
-<li>Tax assessment for individual who is married – separate and combine assessment</li>
+<li>Tax assessment for individual who is married – separate and combine
+assessment</li>
 </ul></li>
 </ol>
 <h3 id="transferable-skills"><em>Transferable Skills</em></h3>
 <ul>
-<li><p>Demonstrate ability to identify and articulate self skills, knowledge and understanding confidently and in a variety of contexts. -Demonstrate ability to investigate problems and provide effective solutions.</p></li>
-<li><p>Demonstrate ability to analyse issues/problems from multiple angles and make suggestions.</p></li>
+<li><p>Demonstrate ability to identify and articulate self skills,
+knowledge and understanding confidently and in a variety of contexts.
+-Demonstrate ability to investigate problems and provide effective
+solutions.</p></li>
+<li><p>Demonstrate ability to analyse issues/problems from multiple
+angles and make suggestions.</p></li>
 </ul>
 <h3 id="course-assessment"><em>Course Assessment</em></h3>
 <p>Final examination – One 3-hour paper : 60%<br />
@@ -2339,25 +2362,35 @@ Course Work (Continuous assessments) : 40%<br />
 - Assignments (2) : 4%</p>
 <h3 id="recommended-text"><em>Recommended Text</em></h3>
 <ol type="1">
-<li>Lau Too Kya,Phang Yook Ngor,Wee Kok Kiang, Business Mathematics for UiTM, 4rd, Oxford Fajar Sdn. Bhd, 2012, ISBN: 9789676571601</li>
+<li>Lau Too Kya,Phang Yook Ngor,Wee Kok Kiang, Business Mathematics for
+UiTM, 4rd, Oxford Fajar Sdn. Bhd, 2012, ISBN: 9789676571601</li>
 </ol>
 <h3 id="references"><em>References</em></h3>
 <ol type="1">
-<li>Paul Lau Ngee Kiong, Business Mathematics, UiTM Press, 2013, ISBN: 9789673634446<br />
+<li>Paul Lau Ngee Kiong, Business Mathematics, UiTM Press, 2013, ISBN:
+9789673634446<br />
 </li>
-<li>Gary Clendenen,Stanley A. Salzman, Business Mathematics, 13th, Pearson College Division, 2014, ISBN: 9780321955050<br />
+<li>Gary Clendenen,Stanley A. Salzman, Business Mathematics, 13th,
+Pearson College Division, 2014, ISBN: 9780321955050<br />
 </li>
-<li>James Deitz,James Southam, Contemporary Business Mathematics for Colleges, 16th, Cengage Learning, 2012, ISBN: 9781111821326<br />
+<li>James Deitz,James Southam, Contemporary Business Mathematics for
+Colleges, 16th, Cengage Learning, 2012, ISBN: 9781111821326<br />
 </li>
-<li>Eugene Don,Joel Lerner, Schaum’s Outline of Basic Business Mathematics, 2ed, 2nd, McGraw-Hill, 2009, <a href="ISBN:9780071611589" class="uri">ISBN:9780071611589</a></li>
+<li>Eugene Don,Joel Lerner, Schaum’s Outline of Basic Business
+Mathematics, 2ed, 2nd, McGraw-Hill, 2009, <a href="ISBN:9780071611589"
+class="uri">ISBN:9780071611589</a></li>
 </ol>
-<h3 class="tabset" id="assessment-evidence"><em>Assessment Evidence</em></h3>
+<h3 class="tabset" id="assessment-evidence"><em>Assessment
+Evidence</em></h3>
 <h4 id="section">20202</h4>
-<p><a href="files/assessment/QUIZ%201%20MAT112.docx">Quiz 1 (2%)</a><br />
-<a href="files/assessment/Test%201%20MAT402%20May%202020.docx">Test 1 (10%)</a></p>
+<p><a href="files/assessment/QUIZ%201%20MAT112.docx">Quiz 1
+(2%)</a><br />
+<a href="files/assessment/Test%201%20MAT402%20May%202020.docx">Test 1
+(10%)</a></p>
 <h4 id="section-1">20204</h4>
 <hr />
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2376,8 +2409,11 @@ Course Work (Continuous assessments) : 40%<br />
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

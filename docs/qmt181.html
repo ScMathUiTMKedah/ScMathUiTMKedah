@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: Introduction to Statistics QMT181/STA104</title>
@@ -457,7 +458,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1864,7 +1865,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2035,7 +2045,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2175,8 +2185,17 @@ Event
 <h1>Introduction to Statistics QMT181/STA104</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>This course introduces the basic statistical concepts in general applications. The topics include basic concepts of sampling methods, method of data collection, introductory methods in descriptive and inferential statistics. Specific topics include methods of describing data, correlation &amp; regression analysis, time series analysis, index numbers and probability. Students will be exposed to statistical project which involve analyzing primary or secondary data in enhancing their understanding in solving real problems. Statistical Analysis using Excel or SPSS will be introduced.<br />
-Welcome to the QMT181/STA104 Introduction to Statistics Courseweb. I hope you enjoy it!</p></p>
+<p><p>This course introduces the basic statistical concepts in general
+applications. The topics include basic concepts of sampling methods,
+method of data collection, introductory methods in descriptive and
+inferential statistics. Specific topics include methods of describing
+data, correlation &amp; regression analysis, time series analysis, index
+numbers and probability. Students will be exposed to statistical project
+which involve analyzing primary or secondary data in enhancing their
+understanding in solving real problems. Statistical Analysis using Excel
+or SPSS will be introduced.<br />
+Welcome to the QMT181/STA104 Introduction to Statistics Courseweb. I
+hope you enjoy it!</p></p>
 </div>
 
 
@@ -2185,10 +2204,12 @@ Welcome to the QMT181/STA104 Introduction to Statistics Courseweb. I hope you en
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#course-learning-outcomes"><em>Course Learning Outcomes</em></a></li>
+<li><a href="#course-learning-outcomes"><em>Course Learning
+Outcomes</em></a></li>
 <li><a href="#course-description"><em>Course Description</em></a></li>
 <li><a href="#syllabus-content"><em>Syllabus Content</em></a></li>
-<li><a href="#teaching-methodology"><em>Teaching Methodology</em></a></li>
+<li><a href="#teaching-methodology"><em>Teaching
+Methodology</em></a></li>
 <li><a href="#assessment"><em>Assessment</em></a></li>
 <li><a href="#recommended-text"><em>Recommended Text</em></a></li>
 <li><a href="#references"><em>References</em></a></li>
@@ -2198,12 +2219,24 @@ Welcome to the QMT181/STA104 Introduction to Statistics Courseweb. I hope you en
 <h3 id="course-learning-outcomes"><em>Course Learning Outcomes</em></h3>
 <p>At the end of the course, students should be able to:</p>
 <ul>
-<li><p>Explain the concept, the use and the application of basic statistical tools in descriptive and inferential statistics. (C2)</p></li>
-<li><p>Determine appropriate statistical solution and interpreting the real world problem. (C5)</p></li>
-<li><p>Propose the use of descriptive statistics in the area of computing. (A3)</p></li>
+<li><p>Explain the concept, the use and the application of basic
+statistical tools in descriptive and inferential statistics.
+(C2)</p></li>
+<li><p>Determine appropriate statistical solution and interpreting the
+real world problem. (C5)</p></li>
+<li><p>Propose the use of descriptive statistics in the area of
+computing. (A3)</p></li>
 </ul>
 <h3 id="course-description"><em>Course Description</em></h3>
-<p>This course introduces the basic statistical concepts in general applications. The topics include basic concepts of sampling methods, method of data collection, introductory methods in descriptive and inferential statistics. Specific topics include methods of describing data, correlation &amp; regression analysis, time series analysis, index numbers and probability. Students will be exposed to statistical project which involve analyzing primary or secondary data in enhancing their understanding in solving real problems. Statistical Analysis using Excel or SPSS will be introduced.</p>
+<p>This course introduces the basic statistical concepts in general
+applications. The topics include basic concepts of sampling methods,
+method of data collection, introductory methods in descriptive and
+inferential statistics. Specific topics include methods of describing
+data, correlation &amp; regression analysis, time series analysis, index
+numbers and probability. Students will be exposed to statistical project
+which involve analyzing primary or secondary data in enhancing their
+understanding in solving real problems. Statistical Analysis using Excel
+or SPSS will be introduced.</p>
 <h3 id="syllabus-content"><em>Syllabus Content</em></h3>
 <ol type="1">
 <li>Introduction to Statistics
@@ -2315,7 +2348,8 @@ Welcome to the QMT181/STA104 Introduction to Statistics Courseweb. I hope you en
 <td style="text-align: center;">CLO2</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">Group Project (Topic 1 &amp; Topic 2)</td>
+<td style="text-align: center;">Group Project (Topic 1 &amp; Topic
+2)</td>
 <td style="text-align: center;">10%</td>
 <td style="text-align: center;">CLO3</td>
 </tr>
@@ -2328,21 +2362,29 @@ Welcome to the QMT181/STA104 Introduction to Statistics Courseweb. I hope you en
 </table>
 <h3 id="recommended-text"><em>Recommended Text</em></h3>
 <ol type="1">
-<li>Allan Bluman, Elementary Statistics: A Step By Step Approach, 8, McGraw-Hill Science/Engineering/Math, 2013, ISBN: 0073534986</li>
+<li>Allan Bluman, Elementary Statistics: A Step By Step Approach, 8,
+McGraw-Hill Science/Engineering/Math, 2013, ISBN: 0073534986</li>
 </ol>
 <h3 id="references"><em>References</em></h3>
 <ol type="1">
-<li>William G Marchal, Samuel A Wathen Douglas A Lind, Statistical Techniques in Business and Economics - 13th Edition, 13, McGraw Hill Companies, 2007, ISBN: 9780070667075.<br />
+<li>William G Marchal, Samuel A Wathen Douglas A Lind, Statistical
+Techniques in Business and Economics - 13th Edition, 13, McGraw Hill
+Companies, 2007, ISBN: 9780070667075.<br />
 </li>
-<li>Prem S. Mann, Introductory Statistics, 8, John Wiley &amp; Sons, 2010, ISBN: 97804704446652.<br />
+<li>Prem S. Mann, Introductory Statistics, 8, John Wiley &amp; Sons,
+2010, ISBN: 97804704446652.<br />
 </li>
-<li>Muhammad Rozi, M &amp; Faridah, A.H, Business Statistics, Oxford Fajar Bakti Sdn. Bhd, 2011, ISBN: 13-97898345093.</li>
-<li>Lau Too Kya, Phang Yook Ngor, Zainuddin Awang, Statistics for UiTM, 2, Penerbit Fajar Bakti Sdn. Bhd., 2009, ISBN: n/a<br />
+<li>Muhammad Rozi, M &amp; Faridah, A.H, Business Statistics, Oxford
+Fajar Bakti Sdn. Bhd, 2011, ISBN: 13-97898345093.</li>
+<li>Lau Too Kya, Phang Yook Ngor, Zainuddin Awang, Statistics for UiTM,
+2, Penerbit Fajar Bakti Sdn. Bhd., 2009, ISBN: n/a<br />
 </li>
-<li>Halilah Haron, Understanding Statistics with SPSS, 1, University Publication Center (UPENA), 2010, ISBN: 9789673631520.</li>
+<li>Halilah Haron, Understanding Statistics with SPSS, 1, University
+Publication Center (UPENA), 2010, ISBN: 9789673631520.</li>
 </ol>
 <hr />
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2361,8 +2403,11 @@ Welcome to the QMT181/STA104 Introduction to Statistics Courseweb. I hope you en
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

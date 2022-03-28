@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: Group Project Guidelines</title>
@@ -458,7 +459,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1865,7 +1866,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2036,7 +2046,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2180,7 +2190,11 @@ Event
 </div>
 
 <div class="d-byline">
-  Kamarul Ariffin Mansor <a href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/" class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php" class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
+  Kamarul Ariffin Mansor <a
+href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/"
+class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti
+Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php"
+class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
   
 <br/>4-7-2020
 </div>
@@ -2192,33 +2206,45 @@ Event
 <ul>
 <li><a href="#project-objectives">PROJECT OBJECTIVES</a></li>
 <li><a href="#project-outcomes">PROJECT OUTCOMES</a></li>
-<li><a href="#suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR PROJECT</a>
+<li><a href="#suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR
+PROJECT</a>
 <ul>
 <li><a href="#group-members">1. GROUP MEMBERS</a></li>
 <li><a href="#source-of-data">2. SOURCE OF DATA</a></li>
 <li><a href="#cover-page">3. COVER PAGE:</a></li>
 <li><a href="#acknowledgement">4. ACKNOWLEDGEMENT</a></li>
-<li><a href="#standard-table-of-content">5. STANDARD TABLE OF CONTENT</a></li>
+<li><a href="#standard-table-of-content">5. STANDARD TABLE OF
+CONTENT</a></li>
 <li><a href="#content-of-project">6. CONTENT OF PROJECT</a></li>
 </ul></li>
-<li><a href="#details-of-date-submission">DETAILS OF DATE SUBMISSION</a></li>
+<li><a href="#details-of-date-submission">DETAILS OF DATE
+SUBMISSION</a></li>
 </ul>
 </nav>
 </div>
 <h2 id="project-objectives">PROJECT OBJECTIVES</h2>
-<p>The main objective of this project is to expose the students to the application of statistics techniques towards on the primary/secondary data. Besides that, to overview the students to the Final Year Project report nature.</p>
+<p>The main objective of this project is to expose the students to the
+application of statistics techniques towards on the primary/secondary
+data. Besides that, to overview the students to the Final Year Project
+report nature.</p>
 <h2 id="project-outcomes">PROJECT OUTCOMES</h2>
 <p>At the end of the project, students should be able:<br />
 1. Describe the actual data.<br />
-2. Explain and analyze the appropriate statistics techniques in analyzing the actual data.<br />
+2. Explain and analyze the appropriate statistics techniques in
+analyzing the actual data.<br />
 3. Produce a good class project report.</p>
-<h2 id="suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR PROJECT</h2>
+<h2 id="suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR
+PROJECT</h2>
 <h3 id="group-members">1. GROUP MEMBERS</h3>
-<p>Students are required to perform a group with 3 – 4 members. (The number of members per group depending on the number of students in the class and the number of class)</p>
+<p>Students are required to perform a group with 3 – 4 members. (The
+number of members per group depending on the number of students in the
+class and the number of class)</p>
 <h3 id="source-of-data">2. SOURCE OF DATA</h3>
-<p>Students are allowed to use primary / secondary data. There is no restricted on the number of sample size.</p>
+<p>Students are allowed to use primary / secondary data. There is no
+restricted on the number of sample size.</p>
 <h3 id="cover-page">3. COVER PAGE:</h3>
-<p>Cover page should include UiTM logo, report title, name, student number and group.</p>
+<p>Cover page should include UiTM logo, report title, name, student
+number and group.</p>
 <h3 id="acknowledgement">4. ACKNOWLEDGEMENT</h3>
 <h3 id="standard-table-of-content">5. STANDARD TABLE OF CONTENT</h3>
 <h3 id="content-of-project">6. CONTENT OF PROJECT</h3>
@@ -2238,13 +2264,15 @@ Event
 </li>
 <li>Data Collection Method<br />
 </li>
-<li>The descriptions on the variables (variable, types of variable and level measurement) are given as follow.<br />
+<li>The descriptions on the variables (variable, types of variable and
+level measurement) are given as follow.<br />
 Example : Insert Image Here<br />
 2.2 Method of analysis (Topic 2)<br />
 </li>
 </ul></li>
 <li>FINDINGS<br />
-It should include organizing and presenting data supported by numerical descriptive measures
+It should include organizing and presenting data supported by numerical
+descriptive measures
 <ul>
 <li>Use suitable chart/plot/table<br />
 </li>
@@ -2259,13 +2287,16 @@ It should include organizing and presenting data supported by numerical descript
 </li>
 <li>Language : English Language<br />
 </li>
-<li>Length report : Minimum 8 pages including cover page and report content</li>
+<li>Length report : Minimum 8 pages including cover page and report
+content</li>
 </ul></li>
 </ol>
 <h2 id="details-of-date-submission">DETAILS OF DATE SUBMISSION</h2>
-<p>Please ensure to submit the hardcopy and softcopy (burn in CD) <strong>BEFORE OR ON WEEK 11.</strong></p>
+<p>Please ensure to submit the hardcopy and softcopy (burn in CD)
+<strong>BEFORE OR ON WEEK 11.</strong></p>
 <hr />
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2284,8 +2315,11 @@ It should include organizing and presenting data supported by numerical descript
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

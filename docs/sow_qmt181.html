@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: Scheme of Work</title>
@@ -458,7 +459,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1865,7 +1866,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2036,7 +2046,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2180,7 +2190,11 @@ Event
 </div>
 
 <div class="d-byline">
-  Kamarul Ariffin Mansor <a href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/" class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php" class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
+  Kamarul Ariffin Mansor <a
+href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/"
+class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti
+Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php"
+class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
   
 <br/>4-6-2020
 </div>
@@ -2304,7 +2318,8 @@ a column separator --></p>
 <div class="column" style="width:20%;">
 <p><strong>Remark:</strong><br />
 Define term of sampling unit and sampling frame.<br />
-Emphasizing calculation on SRS, systematic and stratified sampling.<br />
+Emphasizing calculation on SRS, systematic and stratified
+sampling.<br />
 Guidelines to construct the questionnaires.</p>
 </div>
 </div>
@@ -2351,7 +2366,8 @@ Data organization and presentation</p>
 a column separator --></p>
 </div>
 <div class="column" style="width:20%;">
-<p><strong>Remarks:</strong> Constructing histogram and ogive using graph paper. (compulsory)</p>
+<p><strong>Remarks:</strong> Constructing histogram and ogive using
+graph paper. (compulsory)</p>
 </div>
 </div>
 <div style="display: flex; ">
@@ -2384,8 +2400,10 @@ a column separator --></p>
 </div>
 <div class="column" style="width:20%;">
 <p><strong>Remarks:</strong></p>
-<p>Using calculator to obtain sample mean and standard deviation. (Substitute all the summation values into the respective formula)</p>
-<p>Interpret result from calculation. (Emphasizing the interpretation on mean, median, mode, skewness and coefficient variation)</p>
+<p>Using calculator to obtain sample mean and standard deviation.
+(Substitute all the summation values into the respective formula)</p>
+<p>Interpret result from calculation. (Emphasizing the interpretation on
+mean, median, mode, skewness and coefficient variation)</p>
 </div>
 </div>
 <div style="display: flex; ">
@@ -2450,8 +2468,10 @@ a column separator --></p>
 </div>
 <div class="column" style="width:20%;">
 <p><strong>Remarks:</strong><br />
-Using calculator to obtain sample mean and standard deviation. (Substitute all the summation values into the respective formula)<br />
-Interpret result from calculation. (Emphasizing the interpretation on mean, median, mode, skewness and coefficient variation)</p>
+Using calculator to obtain sample mean and standard deviation.
+(Substitute all the summation values into the respective formula)<br />
+Interpret result from calculation. (Emphasizing the interpretation on
+mean, median, mode, skewness and coefficient variation)</p>
 </div>
 </div>
 <div style="display: flex; ">
@@ -2471,7 +2491,8 @@ a column separator --></p>
 </li>
 <li>Scatter Plot<br />
 </li>
-<li>Pearson’s correlation coefficient <strong>(exclude Spearman’s rank correlation coefficient)</strong><br />
+<li>Pearson’s correlation coefficient <strong>(exclude Spearman’s rank
+correlation coefficient)</strong><br />
 </li>
 </ul></li>
 </ol>
@@ -2482,10 +2503,13 @@ a column separator --></p>
 </div>
 <div class="column" style="width:20%;">
 <p><strong>Remark:</strong><br />
-Using calculator to obtain the Pearson’s Correlation Coefficient and Regression Line Equation by applying Least Square Method. (Substitute all the summation values into the respective formula)</p>
+Using calculator to obtain the Pearson’s Correlation Coefficient and
+Regression Line Equation by applying Least Square Method. (Substitute
+all the summation values into the respective formula)</p>
 </div>
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2504,8 +2528,11 @@ Using calculator to obtain the Pearson’s Correlation Coefficient and Regressio
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

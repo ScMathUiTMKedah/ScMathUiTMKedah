@@ -12,7 +12,7 @@ output:
   distill::distill_article:
     self_contained: true
 ---
-  
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
@@ -20,73 +20,166 @@ knitr::opts_chunk$set(echo = FALSE)
 # https://rstudio.github.io/distill/website.html
 ```
 
+## Assessment 1 (Quiz)
 
-## Assessment 1 (Quiz)  
+**20214 (Oct 2021 - Feb 2022)**\
 
-**20214 (Oct 2021 - Feb 2022)**  
 <details>
-<summary>Assessment 1</summary>  
+
+<summary>
+
+Assessment 1
+
+</summary>
+
 <center>
+
 <embed src="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf" type="application/pdf" width="100%" height="970px" />
-<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf"> Download PDF!</a></p>
-</center>
-</details>  
 
-**20204 (Oct 2020 - Feb 2021)**  
+<p>
+
+If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf"> Download PDF!</a>
+
+</p>
+
+</center>
+
+</details>
+
+**20204 (Oct 2020 - Feb 2021)**\
+
 <details>
-<summary>Assessment 1</summary>  
+
+<summary>
+
+Assessment 1
+
+</summary>
+
 <center>
+
 <embed src="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf" type="application/pdf" width="100%" height="970px" />
-<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf"> Download PDF!</a></p>
+
+<p>
+
+If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf"> Download PDF!</a>
+
+</p>
+
 </center>
-</details>  
+
+</details>
 
 <details>
-<summary>Answer</summary>  
+
+<summary>
+
+Answer
+
+</summary>
+
 <center>
+
 <embed src="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/ANSWERS.pdf" type="application/pdf" width="100%" height="970px" />
-<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/ANSWERS.pdf"> Download PDF!</a></p>
+
+<p>
+
+If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/ANSWERS.pdf"> Download PDF!</a>
+
+</p>
+
 </center>
-</details>  
 
-## Assessment 2 (Test)  
-**20204 (Oct 2020 - Feb 2021)** [Assessment 2](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 2 (TEST)/QUESTIONS.pdf) [Answers](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 2 (TEST)/ANSWERS.pdf)
+</details>
 
-## Assessment 3 (Case Study - Project)  
-**20204 (Oct 2020 - Feb 2021)** [Assessment 3](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 3 (CASE STUDY-PROJECT)/CASE STUDY/QUESTIONS.pdf) [Answers](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 3 (CASE STUDY-PROJECT)/CASE STUDY/ANSWERS.pdf)
+## Assessment 2 (Test)
 
-## Assessment 4 (Final Examination)  
-**20204 (Oct 2020 - Feb 2021)** [Assessment 4](files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 4 (FINAL ASSESSMENT)/QUESTIONS.pdf)  
+**20204 (Oct 2020 - Feb 2021)** [Assessment 2](files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%202%20(TEST)/QUESTIONS.pdf) [Answers](files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%202%20(TEST)/ANSWERS.pdf)
 
-## Past Final Examinations (Questions and Answers)  
-**Dec 2018**  
+## Assessment 3 (Case Study - Project)
+
+**20204 (Oct 2020 - Feb 2021)** [Assessment 3](files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%203%20(CASE%20STUDY-PROJECT)/CASE%20STUDY/QUESTIONS.pdf) [Answers](files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%203%20(CASE%20STUDY-PROJECT)/CASE%20STUDY/ANSWERS.pdf)
+
+## Assessment 4 (Final Examination)
+
+**20204 (Oct 2020 - Feb 2021)** [Assessment 4](files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%204%20(FINAL%20ASSESSMENT)/QUESTIONS.pdf)
+
+## Past Final Examinations (Questions and Answers)
+
+**Dec 2018**\
+
 <details>
-<summary>Show Contents</summary>  
+
+<summary>
+
+Show Contents
+
+</summary>
+
 <center>
+
 <embed src="files/Assessment Repository/STA404/Past Exams/2018 December.pdf" type="application/pdf" width="100%" height="500px" />
-<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 December.pdf"> Download PDF!</a></p>
-</center>
-</details>  
 
-**June 2018**  
+<p>
+
+If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 December.pdf"> Download PDF!</a>
+
+</p>
+
+</center>
+
+</details>
+
+**June 2018**\
+
 <details>
-<summary>Show Contents</summary>  
+
+<summary>
+
+Show Contents
+
+</summary>
+
 <center>
+
 <embed src="files/Assessment Repository/STA404/Past Exams/2018 June.pdf" type="application/pdf" width="100%" height="500px" />
-<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 June.pdf"> Download PDF!</a></p>
-</center>
-</details>  
 
-**Jan 2018**  
-<details>
-<summary>Show Contents</summary>  
-<center>
-<embed src="files/Assessment Repository/STA404/Past Exams/2018 January.pdf" type="application/pdf" width="100%" height="500px" />
-<p>If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 January.pdf"> Download PDF!</a></p>
+<p>
+
+If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 June.pdf"> Download PDF!</a>
+
+</p>
+
 </center>
-</details>  
+
+</details>
+
+**Jan 2018**\
+
+<details>
+
+<summary>
+
+Show Contents
+
+</summary>
+
+<center>
+
+<embed src="files/Assessment Repository/STA404/Past Exams/2018 January.pdf" type="application/pdf" width="100%" height="500px" />
+
+<p>
+
+If you can't view the pdf file, click on the file's link - <a href="files/Assessment Repository/STA404/Past Exams/2018 January.pdf"> Download PDF!</a>
+
+</p>
+
+</center>
+
+</details>
 
 ## Contributors {.appendix}
-Kartini Kasim  
-Senior Lecturer  
+
+Kartini Kasim\
+Senior Lecturer\
 Department of Mathematical Sciences, UiTM Kedah

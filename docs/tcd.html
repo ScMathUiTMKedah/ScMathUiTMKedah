@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: Trade and Cash Discount</title>
@@ -458,7 +459,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1865,7 +1866,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2036,7 +2046,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2180,7 +2190,11 @@ Event
 </div>
 
 <div class="d-byline">
-  Kamarul Ariffin Mansor <a href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/" class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php" class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
+  Kamarul Ariffin Mansor <a
+href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/"
+class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti
+Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php"
+class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
   
 <br/>3-30-2020
 </div>
@@ -2218,13 +2232,70 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/tcd/Slide1.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide2.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide3.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide4.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide5.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide6.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide7.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide8.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide9.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide10.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide11.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide12.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide13.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide14.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide15.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide16.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide17.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide18.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide19.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide20.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide21.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide22.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide23.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide24.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide25.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide26.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide27.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide28.PNG" style="width:100%"> <img class="mySlides" src="images/tcd/Slide29.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/tcd/Slide1.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide2.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide3.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide4.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide5.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide6.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide7.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide8.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide9.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide10.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide11.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide12.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide13.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide14.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide15.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide16.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide17.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide18.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide19.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide20.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide21.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide22.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide23.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide24.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide25.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide26.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide27.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide28.PNG" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide29.PNG" style="width:100%"></p>
 </div>
 <div class="w3-center">
-<p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button> <button class="w3-button w3-light-grey" onclick="plusDivs(1)">Next</button></p>
+<p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
+<button class="w3-button w3-light-grey" onclick="plusDivs(1)">Next</button></p>
 </div>
 <div class="w3-center">
-<p><button class="w3-button demo" onclick="currentDiv(1)">1</button> <button class="w3-button demo" onclick="currentDiv(2)">2</button> <button class="w3-button demo" onclick="currentDiv(3)">3</button> <button class="w3-button demo" onclick="currentDiv(4)">4</button> <button class="w3-button demo" onclick="currentDiv(5)">5</button> <button class="w3-button demo" onclick="currentDiv(6)">6</button> <button class="w3-button demo" onclick="currentDiv(7)">7</button> <button class="w3-button demo" onclick="currentDiv(8)">8</button> <button class="w3-button demo" onclick="currentDiv(9)">9</button> <button class="w3-button demo" onclick="currentDiv(10)">10</button> <button class="w3-button demo" onclick="currentDiv(11)">11</button> <button class="w3-button demo" onclick="currentDiv(12)">12</button> <button class="w3-button demo" onclick="currentDiv(13)">13</button> <button class="w3-button demo" onclick="currentDiv(14)">14</button> <button class="w3-button demo" onclick="currentDiv(15)">15</button> <button class="w3-button demo" onclick="currentDiv(16)">16</button> <button class="w3-button demo" onclick="currentDiv(17)">17</button> <button class="w3-button demo" onclick="currentDiv(18)">18</button> <button class="w3-button demo" onclick="currentDiv(19)">19</button> <button class="w3-button demo" onclick="currentDiv(10)">20</button> <button class="w3-button demo" onclick="currentDiv(11)">21</button> <button class="w3-button demo" onclick="currentDiv(12)">22</button> <button class="w3-button demo" onclick="currentDiv(13)">23</button> <button class="w3-button demo" onclick="currentDiv(14)">24</button> <button class="w3-button demo" onclick="currentDiv(15)">25</button> <button class="w3-button demo" onclick="currentDiv(16)">26</button> <button class="w3-button demo" onclick="currentDiv(17)">27</button> <button class="w3-button demo" onclick="currentDiv(18)">28</button> <button class="w3-button demo" onclick="currentDiv(19)">29</button></p>
+<p><button class="w3-button demo" onclick="currentDiv(1)">1</button>
+<button class="w3-button demo" onclick="currentDiv(2)">2</button>
+<button class="w3-button demo" onclick="currentDiv(3)">3</button>
+<button class="w3-button demo" onclick="currentDiv(4)">4</button>
+<button class="w3-button demo" onclick="currentDiv(5)">5</button>
+<button class="w3-button demo" onclick="currentDiv(6)">6</button>
+<button class="w3-button demo" onclick="currentDiv(7)">7</button>
+<button class="w3-button demo" onclick="currentDiv(8)">8</button>
+<button class="w3-button demo" onclick="currentDiv(9)">9</button>
+<button class="w3-button demo" onclick="currentDiv(10)">10</button>
+<button class="w3-button demo" onclick="currentDiv(11)">11</button>
+<button class="w3-button demo" onclick="currentDiv(12)">12</button>
+<button class="w3-button demo" onclick="currentDiv(13)">13</button>
+<button class="w3-button demo" onclick="currentDiv(14)">14</button>
+<button class="w3-button demo" onclick="currentDiv(15)">15</button>
+<button class="w3-button demo" onclick="currentDiv(16)">16</button>
+<button class="w3-button demo" onclick="currentDiv(17)">17</button>
+<button class="w3-button demo" onclick="currentDiv(18)">18</button>
+<button class="w3-button demo" onclick="currentDiv(19)">19</button>
+<button class="w3-button demo" onclick="currentDiv(10)">20</button>
+<button class="w3-button demo" onclick="currentDiv(11)">21</button>
+<button class="w3-button demo" onclick="currentDiv(12)">22</button>
+<button class="w3-button demo" onclick="currentDiv(13)">23</button>
+<button class="w3-button demo" onclick="currentDiv(14)">24</button>
+<button class="w3-button demo" onclick="currentDiv(15)">25</button>
+<button class="w3-button demo" onclick="currentDiv(16)">26</button>
+<button class="w3-button demo" onclick="currentDiv(17)">27</button>
+<button class="w3-button demo" onclick="currentDiv(18)">28</button>
+<button class="w3-button demo" onclick="currentDiv(19)">29</button></p>
 </div>
 <script>
 var slideIndex = 1;
@@ -2261,18 +2332,54 @@ function showDivs(n) {
 </aside>
 <h1 id="trade-and-cash-discount">Trade and Cash Discount</h1>
 <h3 id="the-due-date">The Due Date</h3>
-<p>So, you made a purchase from this Internet company. You bought several pairs of shoes and this really nice jacket to go with the shoes. The reason you purchased from this company is that they said you didn’t have to pay right away. They would send you an invoice, a bill, later on with how much you owe and the terms of payment. You wait about a week, and you receive your shoes and jacket. They look and fit wonderfully! A few days later, you receive the invoice from this company. The invoice is dated August 12 of this year.</p>
-<p>On this invoice, you see the amount that is due and several other key terms. Let’s take a look at the important terms you need to understand.</p>
-<p>One of the most important is the due date, when your payment needs to be paid by. You look at your invoice and see that the due date on this invoice is located at the top right of the invoice. You’ve seen other invoices before. The ones you’ve seen, though, usually have a date such as November 8 or some other date plus the current year or the next, if we’re in December. But this one, though, is quite different. It has some strange numbers that don’t correspond to dates and some letters that you’ve never seen.</p>
+<p>So, you made a purchase from this Internet company. You bought
+several pairs of shoes and this really nice jacket to go with the shoes.
+The reason you purchased from this company is that they said you didn’t
+have to pay right away. They would send you an invoice, a bill, later on
+with how much you owe and the terms of payment. You wait about a week,
+and you receive your shoes and jacket. They look and fit wonderfully! A
+few days later, you receive the invoice from this company. The invoice
+is dated August 12 of this year.</p>
+<p>On this invoice, you see the amount that is due and several other key
+terms. Let’s take a look at the important terms you need to
+understand.</p>
+<p>One of the most important is the due date, when your payment needs to
+be paid by. You look at your invoice and see that the due date on this
+invoice is located at the top right of the invoice. You’ve seen other
+invoices before. The ones you’ve seen, though, usually have a date such
+as November 8 or some other date plus the current year or the next, if
+we’re in December. But this one, though, is quite different. It has some
+strange numbers that don’t correspond to dates and some letters that
+you’ve never seen.</p>
 <p>Let’s take a look at what these numbers and letters mean.</p>
 <h3 id="possible-discount">Possible Discount</h3>
-<p>The other numbers that you see are 2/10. You know it’s not a date because for one, you are nowhere near the month of February and there’s no year listed. So, what does it mean? This particular term actually means that you will get a discount of two percent if you pay within ten days.</p>
-<p>Companies use these terms to encourage early payment of the invoice. If paid early, the company gives a two percent discount! This benefits both the company and the customer. The customer gets a discount and the company gets paid. Two percent of a discount won’t hurt the company’s pocketbook that much, either. For your invoice dated August 12 of this year, the 2/10 due date is ten days from August 12 or August 22. So, that means if you pay your invoice by August 22, you can take a two percent discount.</p>
-<p>In the business world, you might see 2/10 or some other numbers in the same format that tells you what kind of discount you would get if you pay early. For example, 2/15 says that you will get a two percent discount if you pay within 15 days.</p>
+<p>The other numbers that you see are 2/10. You know it’s not a date
+because for one, you are nowhere near the month of February and there’s
+no year listed. So, what does it mean? This particular term actually
+means that you will get a discount of two percent if you pay within ten
+days.</p>
+<p>Companies use these terms to encourage early payment of the invoice.
+If paid early, the company gives a two percent discount! This benefits
+both the company and the customer. The customer gets a discount and the
+company gets paid. Two percent of a discount won’t hurt the company’s
+pocketbook that much, either. For your invoice dated August 12 of this
+year, the 2/10 due date is ten days from August 12 or August 22. So,
+that means if you pay your invoice by August 22, you can take a two
+percent discount.</p>
+<p>In the business world, you might see 2/10 or some other numbers in
+the same format that tells you what kind of discount you would get if
+you pay early. For example, 2/15 says that you will get a two percent
+discount if you pay within 15 days.</p>
 <h2 class="appendix" id="acknowledgments">Acknowledgments</h2>
-<p>Some of the notes above are taken from online course <a href="https://study.com/academy/course/business-math.html">Business 110: Math Class from Study.com</a></p>
-<p>Credit Terms: Due Date, Invoice Date &amp; EOM. (2014, December 3). Retrieved from <a href="https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html" class="uri">https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html</a>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Some of the notes above are taken from online course <a
+href="https://study.com/academy/course/business-math.html">Business 110:
+Math Class from Study.com</a></p>
+<p>Credit Terms: Due Date, Invoice Date &amp; EOM. (2014, December 3).
+Retrieved from <a
+href="https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html"
+class="uri">https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html</a>.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2291,8 +2398,11 @@ function showDivs(n) {
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

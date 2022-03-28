@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: Income Tax</title>
@@ -461,7 +462,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1868,7 +1869,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2039,7 +2049,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2183,7 +2193,11 @@ Event
 </div>
 
 <div class="d-byline">
-  Kamarul Ariffin Mansor <a href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/" class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php" class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
+  Kamarul Ariffin Mansor <a
+href="https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/"
+class="uri">https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/</a> (Universiti
+Teknologi MARA)<a href="https://kedah.uitm.edu.my/v2/index.php"
+class="uri">https://kedah.uitm.edu.my/v2/index.php</a>
   
 <br/>4-9-2020
 </div>
@@ -2195,18 +2209,22 @@ Event
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#type-of-assessment">Type of Assessment</a></li>
-<li><a href="#how-to-calculate-tax-payable-amount">How to calculate tax payable amount?</a>
+<li><a href="#how-to-calculate-tax-payable-amount">How to calculate tax
+payable amount?</a>
 <ul>
 <li><a href="#aggregate-income">1. <em>Aggregate Income</em></a></li>
 <li><a href="#donation">2. <em>Donation</em></a></li>
 <li><a href="#reliefs">3. <em>Reliefs</em></a></li>
-<li><a href="#taxable-income-chargeable-income">4. <em>Taxable Income (Chargeable Income)</em></a></li>
+<li><a href="#taxable-income-chargeable-income">4. <em>Taxable Income
+(Chargeable Income)</em></a></li>
 <li><a href="#rebates">5. <em>Rebates</em></a></li>
 </ul></li>
 <li><a href="#solved-examples">Solved Examples</a>
 <ul>
-<li><a href="#tax-assessment-for-individual-who-is-single">Tax assessment for individual who is single</a></li>
-<li><a href="#tax-assessment-for-individual-who-is-married">Tax assessment for individual who is married</a></li>
+<li><a href="#tax-assessment-for-individual-who-is-single">Tax
+assessment for individual who is single</a></li>
+<li><a href="#tax-assessment-for-individual-who-is-married">Tax
+assessment for individual who is married</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -2230,13 +2248,48 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/income/Slide1.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide2.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide3.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide4.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide5.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide6.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide7.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide8.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide9.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide10.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide11.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide12.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide13.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide14.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide15.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide16.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide17.PNG" style="width:100%"> <img class="mySlides" src="images/income/Slide18.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/income/Slide1.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide2.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide3.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide4.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide5.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide6.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide7.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide8.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide9.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide10.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide11.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide12.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide13.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide14.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide15.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide16.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide17.PNG" style="width:100%">
+<img class="mySlides" src="images/income/Slide18.PNG" style="width:100%"></p>
 </div>
 <div class="w3-center">
-<p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button> <button class="w3-button w3-light-grey" onclick="plusDivs(1)">Next</button></p>
+<p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
+<button class="w3-button w3-light-grey" onclick="plusDivs(1)">Next</button></p>
 </div>
 <div class="w3-center">
-<p><button class="w3-button demo" onclick="currentDiv(1)">1</button> <button class="w3-button demo" onclick="currentDiv(2)">2</button> <button class="w3-button demo" onclick="currentDiv(3)">3</button> <button class="w3-button demo" onclick="currentDiv(4)">4</button> <button class="w3-button demo" onclick="currentDiv(5)">5</button> <button class="w3-button demo" onclick="currentDiv(6)">6</button> <button class="w3-button demo" onclick="currentDiv(7)">7</button> <button class="w3-button demo" onclick="currentDiv(8)">8</button> <button class="w3-button demo" onclick="currentDiv(9)">9</button> <button class="w3-button demo" onclick="currentDiv(10)">10</button> <button class="w3-button demo" onclick="currentDiv(11)">11</button> <button class="w3-button demo" onclick="currentDiv(12)">12</button> <button class="w3-button demo" onclick="currentDiv(13)">13</button> <button class="w3-button demo" onclick="currentDiv(14)">14</button> <button class="w3-button demo" onclick="currentDiv(15)">15</button> <button class="w3-button demo" onclick="currentDiv(16)">16</button> <button class="w3-button demo" onclick="currentDiv(17)">17</button> <button class="w3-button demo" onclick="currentDiv(18)">18</button></p>
+<p><button class="w3-button demo" onclick="currentDiv(1)">1</button>
+<button class="w3-button demo" onclick="currentDiv(2)">2</button>
+<button class="w3-button demo" onclick="currentDiv(3)">3</button>
+<button class="w3-button demo" onclick="currentDiv(4)">4</button>
+<button class="w3-button demo" onclick="currentDiv(5)">5</button>
+<button class="w3-button demo" onclick="currentDiv(6)">6</button>
+<button class="w3-button demo" onclick="currentDiv(7)">7</button>
+<button class="w3-button demo" onclick="currentDiv(8)">8</button>
+<button class="w3-button demo" onclick="currentDiv(9)">9</button>
+<button class="w3-button demo" onclick="currentDiv(10)">10</button>
+<button class="w3-button demo" onclick="currentDiv(11)">11</button>
+<button class="w3-button demo" onclick="currentDiv(12)">12</button>
+<button class="w3-button demo" onclick="currentDiv(13)">13</button>
+<button class="w3-button demo" onclick="currentDiv(14)">14</button>
+<button class="w3-button demo" onclick="currentDiv(15)">15</button>
+<button class="w3-button demo" onclick="currentDiv(16)">16</button>
+<button class="w3-button demo" onclick="currentDiv(17)">17</button>
+<button class="w3-button demo" onclick="currentDiv(18)">18</button></p>
 </div>
 <script>
 var slideIndex = 1;
@@ -2272,7 +2325,9 @@ function showDivs(n) {
 <a href="files/slides/income.pdf">Download Learning Slides</a>
 </aside>
 <h2 id="introduction">Introduction</h2>
-<p>This chapter deals with the concepts of income tax. However, for this course we will only cover on the topic of personal income tax. By the end of this chapter, student should be able to:</p>
+<p>This chapter deals with the concepts of income tax. However, for this
+course we will only cover on the topic of personal income tax. By the
+end of this chapter, student should be able to:</p>
 <ol type="1">
 <li>identify allowance deductions for income tax purposes,<br />
 </li>
@@ -2280,23 +2335,27 @@ function showDivs(n) {
 </li>
 <li>use the tax schedule to determine the tax amount,<br />
 </li>
-<li>recognize that tax rebate is allowed for a chargeable income of less than RM35,000 and that zakat is an allowable rebate, and<br />
+<li>recognize that tax rebate is allowed for a chargeable income of less
+than RM35,000 and that zakat is an allowable rebate, and<br />
 </li>
 <li>calculate tax payable.</li>
 </ol>
 <h2 id="type-of-assessment">Type of Assessment</h2>
 <blockquote>
-<p>Income tax is the normal tax which is paid on your taxable (chargeable) income.</p>
+<p>Income tax is the normal tax which is paid on your taxable
+(chargeable) income.</p>
 </blockquote>
 <p><strong>Two types of Assessment:</strong></p>
 <ol type="1">
 <li>Separate Assessment, such that:
 <ol type="i">
-<li>Tax is calculated individually. For instance : bachelor, husband only, wife only.<br />
+<li>Tax is calculated individually. For instance : bachelor, husband
+only, wife only.<br />
 </li>
 <li>Husband the only one working (wife get relief and rebate).<br />
 </li>
-<li>Children are assessed under husband unless it is requested by wife.</li>
+<li>Children are assessed under husband unless it is requested by
+wife.</li>
 </ol></li>
 <li>Joint Assessment, such that:
 <ol type="i">
@@ -2305,13 +2364,15 @@ function showDivs(n) {
 <li>For Parents Medical Expenses, only husband part is calculated.</li>
 </ol></li>
 </ol>
-<h2 id="how-to-calculate-tax-payable-amount">How to calculate tax payable amount?</h2>
+<h2 id="how-to-calculate-tax-payable-amount">How to calculate tax
+payable amount?</h2>
 <p>To calculate tax payable amount, there are 5 steps:</p>
 <h3 id="aggregate-income">1. <em>Aggregate Income</em></h3>
 <ul>
 <li>Annual Income (the salary for 12 months)<br />
 </li>
-<li>For joint assessment, the aggregate income must be the combination income of husband and wife.</li>
+<li>For joint assessment, the aggregate income must be the combination
+income of husband and wife.</li>
 </ul>
 <h3 id="donation">2. <em>Donation</em></h3>
 <table>
@@ -2327,36 +2388,51 @@ function showDivs(n) {
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Gift of money to the Government, State Government or Local Authorities.</td>
+<td style="text-align: left;">Gift of money to the Government, State
+Government or Local Authorities.</td>
 <td style="text-align: center;">NIL</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Gift of money to Approved Institutions or Organisations.</td>
-<td style="text-align: center;">(Amount is limited to 7% of aggregate income)</td>
+<td style="text-align: left;">Gift of money to Approved Institutions or
+Organisations.</td>
+<td style="text-align: center;">(Amount is limited to 7% of aggregate
+income)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Gift of money or cost of contribution in kind for any Approved Sports Activity or Sports Body.</td>
-<td style="text-align: center;">(Amount is limited to 7% of aggregate income)</td>
+<td style="text-align: left;">Gift of money or cost of contribution in
+kind for any Approved Sports Activity or Sports Body.</td>
+<td style="text-align: center;">(Amount is limited to 7% of aggregate
+income)</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Gift of money or cost of contribution in kind for any Approved Project of National Interest Approved by Ministry of Finance.</td>
-<td style="text-align: center;">(Amount is limited to 7% of aggregate income)</td>
+<td style="text-align: left;">Gift of money or cost of contribution in
+kind for any Approved Project of National Interest Approved by Ministry
+of Finance.</td>
+<td style="text-align: center;">(Amount is limited to 7% of aggregate
+income)</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Gift of artifacts, manuscripts or paintings.</td>
+<td style="text-align: left;">Gift of artifacts, manuscripts or
+paintings.</td>
 <td style="text-align: center;">NIL</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Gift of money for provision of Library Facilities or to Libraries</td>
+<td style="text-align: left;">Gift of money for provision of Library
+Facilities or to Libraries</td>
 <td style="text-align: center;">NIL</td>
 </tr>
 </tbody>
 </table>
 <h3 id="reliefs">3. <em>Reliefs</em></h3>
 <center style="max-width:700px">
-<img src="files/notes/reliefs_2019.png" title="fig:" alt="Individual Tax Reliefs 2019" />
+<figure>
+<img src="files/notes/reliefs_2019.png"
+alt="Individual Tax Reliefs 2019" />
+<figcaption aria-hidden="true">Individual Tax Reliefs 2019</figcaption>
+</figure>
 </center>
-<h3 id="taxable-income-chargeable-income">4. <em>Taxable Income (Chargeable Income)</em></h3>
+<h3 id="taxable-income-chargeable-income">4. <em>Taxable Income
+(Chargeable Income)</em></h3>
 <center style="max-width:700px">
 <img src="files/notes/tax_schedule_2018_2019.png" />
 </center>
@@ -2372,7 +2448,8 @@ function showDivs(n) {
 <tbody>
 <tr class="odd">
 <td style="text-align: center;">1.</td>
-<td style="text-align: left;">Husband (Taxable income below RM35,000)</td>
+<td style="text-align: left;">Husband (Taxable income below
+RM35,000)</td>
 <td style="text-align: center;">400</td>
 </tr>
 <tr class="even">
@@ -2388,11 +2465,14 @@ function showDivs(n) {
 </tbody>
 </table>
 <h2 id="solved-examples">Solved Examples</h2>
-<h3 id="tax-assessment-for-individual-who-is-single">Tax assessment for individual who is single</h3>
-<h3 id="tax-assessment-for-individual-who-is-married">Tax assessment for individual who is married</h3>
+<h3 id="tax-assessment-for-individual-who-is-single">Tax assessment for
+individual who is single</h3>
+<h3 id="tax-assessment-for-individual-who-is-married">Tax assessment for
+individual who is married</h3>
 <p><strong>Separate Assessment</strong></p>
 <p><strong>Joint Assessment</strong></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2411,8 +2491,11 @@ function showDivs(n) {
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: BIODATA PENSYARAH
@@ -455,7 +456,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1862,7 +1863,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2033,7 +2043,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2187,16 +2197,22 @@ Event
 <li><a href="#c.-kursus-pengajaran">C. Kursus Pengajaran</a>
 <ul>
 <li><a href="#kursus-yang-diajar">Kursus yang Diajar</a></li>
-<li><a href="#kursus-yang-boleh-diajar">Kursus yang boleh diajar</a></li>
+<li><a href="#kursus-yang-boleh-diajar">Kursus yang boleh
+diajar</a></li>
 </ul></li>
 <li><a href="#d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
-<li><a href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</a>
+<li><a
+href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
+Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
+Kerja</a>
 <ul>
-<li><a href="#pembentangan-kertas-kerja">1. Pembentangan Kertas Kerja</a></li>
+<li><a href="#pembentangan-kertas-kerja">1. Pembentangan Kertas
+Kerja</a></li>
 <li><a href="#penyelidikan">2. Penyelidikan</a></li>
 <li><a href="#penerbitan">3. Penerbitan</a></li>
 </ul></li>
-<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
+<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
+Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
 </ul>
 </nav>
 </div>
@@ -2219,7 +2235,9 @@ a column separator --></p>
 <p><strong>Amirah Hazwani Abdul Rahim</strong><br />
 <em>Universiti Teknologi MARA<br />
 Kedah Branch Campus</em></p>
-<p>Amirah Hazwani Abdul Rahim, is a senior lecturer at the Faculty of Computer Science and Mathematics, Universiti Teknologi MARA (UiTM), Kedah Branch Campus, Malaysia.</p>
+<p>Amirah Hazwani Abdul Rahim, is a senior lecturer at the Faculty of
+Computer Science and Mathematics, Universiti Teknologi MARA (UiTM),
+Kedah Branch Campus, Malaysia.</p>
 </div>
 </div>
 <h2 id="a.-profil-pensyarah">A. Profil Pensyarah</h2>
@@ -2238,6 +2256,11 @@ Kedah Branch Campus</em></p>
 </ol>
 <h2 id="b.-kelayakan-akademik">B. Kelayakan Akademik</h2>
 <table>
+<colgroup>
+<col style="width: 47%" />
+<col style="width: 29%" />
+<col style="width: 23%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;">Kelulusan (Bidang)</th>
@@ -2252,7 +2275,8 @@ Kedah Branch Campus</em></p>
 <td style="text-align: center;">JUN 2010</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">BACHELOR OF SCIENCES (HONOURS) MATHEMATICS</td>
+<td style="text-align: center;">BACHELOR OF SCIENCES (HONOURS)
+MATHEMATICS</td>
 <td style="text-align: center;">UNIVERSITI PUTRA MALAYSIA</td>
 <td style="text-align: center;">2008</td>
 </tr>
@@ -2276,7 +2300,8 @@ Kedah Branch Campus</em></p>
 </tr>
 <tr class="even">
 <td style="text-align: center;">MAT111</td>
-<td style="text-align: center;">MATHEMATICS WITH BUSINESS APLICATION</td>
+<td style="text-align: center;">MATHEMATICS WITH BUSINESS
+APLICATION</td>
 <td style="text-align: center;">BA118</td>
 </tr>
 <tr class="odd">
@@ -2291,7 +2316,8 @@ Kedah Branch Campus</em></p>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">STA404</td>
-<td style="text-align: center;">STATISTICAL METHOD FOR SOCIAL SCIENCES</td>
+<td style="text-align: center;">STATISTICAL METHOD FOR SOCIAL
+SCIENCES</td>
 <td style="text-align: center;">AM228 AC220</td>
 </tr>
 <tr class="even">
@@ -2352,15 +2378,24 @@ Kedah Branch Campus</em></p>
 </table>
 <p><br />
 </p>
-<h2 id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</h2>
+<h2
+id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
+Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
+Kerja</h2>
 <h3 id="pembentangan-kertas-kerja">1. Pembentangan Kertas Kerja</h3>
 <ol type="1">
-<li><p>THE EFFECT OF DIFFERENT SAMPLING METHODS ON IMBALANCED DATASET IN BANRUPTCY PREDICTION MODEL</p></li>
-<li><p>COMPARISON ANALYSIS : LARGE DATA CLASSIFICATION USING PLS-DA AND DECISION TREES</p></li>
-<li><p>SMOTE APPROACH TO IMBALANCED DATASET IN LOGISTIC REGRESSION ANALYSIS</p></li>
-<li><p>POCKET LEARNING : CENTRAL TENDENCY AND COEFFICIENT OF VARIATION SNAPSHOT</p></li>
-<li><p>STUDENTS’ PERCEPTION ON STATISTICS ONLINE ASSESSMENT: eSTA404</p></li>
-<li><p>PARTIAL LEAST SQUARES BASED FINANCIAL DISTRESS CLASSIFYING MODEL OF SMALL CONSTRUCTION FIRMS</p></li>
+<li><p>THE EFFECT OF DIFFERENT SAMPLING METHODS ON IMBALANCED DATASET IN
+BANRUPTCY PREDICTION MODEL</p></li>
+<li><p>COMPARISON ANALYSIS : LARGE DATA CLASSIFICATION USING PLS-DA AND
+DECISION TREES</p></li>
+<li><p>SMOTE APPROACH TO IMBALANCED DATASET IN LOGISTIC REGRESSION
+ANALYSIS</p></li>
+<li><p>POCKET LEARNING : CENTRAL TENDENCY AND COEFFICIENT OF VARIATION
+SNAPSHOT</p></li>
+<li><p>STUDENTS’ PERCEPTION ON STATISTICS ONLINE ASSESSMENT:
+eSTA404</p></li>
+<li><p>PARTIAL LEAST SQUARES BASED FINANCIAL DISTRESS CLASSIFYING MODEL
+OF SMALL CONSTRUCTION FIRMS</p></li>
 </ol>
 <h3 id="penyelidikan">2. Penyelidikan</h3>
 <table>
@@ -2380,25 +2415,30 @@ Kedah Branch Campus</em></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">Excellend Fund - Partial Least Squares Based Financial Distressed Classifying Model of Small Construction Firms</td>
+<td style="text-align: center;">Excellend Fund - Partial Least Squares
+Based Financial Distressed Classifying Model of Small Construction
+Firms</td>
 <td style="text-align: center;">RM5,000</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">2013-2014</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">Partial Least Squares Based Bankruptcy Classification Model of Malaysian Small Firms</td>
+<td style="text-align: center;">Partial Least Squares Based Bankruptcy
+Classification Model of Malaysian Small Firms</td>
 <td style="text-align: center;">RM54,590</td>
 <td style="text-align: center;">RAGS</td>
 <td style="text-align: center;">2013-2015</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">Performance of Bankruptcy Prediction Model on Imbalanced Dataset</td>
+<td style="text-align: center;">Performance of Bankruptcy Prediction
+Model on Imbalanced Dataset</td>
 <td style="text-align: center;">RM1,000</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">2017-2018</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">Belief Function Level of Evidence As A Novel Measure of Distance To Default</td>
+<td style="text-align: center;">Belief Function Level of Evidence As A
+Novel Measure of Distance To Default</td>
 <td style="text-align: center;">RM80,630</td>
 <td style="text-align: center;">FRGS</td>
 <td style="text-align: center;">1/9/2019 - 30/5/2023</td>
@@ -2407,7 +2447,8 @@ Kedah Branch Campus</em></p>
 </table>
 <h3 id="penerbitan">3. Penerbitan</h3>
 <ol type="i">
-<li>Judul Buku/Bab Peranan Penerbit Negara/Negeri Penerbit Tarikh Diterbit</li>
+<li>Judul Buku/Bab Peranan Penerbit Negara/Negeri Penerbit Tarikh
+Diterbit</li>
 </ol>
 <!-- -->
 <ol type="1">
@@ -2418,7 +2459,8 @@ Kedah Branch Campus</em></p>
 <ol start="2" type="i">
 <li>Artikel/Rencana</li>
 </ol>
-<p>Tajuk Artikel/Rencana Nama Jurnal/Majalah Jid/Bil Penerbit Tarikh Diterbit</p>
+<p>Tajuk Artikel/Rencana Nama Jurnal/Majalah Jid/Bil Penerbit Tarikh
+Diterbit</p>
 <ol type="1">
 <li></li>
 <li></li>
@@ -2431,7 +2473,8 @@ Kedah Branch Campus</em></p>
 <ol type="1">
 <li></li>
 </ol>
-<h2 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h2>
+<h2 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
+Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h2>
 <p>Nama Jawatan Tarikh<br />
 Dari Hingga<br />
 1</p>
@@ -2483,10 +2526,12 @@ Dari Hingga<br />
 <ol start="4" type="1">
 <li>Keahlian Dalam Badan Profesional</li>
 </ol>
-<p>Nama Badan Profesional/Kebajikan No. Ahli Jenis Keahlian Peranan Tarikh<br />
+<p>Nama Badan Profesional/Kebajikan No. Ahli Jenis Keahlian Peranan
+Tarikh<br />
 Dari Hingga<br />
 1.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2505,8 +2550,11 @@ Dari Hingga<br />
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 

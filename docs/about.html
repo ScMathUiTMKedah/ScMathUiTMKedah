@@ -56,7 +56,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
 code span.cf { color: #007ba5; } /* ControlFlow */
@@ -77,13 +77,14 @@ code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
 code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Math. Sc. UiTM Kedah: Dept of Mathematical Science Team Members</title>
@@ -457,7 +458,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
   </style>
 
-  <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
   <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
@@ -1864,7 +1865,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -2035,7 +2045,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.13/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2175,15 +2185,27 @@ Event
 <h1>Dept of Mathematical Science Team Members</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Welcome to the Department of Mathematical Sciences at Faculty of Computer and Mathematical Sciences, UiTM Kedah Branch Campus. We offers servicing courses in Mathematics and Statistics to all the faculties at UiTM Kedah. We started with Department of Quantitative Sciences and in 2007 it has gone through a rebranding process and is now called Department of Mathematical Sciences. Currently, the Department of Mathematical Sciences consists of 22 lecturers (12 Mathematics, 9 Statistics and 1 Physics).</p></p>
+<p><p>Welcome to the Department of Mathematical Sciences at Faculty of
+Computer and Mathematical Sciences, UiTM Kedah Branch Campus. We offers
+servicing courses in Mathematics and Statistics to all the faculties at
+UiTM Kedah. We started with Department of Quantitative Sciences and in
+2007 it has gone through a rebranding process and is now called
+Department of Mathematical Sciences. Currently, the Department of
+Mathematical Sciences consists of 22 lecturers (12 Mathematics, 9
+Statistics and 1 Physics).</p></p>
 </div>
 
 
 <div class="d-article">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/fazillah_bosli.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/fazillah_bosli.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
@@ -2197,24 +2219,33 @@ Event
 <td style="text-align: center;">Mgmt. Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:fazillah@uitm.edu.my" class="email">fazillah@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:fazillah@uitm.edu.my"
+class="email">fazillah@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=I7coKSJ7wWgTShTnEUhQevgsZVH+CTCOPaPYW7bOwBE=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=I7coKSJ7wWgTShTnEUhQevgsZVH+CTCOPaPYW7bOwBE=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
 <div style="display: flex; ">
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/rosidah_ahmad.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/rosidah_ahmad.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Rosidah Ahmad (PhD)</strong></td>
+<td style="text-align: center;"><strong>Rosidah Ahmad
+(PhD)</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2223,10 +2254,13 @@ Event
 <td style="text-align: center;">Mathematics Education</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:rosidah437@uitm.edu.my" class="email">rosidah437@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:rosidah437@uitm.edu.my"
+class="email">rosidah437@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=gFgEUoquEqEhKH9HNLld6Tm68K4l0I6ce3MS+MtyoKs=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=gFgEUoquEqEhKH9HNLld6Tm68K4l0I6ce3MS+MtyoKs=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2237,9 +2271,14 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/noor_rashidah_ali.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/noor_rashidah_ali.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
@@ -2253,10 +2292,13 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:norrash@uitm.edu.my" class="email">norrash@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:norrash@uitm.edu.my"
+class="email">norrash@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=DwTLbI9WbPMnfLG2r7F5H5iQvFvX4qHynceoo9APinQ=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=DwTLbI9WbPMnfLG2r7F5H5iQvFvX4qHynceoo9APinQ=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2267,14 +2309,20 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/shahida_farhan.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/shahida_farhan.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Shaida Farhan Zakaria</strong></td>
+<td style="text-align: center;"><strong>Shaida Farhan
+Zakaria</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2283,10 +2331,14 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:shahidafarhan@uitm.edu.my" class="email">shahidafarhan@uitm.edu.my</a></td>
+<td style="text-align: center;"><a
+href="mailto:shahidafarhan@uitm.edu.my"
+class="email">shahidafarhan@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=BspHlBJTUkFLOWB60OQ3DVsr1yuXipbeaFDcQkrMTZc=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=BspHlBJTUkFLOWB60OQ3DVsr1yuXipbeaFDcQkrMTZc=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2295,14 +2347,20 @@ a column separator --></p>
 <div style="display: flex; ">
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/asmahani_nayan.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/asmahani_nayan.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Asmahani Binti Nayan</strong></td>
+<td style="text-align: center;"><strong>Asmahani Binti
+Nayan</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2311,10 +2369,13 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:asmahanin@uitm.edu.my" class="email">asmahanin@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:asmahanin@uitm.edu.my"
+class="email">asmahanin@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=7TW/I4R0KTD45wDX3cXxkt5jVFJZEyuCrfMbgD9e7Y8=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=7TW/I4R0KTD45wDX3cXxkt5jVFJZEyuCrfMbgD9e7Y8=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2325,6 +2386,9 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;"><img src="images/female.png" /></th>
@@ -2332,7 +2396,8 @@ a column separator --></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Norliana Najib (Dr.)</strong></td>
+<td style="text-align: center;"><strong>Norliana Najib
+(Dr.)</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2341,10 +2406,13 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><span class="citation" data-cites="uitm.edu.my">@uitm.edu.my</span></td>
+<td style="text-align: center;"><span class="citation"
+data-cites="uitm.edu.my">@uitm.edu.my</span></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=AwM/Zz3RhgiCb4jxvklNIftyjyqul8fVNrLmqwxeS2s=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=AwM/Zz3RhgiCb4jxvklNIftyjyqul8fVNrLmqwxeS2s=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2355,14 +2423,20 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/anis_mardiana.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/anis_mardiana.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Anis Mardiana Binti Ahmad</strong></td>
+<td style="text-align: center;"><strong>Anis Mardiana Binti
+Ahmad</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2371,10 +2445,14 @@ a column separator --></p>
 <td style="text-align: center;">Mgmt. Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:anis513@kedah.uitm.edu.my" class="email">anis513@kedah.uitm.edu.my</a></td>
+<td style="text-align: center;"><a
+href="mailto:anis513@kedah.uitm.edu.my"
+class="email">anis513@kedah.uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=2pQJnZ9ZjhSpC+4junrXXGXZZ1SHLihagtP5TTEl5p8=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=2pQJnZ9ZjhSpC+4junrXXGXZZ1SHLihagtP5TTEl5p8=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2383,14 +2461,20 @@ a column separator --></p>
 <div style="display: flex; ">
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/amirah.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/amirah.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>’Amirah Hazwani Abdul Rahim</strong></td>
+<td style="text-align: center;"><strong>’Amirah Hazwani Abdul
+Rahim</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2399,10 +2483,13 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:amirah017@uitm.edu.my" class="email">amirah017@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:amirah017@uitm.edu.my"
+class="email">amirah017@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=I1bzg5Z/LbzURNc6V6s3V5Cw4rjGnv2MB2xEaGgiwHE=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=I1bzg5Z/LbzURNc6V6s3V5Cw4rjGnv2MB2xEaGgiwHE=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2413,14 +2500,20 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/ida_normaya.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/ida_normaya.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Ida Normaya Mohd Nasir (Dr.)</strong></td>
+<td style="text-align: center;"><strong>Ida Normaya Mohd Nasir
+(Dr.)</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2429,10 +2522,13 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:normaya@uitm.edu.my" class="email">normaya@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:normaya@uitm.edu.my"
+class="email">normaya@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=RGAZeruxsBbbu4iKM5gF+D+xzXbrTXqKbCDt2EqmV2k=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=RGAZeruxsBbbu4iKM5gF+D+xzXbrTXqKbCDt2EqmV2k=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2443,9 +2539,14 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/kartini_kasim.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/kartini_kasim.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
@@ -2459,10 +2560,13 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:kartini2929@uitm.edu.my" class="email">kartini2929@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:kartini2929@uitm.edu.my"
+class="email">kartini2929@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=w6bR9Tbh5Y8xOTKZijPTnHXjaePG5+q6/VCdAeGXVg0=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=w6bR9Tbh5Y8xOTKZijPTnHXjaePG5+q6/VCdAeGXVg0=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2471,14 +2575,21 @@ a column separator --></p>
 <div style="display: flex; ">
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/norashikin_nasarudin.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img
+src="images/norashikin_nasarudin.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Norashikin Nasarudin</strong></td>
+<td style="text-align: center;"><strong>Norashikin
+Nasarudin</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2487,10 +2598,14 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:norashikin116@uitm.edu.my" class="email">norashikin116@uitm.edu.my</a></td>
+<td style="text-align: center;"><a
+href="mailto:norashikin116@uitm.edu.my"
+class="email">norashikin116@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=mxqFhTgzvi1vbH0Rw3iVep58ZXngVb4yFpi4WzcMT6U=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=mxqFhTgzvi1vbH0Rw3iVep58ZXngVb4yFpi4WzcMT6U=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2501,14 +2616,20 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/norin_rahayu.jpeg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/norin_rahayu.jpeg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Dr. Norin Rahayu Shamsuddin</strong></td>
+<td style="text-align: center;"><strong>Dr. Norin Rahayu
+Shamsuddin</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2517,10 +2638,13 @@ a column separator --></p>
 <td style="text-align: center;">Epidemiology &amp; Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:norinrahayu@uitm.edu.my" class="email">norinrahayu@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:norinrahayu@uitm.edu.my"
+class="email">norinrahayu@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=WEanYMmC98YU0mNPOF4Edzocj3thMWWLhbtoqM+5yrA=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=WEanYMmC98YU0mNPOF4Edzocj3thMWWLhbtoqM+5yrA=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2531,14 +2655,21 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/nur_azlina_abdul_rahid.jpg" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img
+src="images/nur_azlina_abdul_rahid.jpg"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Nurazlina Abdul Rashid</strong></td>
+<td style="text-align: center;"><strong>Nurazlina Abdul
+Rashid</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2547,10 +2678,13 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:azlina150@uitm.edu.my" class="email">azlina150@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:azlina150@uitm.edu.my"
+class="email">azlina150@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=CdGJDBudt6jVexAzyydxLNmmMH+HRcfxzH8xb9TLcXQ="l target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=CdGJDBudt6jVexAzyydxLNmmMH+HRcfxzH8xb9TLcXQ="l target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2559,14 +2693,19 @@ a column separator --></p>
 <div style="display: flex; ">
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/noor_hafizah_zainal_aznam.jpg" /></th>
+<th style="text-align: center;"><img
+src="images/noor_hafizah_zainal_aznam.jpg" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Noor Hafizah Zainal Aznam</strong></td>
+<td style="text-align: center;"><strong>Noor Hafizah Zainal
+Aznam</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer (Study Leave)</td>
@@ -2575,10 +2714,13 @@ a column separator --></p>
 <td style="text-align: center;">Management Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:noorhafizah@uitm.edu.my" class="email">noorhafizah@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:noorhafizah@uitm.edu.my"
+class="email">noorhafizah@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=r4jTSuRVylqP2yQqUZxg4J9KBmPnvEQtu4dEMJ7I/RQ=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=r4jTSuRVylqP2yQqUZxg4J9KBmPnvEQtu4dEMJ7I/RQ=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2589,14 +2731,20 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/siti_fairus.png" style="display: rounded-circle; margin: 0 auto" style="width:50.0%;height:50.0%" /></th>
+<th style="text-align: center;"><img src="images/siti_fairus.png"
+style="display: rounded-circle; margin: 0 auto"
+style="width:50.0%;height:50.0%" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Siti Fairus Mokhtar</strong></td>
+<td style="text-align: center;"><strong>Siti Fairus
+Mokhtar</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2605,10 +2753,13 @@ a column separator --></p>
 <td style="text-align: center;">Statistics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:fairus706@uitm.edu.my" class="email">fairus706@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:fairus706@uitm.edu.my"
+class="email">fairus706@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=bBQC9G6pwZP07H8UxJnlZ0ku6VARheUg+OVOElB7HTw=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=bBQC9G6pwZP07H8UxJnlZ0ku6VARheUg+OVOElB7HTw=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2619,6 +2770,9 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;"><img src="images/ab_razak.png" /></th>
@@ -2635,10 +2789,13 @@ a column separator --></p>
 <td style="text-align: center;">Physics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:arazman@uitm.edu.my" class="email">arazman@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:arazman@uitm.edu.my"
+class="email">arazman@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=iafjCEhLtPrpYDvelAsJj4ypVRtC3zCRb2y7Rw/zFSQ=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=iafjCEhLtPrpYDvelAsJj4ypVRtC3zCRb2y7Rw/zFSQ=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2647,6 +2804,9 @@ a column separator --></p>
 <div style="display: flex; ">
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;"><img src="images/profile2.png" /></th>
@@ -2654,7 +2814,8 @@ a column separator --></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Kamarul Ariffin Mansor</strong></td>
+<td style="text-align: center;"><strong>Kamarul Ariffin
+Mansor</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2663,10 +2824,13 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:ariff118@uitm.edu.my" class="email">ariff118@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:ariff118@uitm.edu.my"
+class="email">ariff118@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=jfJl92rZPRb9k0UzVrkKHc8BKRT+dbEhL8J6Qd6XU1o=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=jfJl92rZPRb9k0UzVrkKHc8BKRT+dbEhL8J6Qd6XU1o=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2677,6 +2841,9 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;"><img src="images/afida.png" /></th>
@@ -2693,10 +2860,13 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:afidaahmad@uitm.edu.my" class="email">afidaahmad@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:afidaahmad@uitm.edu.my"
+class="email">afidaahmad@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=xs2tfNpxcB+fYe6imnMRQh2hwjBDGzCirKihlKiO3H8=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=xs2tfNpxcB+fYe6imnMRQh2hwjBDGzCirKihlKiO3H8=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2707,14 +2877,19 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="images/nora_baizura.png" /></th>
+<th style="text-align: center;"><img
+src="images/nora_baizura.png" /></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Nora Baizura Mohd Isa</strong></td>
+<td style="text-align: center;"><strong>Nora Baizura Mohd
+Isa</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2723,10 +2898,13 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:norabaizura@uitm.edu.my" class="email">norabaizura@uitm.edu.my</a></td>
+<td style="text-align: center;"><a href="mailto:norabaizura@uitm.edu.my"
+class="email">norabaizura@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=HBRkvV2TGl/s7d7mVKPaMowvUnBmtMLGsdE3lyqpxrI=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=HBRkvV2TGl/s7d7mVKPaMowvUnBmtMLGsdE3lyqpxrI=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2735,6 +2913,9 @@ a column separator --></p>
 <div style="display: flex; ">
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;"><img src="images/nur_alwani.png" /></th>
@@ -2742,7 +2923,8 @@ a column separator --></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Siti Nur Alwani Salleh (Dr.)</strong></td>
+<td style="text-align: center;"><strong>Siti Nur Alwani Salleh
+(Dr.)</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2751,10 +2933,14 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><a href="mailto:sitinuralwani@uitm.edu.my" class="email">sitinuralwani@uitm.edu.my</a></td>
+<td style="text-align: center;"><a
+href="mailto:sitinuralwani@uitm.edu.my"
+class="email">sitinuralwani@uitm.edu.my</a></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=msbj6JA6mWA9tP6kZv3TVlUENdx+5ojO8FosdMS1bhs=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=msbj6JA6mWA9tP6kZv3TVlUENdx+5ojO8FosdMS1bhs=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2765,6 +2951,9 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;"><img src="images/sya.png" /></th>
@@ -2772,7 +2961,8 @@ a column separator --></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Syafiza Saila Samsudin</strong></td>
+<td style="text-align: center;"><strong>Syafiza Saila
+Samsudin</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2781,10 +2971,13 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><span class="citation" data-cites="uitm.edu.my">@uitm.edu.my</span></td>
+<td style="text-align: center;"><span class="citation"
+data-cites="uitm.edu.my">@uitm.edu.my</span></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=l/Xl90KpCGddU2kFj3pJ3468+IkWWrMNZiaJ7ccMBA4=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=l/Xl90KpCGddU2kFj3pJ3468+IkWWrMNZiaJ7ccMBA4=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
@@ -2795,6 +2988,9 @@ a column separator --></p>
 </div>
 <div class="column" style="width:30%;">
 <table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: center;"><img src="images/female.png" /></th>
@@ -2802,7 +2998,8 @@ a column separator --></p>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;"><strong>Norathirah Md Zin (Dr.)</strong></td>
+<td style="text-align: center;"><strong>Norathirah Md Zin
+(Dr.)</strong></td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Senior Lecturer</td>
@@ -2811,17 +3008,23 @@ a column separator --></p>
 <td style="text-align: center;">Mathematics</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;"><span class="citation" data-cites="uitm.edu.my">@uitm.edu.my</span></td>
+<td style="text-align: center;"><span class="citation"
+data-cites="uitm.edu.my">@uitm.edu.my</span></td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=uDdHAVPd3yikBitFtgage4iPBLQgPSSt/LZ8HFefZQ0=" target="_blank">View Profile</a></td>
+<td
+style="text-align: center;"><a href="https://expert.uitm.edu.my/profile.php?id=uDdHAVPd3yikBitFtgage4iPBLQgPSSt/LZ8HFefZQ0=" target="_blank">View
+Profile</a></td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>Link to the <a href="https://kedah.uitm.edu.my/directory/academic-staff">Official Staff Directory at UiTM Kedah</a></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Link to the <a
+href="https://kedah.uitm.edu.my/directory/academic-staff">Official Staff
+Directory at UiTM Kedah</a></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2840,8 +3043,11 @@ a column separator --></p>
 <!--/radix_placeholder_appendices-->
 <!--radix_placeholder_navigation_after_body-->
 <div class="distill-site-nav distill-site-footer">
-<p>Copyright ©2020 <a href="https://scmath.github.io">Department of Mathematical Sciences UiTM Kedah</a><br />
-Software licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License, v2.0</a></p>
+<p>Copyright ©2020 <a href="https://scmath.github.io">Department of
+Mathematical Sciences UiTM Kedah</a><br />
+Software licensed under the <a
+href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
+v2.0</a></p>
 </div>
 <!--/radix_placeholder_navigation_after_body-->
 
