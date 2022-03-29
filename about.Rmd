@@ -9,6 +9,9 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
 ```
 
 |![](images/fazillah_bosli.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
@@ -84,12 +87,12 @@ a column separator -->
 :::
 
 ::: {.column width="30%"}
-|![](images/female.png)|
+|![](images/liananajib.png)|
 |:-----:|
 | **Norliana Najib (Dr.)** |    
 | Senior Lecturer |    
 | Mathematics |  
-| @uitm.edu.my |  
+| liananajib@uitm.edu.my |  
 | <a href="https://expert.uitm.edu.my/profile.php?id=AwM/Zz3RhgiCb4jxvklNIftyjyqul8fVNrLmqwxeS2s=" target="_blank">View Profile</a> |  
 :::
 
@@ -288,7 +291,7 @@ a column separator -->
 |![](images/nora_baizura.png)|  
 |:-----:|
 | **Nora Baizura Mohd Isa** |    
-| Senior Lecturer |    
+| Lecturer |    
 | Mathematics |  
 | norabaizura@uitm.edu.my |  
 | <a href="https://expert.uitm.edu.my/profile.php?id=HBRkvV2TGl/s7d7mVKPaMowvUnBmtMLGsdE3lyqpxrI=" target="_blank">View Profile</a> |  
@@ -320,7 +323,7 @@ a column separator -->
 | **Syafiza Saila Samsudin** |    
 | Senior Lecturer |    
 | Mathematics |  
-| @uitm.edu.my |  
+| syafi915@uitm.edu.my |  
 | <a href="https://expert.uitm.edu.my/profile.php?id=l/Xl90KpCGddU2kFj3pJ3468+IkWWrMNZiaJ7ccMBA4=" target="_blank">View Profile</a> |  
 :::
 
@@ -331,12 +334,12 @@ a column separator -->
 :::
 
 ::: {.column width="30%"}  
-|![](images/female.png)|  
+|![](images/athirahmz.png)|  
 |:-----:|
 | **Norathirah Md Zin (Dr.)** |    
 | Senior Lecturer |    
 | Mathematics |  
-| @uitm.edu.my |  
+| athirahmz@uitm.edu.my |  
 | <a href="https://expert.uitm.edu.my/profile.php?id=uDdHAVPd3yikBitFtgage4iPBLQgPSSt/LZ8HFefZQ0=" target="_blank">View Profile</a> |  
 :::
 
