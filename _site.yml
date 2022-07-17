@@ -47,6 +47,8 @@ navbar:
           href: depreciation.html
         - text: "Chapter 10 - Income Tax"
           href: income.html
+        - text: "SCORE (Practice Exercises)"
+          href: score.html
         - text: "Assessment Dates"
           href: assess_mat112.html
     - text: "QMT181/STA104"

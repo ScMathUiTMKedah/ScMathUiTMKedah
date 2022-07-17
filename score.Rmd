@@ -1,13 +1,13 @@
 ---
-title: "Workshops"
+title: "Practice Exercise"
 description: |
-  Our past and upcoming workshops.  
+  This page give you the opportunity to test your knowledge that has been delivered in class lectures.
 author: 
   - name: "Kamarul Ariffin Mansor"
     url: https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/
     affiliation: Universiti Teknologi MARA
     affiliation_url: https://kedah.uitm.edu.my/v2/index.php
-date: 3-19-2021
+date: 7-16-2022
 output: 
   distill::distill_article:
     self_contained: true
@@ -20,14 +20,14 @@ knitr::opts_chunk$set(echo = FALSE)
 # https://rstudio.github.io/distill/website.html
 ```
 
-### Upcoming Events  
+```{r message=FALSE, warning=FALSE, include=FALSE}
+knitr::include_url("https://cskedah.uitm.edu.my/score/")
+```
 
-![ICIS 2022 Pre-Conference Workshop](images/workshops/r_20220919.jpg)
+[Visit the Practice Exercise Page <- Click Here](https://cskedah.uitm.edu.my/score/)
 
-***
+## Contributors {.appendix}
 
-### Past Events  
-
-![Data Analysis using SPSS](images/workshops/spss_20220625.jpg)  
-![Online Workshop on SPSS](images/workshops/workshop_spss_2021.jpg)  
-![iCMS 2021 Pre-Conference Workshop](images/workshops/r_20210803.jpg)
+Dr Afida Ahmad\
+Senior Lecturer\
+Department of Mathematical Sciences, UiTM Kedah
