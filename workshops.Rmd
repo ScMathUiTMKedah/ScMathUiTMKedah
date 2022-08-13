@@ -20,14 +20,14 @@ knitr::opts_chunk$set(echo = FALSE)
 # https://rstudio.github.io/distill/website.html
 ```
 
-### Upcoming Events  
+<!-- ### Upcoming Events   -->
 
-![ICIS 2022 Pre-Conference Workshop](images/workshops/r_20220919.jpg)
+<!-- ![ICIS 2022 Pre-Conference Workshop](images/workshops/r_20220919.jpg) -->
 
-***
+<!-- *** -->
 
-### Past Events  
+<!-- ### Past Events   -->
 
-![Data Analysis using SPSS](images/workshops/spss_20220625.jpg)  
-![Online Workshop on SPSS](images/workshops/workshop_spss_2021.jpg)  
-![iCMS 2021 Pre-Conference Workshop](images/workshops/r_20210803.jpg)
+<!-- ![Data Analysis using SPSS](images/workshops/spss_20220625.jpg)   -->
+<!-- ![Online Workshop on SPSS](images/workshops/workshop_spss_2021.jpg)   -->
+<!-- ![iCMS 2021 Pre-Conference Workshop](images/workshops/r_20210803.jpg) -->

@@ -2,12 +2,7 @@
 title: "Talks"
 description: |
   Our past and upcoming talks.  
-author: 
-  - name: "Kamarul Ariffin Mansor"
-    url: https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/
-    affiliation: Universiti Teknologi MARA
-    affiliation_url: https://kedah.uitm.edu.my/v2/index.php
-date: 3-19-2021
+
 output: 
   distill::distill_article:
     self_contained: true

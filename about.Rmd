@@ -256,13 +256,13 @@ a column separator -->
 :::::: {style="display: flex; "}
 
 ::: {.column width="30%"}
-|![](images/profile2.png)|
+|![](images/male.png)|
 |:-----:|
-| **Kamarul Ariffin Mansor** |    
+|  |    
 | Senior Lecturer |    
 | Mathematics |  
-| ariff118@uitm.edu.my |  
-| <a href="https://expert.uitm.edu.my/profile.php?id=jfJl92rZPRb9k0UzVrkKHc8BKRT+dbEhL8J6Qd6XU1o=" target="_blank">View Profile</a> |  
+|  |  
+|  |  
 :::
 
 ::: {.column width="5%"}

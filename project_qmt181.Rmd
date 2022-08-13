@@ -1,8 +1,8 @@
 ---
 title: "Group Project Guidelines"
 author: 
-  - name: "Kamarul Ariffin Mansor"
-    url: https://my.linkedin.com/in/kamarul-ariffin-mansor-254b9ba7/
+  - name: 
+    url: 
     affiliation: Universiti Teknologi MARA
     affiliation_url: https://kedah.uitm.edu.my/v2/index.php
 date: 4-7-2020
