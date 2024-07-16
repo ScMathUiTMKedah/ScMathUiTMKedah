@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -787,6 +788,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1028,10 +1030,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1863,15 +1861,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1883,6 +1887,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1982,6 +2011,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2004,7 +2035,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2043,7 +2074,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2193,16 +2224,12 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#a.-profil-pensyarah">A. Profil Pensyarah</a></li>
-<li><a href="#b.-kelayakan-akademik">B. Kelayakan Akademik</a></li>
-<li><a href="#c.-kursus-pengajaran">C. Kursus Pengajaran</a></li>
-<li><a href="#d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
-<li><a
-href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
-Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
-Kerja</a></li>
-<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
-Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
+<li><a href="#a.-profil-pensyarah" id="toc-a.-profil-pensyarah">A. Profil Pensyarah</a></li>
+<li><a href="#b.-kelayakan-akademik" id="toc-b.-kelayakan-akademik">B. Kelayakan Akademik</a></li>
+<li><a href="#c.-kursus-pengajaran" id="toc-c.-kursus-pengajaran">C. Kursus Pengajaran</a></li>
+<li><a href="#d.-pengalaman-kerja" id="toc-d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
+<li><a href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja" id="toc-e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</a></li>
+<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir" id="toc-f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
 </ul>
 </nav>
 </div>
@@ -2225,15 +2252,10 @@ a column separator --></p>
 <p><strong>SYAFIZA SAILA SAMSUDIN</strong><br />
 <em>Universiti Teknologi MARA<br />
 Kedah Branch Campus</em></p>
-<p>Syafiza Saila Samsudin, is a senior lecturer at the Faculty of
-Computer Science and Mathematics, Universiti Teknologi MARA (UiTM),
-Kedah Branch Campus, Malaysia.</p>
-<p><strong>Total Cites:</strong> 12 , <strong>h Index:</strong> 2 ,
-<strong>i10 Index:</strong> 0</p>
+<p>Syafiza Saila Samsudin, is a senior lecturer at the Faculty of Computer Science and Mathematics, Universiti Teknologi MARA (UiTM), Kedah Branch Campus, Malaysia.</p>
+<p><strong>Total Cites:</strong> 19 , <strong>h Index:</strong> 3 , <strong>i10 Index:</strong> 0</p>
 <center>
-<p><a
-href="https://scholar.google.com/citations?hl=en&amp;user=qVPi6kYAAAAJ"><img
-src="scholar_citations_qVPi6kYAAAAJ.png" width="350" /></a></p>
+<p><a href="https://scholar.google.com/citations?hl=en&amp;user=qVPi6kYAAAAJ"><img src="scholar_citations_qVPi6kYAAAAJ.png" width="350" /></a></p>
 </center>
 </div>
 </div>
@@ -2342,21 +2364,18 @@ src="scholar_citations_qVPi6kYAAAAJ.png" width="350" /></a></p>
 </tr>
 </tbody>
 </table>
-<h3
-id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
-Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
-Kerja</h3>
+<h3 id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</h3>
 <h4 id="pembentangan-kertas-kerja">1. Pembentangan Kertas Kerja</h4>
 <ol type="1">
 <li></li>
 </ol>
 <h4 id="penyelidikan">2. Penyelidikan</h4>
-<table>
+<table style="width:97%;">
 <colgroup>
 <col style="width: 25%" />
-<col style="width: 32%" />
-<col style="width: 12%" />
-<col style="width: 29%" />
+<col style="width: 31%" />
+<col style="width: 11%" />
+<col style="width: 28%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2405,9 +2424,9 @@ Kerja</h3>
 </tbody>
 </table>
 <h5 id="ii.-artikelrencana">ii. Artikel/Rencana</h5>
-<table style="width:100%;">
+<table style="width:99%;">
 <colgroup>
-<col style="width: 52%" />
+<col style="width: 51%" />
 <col style="width: 31%" />
 <col style="width: 3%" />
 <col style="width: 4%" />
@@ -2424,10 +2443,8 @@ Kerja</h3>
 </thead>
 <tbody>
 <tr class="odd">
-<td>LEARNING STATISTICS COURSE USING COMPUTER_AIDED SOFTWARE: A CASE
-STUDY AMONG FURNITURE TECHNOLOGY STUDENTS</td>
-<td>International Journal of Modern Trends in Social Sciences
-(IJMTSS)</td>
+<td>LEARNING STATISTICS COURSE USING COMPUTER_AIDED SOFTWARE: A CASE STUDY AMONG FURNITURE TECHNOLOGY STUDENTS</td>
+<td>International Journal of Modern Trends in Social Sciences (IJMTSS)</td>
 <td style="text-align: center;">3</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">2020</td>
@@ -2447,10 +2464,8 @@ STUDY AMONG FURNITURE TECHNOLOGY STUDENTS</td>
 <td style="text-align: center;">2018</td>
 </tr>
 <tr class="even">
-<td>Academic Poster Evaluation by Mamdani-Type Fuzzy Inference
-System</td>
-<td>Regional Conference on Science, Technology and Social Sciences
-(RCSTSS 2016) </td>
+<td>Academic Poster Evaluation by Mamdani-Type Fuzzy Inference System</td>
+<td>Regional Conference on Science, Technology and Social Sciences (RCSTSS 2016)</td>
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">SPRINGER</td>
 <td style="text-align: center;">2018</td>
@@ -2463,16 +2478,14 @@ System</td>
 <td style="text-align: center;">2016</td>
 </tr>
 <tr class="even">
-<td>Blanded Learning: Readiness Study Among Mathematics and Statistics
-Lecturer in UiTM Cawangan Pahang</td>
+<td>Blanded Learning: Readiness Study Among Mathematics and Statistics Lecturer in UiTM Cawangan Pahang</td>
 <td>Business Management and Computing Research Colloqium (BMCRC)</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">2016</td>
 </tr>
 <tr class="odd">
-<td>Effectiveness of Constructive Approach on Students’ Achievement in
-Mathematics: A Case Study at Primary School in Kuantan, Pahang</td>
+<td>Effectiveness of Constructive Approach on Students’ Achievement in Mathematics: A Case Study at Primary School in Kuantan, Pahang</td>
 <td>AIP Conference Proceedings</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;"></td>
@@ -2480,12 +2493,11 @@ Mathematics: A Case Study at Primary School in Kuantan, Pahang</td>
 </tr>
 </tbody>
 </table>
-<h5 id="iii.-pembentangan-kertas-kerja">iii. Pembentangan Kertas
-Kerja</h5>
-<table>
+<h5 id="iii.-pembentangan-kertas-kerja">iii. Pembentangan Kertas Kerja</h5>
+<table style="width:99%;">
 <colgroup>
 <col style="width: 46%" />
-<col style="width: 37%" />
+<col style="width: 36%" />
 <col style="width: 7%" />
 <col style="width: 8%" />
 </colgroup>
@@ -2499,19 +2511,15 @@ Kerja</h5>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Leaf Spot Disease Severity Among Common Vegetables using Fuzzy
-Analytical Hierarchy Process (FAHP)</td>
-<td style="text-align: center;">Regional Conference on Science,
-Technology and Social Sciences (RCSTSS 2018) </td>
+<td>Leaf Spot Disease Severity Among Common Vegetables using Fuzzy Analytical Hierarchy Process (FAHP)</td>
+<td style="text-align: center;">Regional Conference on Science, Technology and Social Sciences (RCSTSS 2018)</td>
 <td style="text-align: center;">MALAYSIA</td>
 <td style="text-align: center;">2021</td>
 </tr>
 </tbody>
 </table>
-<h3 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
-Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h3>
-<h4 id="jawatan-pentadbiran-akademik">1. Jawatan Pentadbiran /
-Akademik</h4>
+<h3 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h3>
+<h4 id="jawatan-pentadbiran-akademik">1. Jawatan Pentadbiran / Akademik</h4>
 <table>
 <thead>
 <tr class="header">
@@ -2528,8 +2536,7 @@ Akademik</h4>
 </tr>
 </tbody>
 </table>
-<h4 id="jawatankuasa-di-dalamdi-luar-uitm">2. Jawatankuasa Di Dalam/Di
-Luar UiTM</h4>
+<h4 id="jawatankuasa-di-dalamdi-luar-uitm">2. Jawatankuasa Di Dalam/Di Luar UiTM</h4>
 <table>
 <colgroup>
 <col style="width: 51%" />
@@ -2571,8 +2578,7 @@ Luar UiTM</h4>
 <td style="text-align: center;">31-Dec-21</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">AJK Laporan Teknikal Self-Review Report
-FSKM</td>
+<td style="text-align: center;">AJK Laporan Teknikal Self-Review Report FSKM</td>
 <td style="text-align: center;">AJK</td>
 <td style="text-align: center;">1-Jan-21</td>
 <td style="text-align: center;">31-Dec-21</td>
@@ -2585,8 +2591,7 @@ FSKM</td>
 </tr>
 </tbody>
 </table>
-<h4 id="sumbangan-profesionalmasyarakat">3. Sumbangan
-Profesional/Masyarakat</h4>
+<h4 id="sumbangan-profesionalmasyarakat">3. Sumbangan Profesional/Masyarakat</h4>
 <table>
 <colgroup>
 <col style="width: 47%" />
@@ -2611,13 +2616,12 @@ Profesional/Masyarakat</h4>
 </tr>
 </tbody>
 </table>
-<h4 id="keahlian-dalam-badan-profesional">4. Keahlian Dalam Badan
-Profesional</h4>
-<table>
+<h4 id="keahlian-dalam-badan-profesional">4. Keahlian Dalam Badan Profesional</h4>
+<table style="width:96%;">
 <colgroup>
-<col style="width: 32%" />
-<col style="width: 10%" />
-<col style="width: 18%" />
+<col style="width: 30%" />
+<col style="width: 9%" />
+<col style="width: 17%" />
 <col style="width: 11%" />
 <col style="width: 12%" />
 <col style="width: 14%" />
@@ -2643,8 +2647,7 @@ Profesional</h4>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

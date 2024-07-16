@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,11 +2223,11 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#trade-and-cash-discount">Trade and Cash Discount</a>
+<li><a href="#trade-and-cash-discount" id="toc-trade-and-cash-discount">Trade and Cash Discount</a>
 <ul>
-<li><a href="#the-due-date">The Due Date</a></li>
-<li><a href="#possible-discount">Possible Discount</a></li>
-<li><a href="#acknowledgments">Acknowledgments</a></li>
+<li><a href="#the-due-date" id="toc-the-due-date">The Due Date</a></li>
+<li><a href="#possible-discount" id="toc-possible-discount">Possible Discount</a></li>
+<li><a href="#acknowledgments" id="toc-acknowledgments">Acknowledgments</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -2220,35 +2251,35 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/tcd/Slide1.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide2.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide3.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide4.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide5.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide6.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide7.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide8.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide9.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide10.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide11.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide12.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide13.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide14.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide15.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide16.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide17.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide18.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide19.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide20.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide21.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide22.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide23.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide24.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide25.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide26.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide27.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide28.PNG" style="width:100%">
-<img class="mySlides" src="images/tcd/Slide29.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/tcd/Slide1.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide2.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide3.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide4.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide5.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide6.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide7.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide8.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide9.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide10.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide11.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide12.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide13.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide14.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide15.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide16.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide17.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide18.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide19.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide20.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide21.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide22.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide23.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide24.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide25.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide26.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide27.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide28.png" style="width:100%">
+<img class="mySlides" src="images/tcd/Slide29.png" style="width:100%"></p>
 </div>
 <div class="w3-center">
 <p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
@@ -2320,54 +2351,18 @@ function showDivs(n) {
 </aside>
 <h1 id="trade-and-cash-discount">Trade and Cash Discount</h1>
 <h3 id="the-due-date">The Due Date</h3>
-<p>So, you made a purchase from this Internet company. You bought
-several pairs of shoes and this really nice jacket to go with the shoes.
-The reason you purchased from this company is that they said you didn’t
-have to pay right away. They would send you an invoice, a bill, later on
-with how much you owe and the terms of payment. You wait about a week,
-and you receive your shoes and jacket. They look and fit wonderfully! A
-few days later, you receive the invoice from this company. The invoice
-is dated August 12 of this year.</p>
-<p>On this invoice, you see the amount that is due and several other key
-terms. Let’s take a look at the important terms you need to
-understand.</p>
-<p>One of the most important is the due date, when your payment needs to
-be paid by. You look at your invoice and see that the due date on this
-invoice is located at the top right of the invoice. You’ve seen other
-invoices before. The ones you’ve seen, though, usually have a date such
-as November 8 or some other date plus the current year or the next, if
-we’re in December. But this one, though, is quite different. It has some
-strange numbers that don’t correspond to dates and some letters that
-you’ve never seen.</p>
+<p>So, you made a purchase from this Internet company. You bought several pairs of shoes and this really nice jacket to go with the shoes. The reason you purchased from this company is that they said you didn’t have to pay right away. They would send you an invoice, a bill, later on with how much you owe and the terms of payment. You wait about a week, and you receive your shoes and jacket. They look and fit wonderfully! A few days later, you receive the invoice from this company. The invoice is dated August 12 of this year.</p>
+<p>On this invoice, you see the amount that is due and several other key terms. Let’s take a look at the important terms you need to understand.</p>
+<p>One of the most important is the due date, when your payment needs to be paid by. You look at your invoice and see that the due date on this invoice is located at the top right of the invoice. You’ve seen other invoices before. The ones you’ve seen, though, usually have a date such as November 8 or some other date plus the current year or the next, if we’re in December. But this one, though, is quite different. It has some strange numbers that don’t correspond to dates and some letters that you’ve never seen.</p>
 <p>Let’s take a look at what these numbers and letters mean.</p>
 <h3 id="possible-discount">Possible Discount</h3>
-<p>The other numbers that you see are 2/10. You know it’s not a date
-because for one, you are nowhere near the month of February and there’s
-no year listed. So, what does it mean? This particular term actually
-means that you will get a discount of two percent if you pay within ten
-days.</p>
-<p>Companies use these terms to encourage early payment of the invoice.
-If paid early, the company gives a two percent discount! This benefits
-both the company and the customer. The customer gets a discount and the
-company gets paid. Two percent of a discount won’t hurt the company’s
-pocketbook that much, either. For your invoice dated August 12 of this
-year, the 2/10 due date is ten days from August 12 or August 22. So,
-that means if you pay your invoice by August 22, you can take a two
-percent discount.</p>
-<p>In the business world, you might see 2/10 or some other numbers in
-the same format that tells you what kind of discount you would get if
-you pay early. For example, 2/15 says that you will get a two percent
-discount if you pay within 15 days.</p>
+<p>The other numbers that you see are 2/10. You know it’s not a date because for one, you are nowhere near the month of February and there’s no year listed. So, what does it mean? This particular term actually means that you will get a discount of two percent if you pay within ten days.</p>
+<p>Companies use these terms to encourage early payment of the invoice. If paid early, the company gives a two percent discount! This benefits both the company and the customer. The customer gets a discount and the company gets paid. Two percent of a discount won’t hurt the company’s pocketbook that much, either. For your invoice dated August 12 of this year, the 2/10 due date is ten days from August 12 or August 22. So, that means if you pay your invoice by August 22, you can take a two percent discount.</p>
+<p>In the business world, you might see 2/10 or some other numbers in the same format that tells you what kind of discount you would get if you pay early. For example, 2/15 says that you will get a two percent discount if you pay within 15 days.</p>
 <h2 class="appendix" id="acknowledgments">Acknowledgments</h2>
-<p>Some of the notes above are taken from online course <a
-href="https://study.com/academy/course/business-math.html">Business 110:
-Math Class from Study.com</a></p>
-<p>Credit Terms: Due Date, Invoice Date &amp; EOM. (2014, December 3).
-Retrieved from <a
-href="https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html"
-class="uri">https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html</a>.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Some of the notes above are taken from online course <a href="https://study.com/academy/course/business-math.html">Business 110: Math Class from Study.com</a></p>
+<p>Credit Terms: Due Date, Invoice Date &amp; EOM. (2014, December 3). Retrieved from <a href="https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html" class="uri">https://study.com/academy/lesson/credit-terms-due-date-invoice-date-eom.html</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

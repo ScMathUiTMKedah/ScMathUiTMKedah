@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,17 +2223,16 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#course-information">Course Information</a>
+<li><a href="#course-information" id="toc-course-information">Course Information</a>
 <ul>
-<li><a href="#course-learning-outcomes"><em>Course Learning
-Outcomes</em></a></li>
-<li><a href="#course-description"><em>Course Description</em></a></li>
-<li><a href="#syllabus-content"><em>Syllabus Content</em></a></li>
-<li><a href="#transferable-skills"><em>Transferable Skills</em></a></li>
-<li><a href="#course-assessment"><em>Course Assessment</em></a></li>
-<li><a href="#recommended-text"><em>Recommended Text</em></a></li>
-<li><a href="#references"><em>References</em></a></li>
-<li><a href="#assessment-evidence"><em>Assessment Evidence</em></a></li>
+<li><a href="#course-learning-outcomes" id="toc-course-learning-outcomes"><em>Course Learning Outcomes</em></a></li>
+<li><a href="#course-description" id="toc-course-description"><em>Course Description</em></a></li>
+<li><a href="#syllabus-content" id="toc-syllabus-content"><em>Syllabus Content</em></a></li>
+<li><a href="#transferable-skills" id="toc-transferable-skills"><em>Transferable Skills</em></a></li>
+<li><a href="#course-assessment" id="toc-course-assessment"><em>Course Assessment</em></a></li>
+<li><a href="#recommended-text" id="toc-recommended-text"><em>Recommended Text</em></a></li>
+<li><a href="#references" id="toc-references"><em>References</em></a></li>
+<li><a href="#assessment-evidence" id="toc-assessment-evidence"><em>Assessment Evidence</em></a></li>
 </ul></li>
 </ul>
 </nav>
@@ -2211,19 +2241,12 @@ Outcomes</em></a></li>
 <h3 id="course-learning-outcomes"><em>Course Learning Outcomes</em></h3>
 <p>At the end of the course, students should be able to:</p>
 <ol type="1">
-<li><p>Describe the concepts and mathematical terms encountered in
-business, finance, investment and income tax assessment. ( C2 )</p></li>
-<li><p>Solve basic mathematical problems in the specific area of
-business, finance, investment and income tax assessment. ( C3 )</p></li>
-<li><p>Evaluate the combination of concepts and mathematical terms
-involved in financing business, providing loan, installment purchase,
-trading or retailing. ( C6 )</p></li>
+<li><p>Describe the concepts and mathematical terms encountered in business, finance, investment and income tax assessment. ( C2 )</p></li>
+<li><p>Solve basic mathematical problems in the specific area of business, finance, investment and income tax assessment. ( C3 )</p></li>
+<li><p>Evaluate the combination of concepts and mathematical terms involved in financing business, providing loan, installment purchase, trading or retailing. ( C6 )</p></li>
 </ol>
 <h3 id="course-description"><em>Course Description</em></h3>
-<p>The course is primarily designed to develop the mathematical
-knowledge needed by the students to meet the demands of business
-operation. It is to provide a solid coverage of the most basic and
-frequently occurring business situations.</p>
+<p>The course is primarily designed to develop the mathematical knowledge needed by the students to meet the demands of business operation. It is to provide a solid coverage of the most basic and frequently occurring business situations.</p>
 <h3 id="syllabus-content"><em>Syllabus Content</em></h3>
 <ol type="1">
 <li>Sequence
@@ -2342,18 +2365,13 @@ frequently occurring business situations.</p>
 </li>
 <li>Tax assessment for individual who is single<br />
 </li>
-<li>Tax assessment for individual who is married – separate and combine
-assessment</li>
+<li>Tax assessment for individual who is married – separate and combine assessment</li>
 </ul></li>
 </ol>
 <h3 id="transferable-skills"><em>Transferable Skills</em></h3>
 <ul>
-<li><p>Demonstrate ability to identify and articulate self skills,
-knowledge and understanding confidently and in a variety of contexts.
--Demonstrate ability to investigate problems and provide effective
-solutions.</p></li>
-<li><p>Demonstrate ability to analyse issues/problems from multiple
-angles and make suggestions.</p></li>
+<li><p>Demonstrate ability to identify and articulate self skills, knowledge and understanding confidently and in a variety of contexts. -Demonstrate ability to investigate problems and provide effective solutions.</p></li>
+<li><p>Demonstrate ability to analyse issues/problems from multiple angles and make suggestions.</p></li>
 </ul>
 <h3 id="course-assessment"><em>Course Assessment</em></h3>
 <p>Final examination – One 3-hour paper : 60%<br />
@@ -2363,35 +2381,26 @@ Course Work (Continuous assessments) : 40%<br />
 - Assignments (2) : 4%</p>
 <h3 id="recommended-text"><em>Recommended Text</em></h3>
 <ol type="1">
-<li>Lau Too Kya,Phang Yook Ngor,Wee Kok Kiang, Business Mathematics for
-UiTM, 4rd, Oxford Fajar Sdn. Bhd, 2012, ISBN: 9789676571601</li>
+<li>Lau Too Kya,Phang Yook Ngor,Wee Kok Kiang, Business Mathematics for UiTM, 4rd, Oxford Fajar Sdn. Bhd, 2012, ISBN: 9789676571601</li>
 </ol>
 <h3 id="references"><em>References</em></h3>
 <ol type="1">
-<li>Paul Lau Ngee Kiong, Business Mathematics, UiTM Press, 2013, ISBN:
-9789673634446<br />
+<li>Paul Lau Ngee Kiong, Business Mathematics, UiTM Press, 2013, ISBN: 9789673634446<br />
 </li>
-<li>Gary Clendenen,Stanley A. Salzman, Business Mathematics, 13th,
-Pearson College Division, 2014, ISBN: 9780321955050<br />
+<li>Gary Clendenen,Stanley A. Salzman, Business Mathematics, 13th, Pearson College Division, 2014, ISBN:
+9780321955050<br />
 </li>
-<li>James Deitz,James Southam, Contemporary Business Mathematics for
-Colleges, 16th, Cengage Learning, 2012, ISBN: 9781111821326<br />
+<li>James Deitz,James Southam, Contemporary Business Mathematics for Colleges, 16th, Cengage Learning, 2012, ISBN: 9781111821326<br />
 </li>
-<li>Eugene Don,Joel Lerner, Schaum’s Outline of Basic Business
-Mathematics, 2ed, 2nd, McGraw-Hill, 2009, <a href="ISBN:9780071611589"
-class="uri">ISBN:9780071611589</a></li>
+<li>Eugene Don,Joel Lerner, Schaum’s Outline of Basic Business Mathematics, 2ed, 2nd, McGraw-Hill, 2009, <a href="ISBN:9780071611589" class="uri">ISBN:9780071611589</a></li>
 </ol>
-<h3 class="tabset" id="assessment-evidence"><em>Assessment
-Evidence</em></h3>
+<h3 class="tabset" id="assessment-evidence"><em>Assessment Evidence</em></h3>
 <h4 id="section">20202</h4>
-<p><a href="files/assessment/QUIZ%201%20MAT112.docx">Quiz 1
-(2%)</a><br />
-<a href="files/assessment/Test%201%20MAT402%20May%202020.docx">Test 1
-(10%)</a></p>
+<p><a href="files/assessment/QUIZ%201%20MAT112.docx">Quiz 1 (2%)</a><br />
+<a href="files/assessment/Test%201%20MAT402%20May%202020.docx">Test 1 (10%)</a></p>
 <h4 id="section-1">20204</h4>
 <hr />
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

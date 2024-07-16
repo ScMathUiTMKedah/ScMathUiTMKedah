@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,22 +2223,20 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#what-is-depreciation">What is depreciation?</a></li>
-<li><a href="#methods-of-depreciation">Methods of Depreciation</a>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#what-is-depreciation" id="toc-what-is-depreciation">What is depreciation?</a></li>
+<li><a href="#methods-of-depreciation" id="toc-methods-of-depreciation">Methods of Depreciation</a>
 <ul>
-<li><a href="#straight-line-method">Straight Line Method</a></li>
-<li><a href="#declining-balance-method">Declining Balance
-Method</a></li>
+<li><a href="#straight-line-method" id="toc-straight-line-method">Straight Line Method</a></li>
+<li><a href="#declining-balance-method" id="toc-declining-balance-method">Declining Balance Method</a></li>
 </ul></li>
-<li><a href="#practice-problems">Practice Problems</a></li>
-<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#practice-problems" id="toc-practice-problems">Practice Problems</a></li>
+<li><a href="#acknowledgements" id="toc-acknowledgements">Acknowledgements</a></li>
 </ul>
 </nav>
 </div>
 <blockquote>
-<p>Ya Allah! Semoga kami berusaha sedaya mampu menambah amal ibadah
-dengan solat sunat, membaca Al Quran, bersedekah dan sebagainya.<br />
+<p>Ya Allah! Semoga kami berusaha sedaya mampu menambah amal ibadah dengan solat sunat, membaca Al Quran, bersedekah dan sebagainya.<br />
 AAmiin Ya Rabbal’alamin</p>
 </blockquote>
 <html>
@@ -2226,19 +2255,19 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/depreciation/Slide1.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide2.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide3.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide4.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide5.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide6.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide7.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide8.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide9.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide10.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide11.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide12.PNG" style="width:100%">
-<img class="mySlides" src="images/depreciation/Slide13.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/depreciation/Slide1.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide2.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide3.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide4.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide5.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide6.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide7.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide8.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide9.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide10.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide11.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide12.png" style="width:100%">
+<img class="mySlides" src="images/depreciation/Slide13.png" style="width:100%"></p>
 </div>
 <div class="w3-center">
 <p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
@@ -2293,77 +2322,45 @@ function showDivs(n) {
 <a href="files/slides/depreciation.pdf">Download Learning Slides</a>
 </aside>
 <h2 id="introduction">Introduction</h2>
-<p>In this chapter, student will be introduced to the fundamental
-concept of depreciation. It started with the answer to what is
-depreciation is? Some important terms with its meaning will be explain
-to the students. Finally, the cahpter will discuss on the two methods of
-depreciation calculation that will be covered in this chapter. Examples
-with solution will be provided to guide the students understanding on
-this topic.</p>
+<p>In this chapter, student will be introduced to the fundamental concept of depreciation. It started with the answer to what is depreciation is? Some important terms with its meaning will be explain to the students. Finally, the cahpter will discuss on the two methods of depreciation calculation that will be covered in this chapter. Examples with solution will be provided to guide the students understanding on this topic.</p>
 <h2 id="what-is-depreciation">What is depreciation?</h2>
 <blockquote>
 <p>Definition:<br />
-Depreciation is defined as the loss in value of capital assets such as
-vehicles, machinery tools and equipment due to usage over time.</p>
+Depreciation is defined as the loss in value of capital assets such as vehicles, machinery tools and equipment due to usage over time.</p>
 </blockquote>
-<p>Thus, in general the term depreciation refers to fall in the value or
-utility of fixed assets which are used in operations over the definite
-period of years. In other words, depreciation is the process of
-spreading the cost of fixed assets over the number of years during which
-benefit of the asset is received.</p>
-<p>The fall in value or utility of fixed assets due to so many causes
-like wear and tear, decay, effluxion of time or obsolescence,
-replacement, breakdown, fall in market value etc.</p>
-<p>The following factors are to be considered while charging the amount
-of depreciation:<br />
+<p>Thus, in general the term depreciation refers to fall in the value or utility of fixed assets which are used in operations over the definite period of years. In other words, depreciation is the process of spreading the cost of fixed assets over the number of years during which benefit of the asset is received.</p>
+<p>The fall in value or utility of fixed assets due to so many causes like wear and tear, decay, effluxion of time or obsolescence, replacement, breakdown, fall in market value etc.</p>
+<p>The following factors are to be considered while charging the amount of depreciation:<br />
 1. The original cost of the asset.<br />
 2. The useful life of the asset.<br />
-3. Estimated scrap or residual value of the asset at the end of its
-life.<br />
+3. Estimated scrap or residual value of the asset at the end of its life.<br />
 4. Selecting an appropriate method of depreciation.</p>
 <p>Some of the important terms in depreciation are:<br />
-<strong>Original cost (C) :</strong> The cost paid for the item
-including any sales tax, transportation charges, installation charges
-and other cost that incurred.<br />
-<strong>Salvage cost (S) :</strong> Cost at the end of its lifetime. It
-is also called scrap-value or trade-in-value or junkyard.<br />
-<strong>Useful life (n) :</strong> life expectancy or the number of
-years the asset is expected to last. Sometimes called as economic
-life.<br />
-<strong>Book value (BV) :</strong> The difference between the original
-cost and the accumulated depreciation to that date. May also refer as
-the market value or market price of an asset at certain years.<br />
-<strong>Total depreciation :</strong> difference between original cost
-and the salvage value.<br />
-<strong>Annual depreciation :</strong> the amount of depreciation in a
-year.<br />
-<strong>Accumulated depreciation :</strong> the total depreciation to
-date.</p>
+<strong>Original cost (C) :</strong> The cost paid for the item including any sales tax, transportation charges, installation charges and other cost that incurred.<br />
+<strong>Salvage cost (S) :</strong> Cost at the end of its lifetime. It is also called scrap-value or trade-in-value or junkyard.<br />
+<strong>Useful life (n) :</strong> life expectancy or the number of years the asset is expected to last. Sometimes called as economic life.<br />
+<strong>Book value (BV) :</strong> The difference between the original cost and the accumulated depreciation to that date. May also refer as the market value or market price of an asset at certain years.<br />
+<strong>Total depreciation :</strong> difference between original cost and the salvage value.<br />
+<strong>Annual depreciation :</strong> the amount of depreciation in a year.<br />
+<strong>Accumulated depreciation :</strong> the total depreciation to date.</p>
 <h2 id="methods-of-depreciation">Methods of Depreciation</h2>
-<p>In depreciation there are several methods that can be used. However,
-in this course, we are only cover two methods which are,<br />
+<p>In depreciation there are several methods that can be used. However, in this course, we are only cover two methods which are,<br />
 1. Straight Line Method<br />
 2. Declining Balance Method</p>
 <h3 id="straight-line-method">Straight Line Method</h3>
-<p>This method is also termed as Constant Charge Method. Under this
-method, depreciation is charged for every year will be the constant
-amount throughout the life of the asset.</p>
-<p>Accordingly depreciation is calculated by deducting the scrap value
-from the original cost of an asset and the balance is divided by the
-number of years estimated as the life of the asset.</p>
+<p>This method is also termed as Constant Charge Method. Under this method, depreciation is charged for every year will be the constant amount throughout the life of the asset.</p>
+<p>Accordingly depreciation is calculated by deducting the scrap value from the original cost of an asset and the balance is divided by the number of years estimated as the life of the asset.</p>
 <p><span class="math display">\[
 \begin{aligned}
-Annual\ Depreciation,\ AD &amp;=\ \frac{Total\ Cost(C) - Salvage\
-Value(S)}{Useful\ Life(n)}\\
+Annual\ Depreciation,\ AD &amp;=\ \frac{Total\ Cost(C) - Salvage\ Value(S)}{Useful\ Life(n)}\\
 \\
 where\ ,\ n\ &amp;=\ useful\ life\\
 C\ &amp;=\ Cost\\
 S\ &amp;=\ Salvage\ Value
 \end{aligned}
-\]</span> <em>Example</em><br />
-Consider a piece of equipment that costs RM25,000 with an estimated
-useful life of 6 years and a RM6,250 salvage value. The depreciation
-expense per year for this equipment would be as follows:</p>
+\]</span>
+<em>Example</em><br />
+Consider a piece of equipment that costs RM25,000 with an estimated useful life of 6 years and a RM6,250 salvage value. The depreciation expense per year for this equipment would be as follows:</p>
 <p><span class="math display">\[
 \begin{aligned}
 C &amp;= 25,000 \\
@@ -2373,8 +2370,8 @@ n &amp;= 6 \\
 AD &amp;= \frac{25,000 - 6,250}{6} \\
 &amp;= 3,125
 \end{aligned}
-\]</span> The following table illustrate the depreciation process using
-straight line method:</p>
+\]</span>
+The following table illustrate the depreciation process using straight line method:</p>
 <table>
 <colgroup>
 <col style="width: 6%" />
@@ -2385,15 +2382,11 @@ straight line method:</p>
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;">Year (<span
-class="math inline">\(n\)</span>)</th>
+<th style="text-align: center;">Year (<span class="math inline">\(n\)</span>)</th>
 <th style="text-align: center;">Opening Book Value</th>
-<th style="text-align: center;">Annual Depreciation (<span
-class="math inline">\(AD\)</span>)</th>
-<th style="text-align: center;">Accumulated Depreciation (<span
-class="math inline">\(AcD_n\)</span>)</th>
-<th style="text-align: center;">Ending Book Value (<span
-class="math inline">\(BV_n\)</span>)</th>
+<th style="text-align: center;">Annual Depreciation (<span class="math inline">\(AD\)</span>)</th>
+<th style="text-align: center;">Accumulated Depreciation (<span class="math inline">\(AcD_n\)</span>)</th>
+<th style="text-align: center;">Ending Book Value (<span class="math inline">\(BV_n\)</span>)</th>
 </tr>
 </thead>
 <tbody>
@@ -2451,8 +2444,7 @@ class="math inline">\(BV_n\)</span>)</th>
 <p>Some of the important formula that comes with this method are;<br />
 <span class="math display">\[
 \begin{aligned}
-Annual\ Rate\ of\ Depreciation &amp;= \frac{Annual\ Depreciation}{Total\
-Depreciation} * 100\% \\
+Annual\ Rate\ of\ Depreciation &amp;= \frac{Annual\ Depreciation}{Total\ Depreciation} * 100\% \\
 &amp;= \frac{AD}{TD} * 100\%
 \end{aligned}
 \]</span><br />
@@ -2463,29 +2455,22 @@ Annual\ Rate\ of\ Depreciation &amp;= \frac{1}{Useful\ Life} * 100\% \\
 &amp;= \frac{1}{n} * 100\%
 \end{aligned}
 \]</span><br />
-To find the Book Value at certain period, BV_n <span
-class="math display">\[
+To find the Book Value at certain period, BV_n
+<span class="math display">\[
 \begin{aligned}
 Book\ Value(BV_n) &amp;= Cost\ -\ Accumulated\ Depreciation\\
 &amp;= C\ -\ nAD\\
 \end{aligned}
 \]</span></p>
 <h3 id="declining-balance-method">Declining Balance Method</h3>
-<p>The declining balance method produces the highest depreciation
-charges in the earlier years of the asset. The book value of the asset
-remaining at the end of the depreciation year becomes the scrap
-value.</p>
+<p>The declining balance method produces the highest depreciation charges in the earlier years of the asset. The book value of the asset remaining at the end of the depreciation year becomes the scrap value.</p>
 <figure>
-<img src="images/decbalance.png"
-alt="Table on Declining Balance Illustrated retrieved from https://corporatefinanceinstitute.com/" />
-<figcaption aria-hidden="true">Table on Declining Balance Illustrated
-retrieved from <a href="https://corporatefinanceinstitute.com/"
-class="uri">https://corporatefinanceinstitute.com/</a></figcaption>
+<img src="images/decbalance.png" alt="Table on Declining Balance Illustrated retrieved from https://corporatefinanceinstitute.com/" />
+<figcaption aria-hidden="true">Table on Declining Balance Illustrated retrieved from <a href="https://corporatefinanceinstitute.com/" class="uri">https://corporatefinanceinstitute.com/</a></figcaption>
 </figure>
 <p><span class="math display">\[
 \begin{align*}
-Rate\ of\ Depreciation(r)\ &amp;=\ 1\ -\ \sqrt[3]{\frac{S}{C}}\ \ \ \ \
-or\ \ \ \ \ 1\ -\ \sqrt[n]{\frac{BV_n}{C}}\\
+Rate\ of\ Depreciation(r)\ &amp;=\ 1\ -\ \sqrt[3]{\frac{S}{C}}\ \ \ \ \ or\ \ \ \ \ 1\ -\ \sqrt[n]{\frac{BV_n}{C}}\\
 \\
 where\ ,\ n\ &amp;=\ useful\ life\\
 C\ &amp;=\ Cost\\
@@ -2496,8 +2481,7 @@ The Book Value of any years is calculated by,<br />
 <span class="math display">\[
 Book\ Value(BV_n)\ =\ C\ -\ C(1\ -\ r)^n\\
 \]</span><br />
-The accumulated depreciation for certain year can be calculated
-as,<br />
+The accumulated depreciation for certain year can be calculated as,<br />
 <span class="math display">\[
 \begin{aligned}
 Accumulated\ Depreciation_n(AcD_n)\ &amp;=\ Cost\ -\ Book\ Value\\
@@ -2506,11 +2490,8 @@ Accumulated\ Depreciation_n(AcD_n)\ &amp;=\ Cost\ -\ Book\ Value\\
 \]</span></p>
 <h2 id="practice-problems">Practice Problems</h2>
 <h2 class="appendix" id="acknowledgements">Acknowledgements</h2>
-<p>Figure from Corporate Finance Institute. Retrived from <a
-href="https://corporatefinanceinstitute.com/resources/knowledge/accounting/types-depreciation-methods/"
-class="uri">https://corporatefinanceinstitute.com/resources/knowledge/accounting/types-depreciation-methods/</a></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Figure from Corporate Finance Institute. Retrived from <a href="https://corporatefinanceinstitute.com/resources/knowledge/accounting/types-depreciation-methods/" class="uri">https://corporatefinanceinstitute.com/resources/knowledge/accounting/types-depreciation-methods/</a></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

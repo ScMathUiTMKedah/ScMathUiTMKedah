@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -789,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1030,10 +1032,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1865,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1885,6 +1889,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1984,6 +2013,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2006,7 +2037,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2045,7 +2076,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2186,8 +2217,7 @@ Event
 <h1>STA404</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Download Past Semester Exam Paper and Continuous
-Assessmenthere!!!</p></p>
+<p><p>Download Past Semester Exam Paper and Continuous Assessmenthere!!!</p></p>
 </div>
 
 
@@ -2196,15 +2226,12 @@ Assessmenthere!!!</p></p>
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#assessment-1-quiz">Assessment 1 (Quiz)</a></li>
-<li><a href="#assessment-2-test">Assessment 2 (Test)</a></li>
-<li><a href="#assessment-3-case-study---project">Assessment 3 (Case
-Study - Project)</a></li>
-<li><a href="#assessment-4-final-examination">Assessment 4 (Final
-Examination)</a></li>
-<li><a href="#past-final-examinations-questions-and-answers">Past Final
-Examinations (Questions and Answers)</a></li>
-<li><a href="#contributors">Contributors</a></li>
+<li><a href="#assessment-1-quiz" id="toc-assessment-1-quiz">Assessment 1 (Quiz)</a></li>
+<li><a href="#assessment-2-test" id="toc-assessment-2-test">Assessment 2 (Test)</a></li>
+<li><a href="#assessment-3-case-study---project" id="toc-assessment-3-case-study---project">Assessment 3 (Case Study - Project)</a></li>
+<li><a href="#assessment-4-final-examination" id="toc-assessment-4-final-examination">Assessment 4 (Final Examination)</a></li>
+<li><a href="#past-final-examinations-questions-and-answers" id="toc-past-final-examinations-questions-and-answers">Past Final Examinations (Questions and Answers)</a></li>
+<li><a href="#contributors" id="toc-contributors">Contributors</a></li>
 </ul>
 </nav>
 </div>
@@ -2218,9 +2245,7 @@ Examinations (Questions and Answers)</a></li>
 <center>
 <embed src="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf" type="application/pdf" width="100%" height="970px" />
 <p>
-<p>If you can’t view the pdf file, click on the file’s link -
-<a href="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf">
-Download PDF!</a></p>
+<p>If you can’t view the pdf file, click on the file’s link - <a href="files/Assessment Repository/STA404/20214 (OCT 2021 - FEB 2022)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf"> Download PDF!</a></p>
 </p>
 </center>
 </details>
@@ -2233,9 +2258,7 @@ Download PDF!</a></p>
 <center>
 <embed src="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf" type="application/pdf" width="100%" height="970px" />
 <p>
-<p>If you can’t view the pdf file, click on the file’s link -
-<a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf">
-Download PDF!</a></p>
+<p>If you can’t view the pdf file, click on the file’s link - <a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/QUESTIONS.pdf"> Download PDF!</a></p>
 </p>
 </center>
 </details>
@@ -2246,30 +2269,17 @@ Download PDF!</a></p>
 <center>
 <embed src="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/ANSWERS.pdf" type="application/pdf" width="100%" height="970px" />
 <p>
-<p>If you can’t view the pdf file, click on the file’s link -
-<a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/ANSWERS.pdf">
-Download PDF!</a></p>
+<p>If you can’t view the pdf file, click on the file’s link - <a href="files/Assessment Repository/STA404/20204 (OCT 2020 - FEB 2021)/ASSESSMENT 1 (QUIZ)/ANSWERS.pdf"> Download PDF!</a></p>
 </p>
 </center>
 </details>
 <h2 id="assessment-2-test">Assessment 2 (Test)</h2>
-<p><strong>20204 (Oct 2020 - Feb 2021)</strong> <a
-href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%202%20(TEST)/QUESTIONS.pdf">Assessment
-2</a> <a
-href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%202%20(TEST)/ANSWERS.pdf">Answers</a></p>
-<h2 id="assessment-3-case-study---project">Assessment 3 (Case Study -
-Project)</h2>
-<p><strong>20204 (Oct 2020 - Feb 2021)</strong> <a
-href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%203%20(CASE%20STUDY-PROJECT)/CASE%20STUDY/QUESTIONS.pdf">Assessment
-3</a> <a
-href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%203%20(CASE%20STUDY-PROJECT)/CASE%20STUDY/ANSWERS.pdf">Answers</a></p>
-<h2 id="assessment-4-final-examination">Assessment 4 (Final
-Examination)</h2>
-<p><strong>20204 (Oct 2020 - Feb 2021)</strong> <a
-href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%204%20(FINAL%20ASSESSMENT)/QUESTIONS.pdf">Assessment
-4</a></p>
-<h2 id="past-final-examinations-questions-and-answers">Past Final
-Examinations (Questions and Answers)</h2>
+<p><strong>20204 (Oct 2020 - Feb 2021)</strong> <a href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%202%20(TEST)/QUESTIONS.pdf">Assessment 2</a> <a href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%202%20(TEST)/ANSWERS.pdf">Answers</a></p>
+<h2 id="assessment-3-case-study---project">Assessment 3 (Case Study - Project)</h2>
+<p><strong>20204 (Oct 2020 - Feb 2021)</strong> <a href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%203%20(CASE%20STUDY-PROJECT)/CASE%20STUDY/QUESTIONS.pdf">Assessment 3</a> <a href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%203%20(CASE%20STUDY-PROJECT)/CASE%20STUDY/ANSWERS.pdf">Answers</a></p>
+<h2 id="assessment-4-final-examination">Assessment 4 (Final Examination)</h2>
+<p><strong>20204 (Oct 2020 - Feb 2021)</strong> <a href="files/Assessment%20Repository/STA404/20204%20(OCT%202020%20-%20FEB%202021)/ASSESSMENT%204%20(FINAL%20ASSESSMENT)/QUESTIONS.pdf">Assessment 4</a></p>
+<h2 id="past-final-examinations-questions-and-answers">Past Final Examinations (Questions and Answers)</h2>
 <p><strong>Dec 2018</strong><br />
 </p>
 <details>
@@ -2279,9 +2289,7 @@ Examinations (Questions and Answers)</h2>
 <center>
 <embed src="files/Assessment Repository/STA404/Past Exams/2018 December.pdf" type="application/pdf" width="100%" height="970px" />
 <p>
-<p>If you can’t view the pdf file, click on the file’s link -
-<a href="files/Assessment Repository/STA404/Past Exams/2018 December.pdf">
-Download PDF!</a></p>
+<p>If you can’t view the pdf file, click on the file’s link - <a href="files/Assessment Repository/STA404/Past Exams/2018 December.pdf"> Download PDF!</a></p>
 </p>
 </center>
 </details>
@@ -2294,9 +2302,7 @@ Download PDF!</a></p>
 <center>
 <embed src="files/Assessment Repository/STA404/Past Exams/2018 June.pdf" type="application/pdf" width="100%" height="970px" />
 <p>
-<p>If you can’t view the pdf file, click on the file’s link -
-<a href="files/Assessment Repository/STA404/Past Exams/2018 June.pdf">
-Download PDF!</a></p>
+<p>If you can’t view the pdf file, click on the file’s link - <a href="files/Assessment Repository/STA404/Past Exams/2018 June.pdf"> Download PDF!</a></p>
 </p>
 </center>
 </details>
@@ -2309,9 +2315,7 @@ Download PDF!</a></p>
 <center>
 <embed src="files/Assessment Repository/STA404/Past Exams/2018 January.pdf" type="application/pdf" width="100%" height="970px" />
 <p>
-<p>If you can’t view the pdf file, click on the file’s link -
-<a href="files/Assessment Repository/STA404/Past Exams/2018 January.pdf">
-Download PDF!</a></p>
+<p>If you can’t view the pdf file, click on the file’s link - <a href="files/Assessment Repository/STA404/Past Exams/2018 January.pdf"> Download PDF!</a></p>
 </p>
 </center>
 </details>
@@ -2319,8 +2323,7 @@ Download PDF!</a></p>
 <p>Kartini Kasim<br />
 Senior Lecturer<br />
 Department of Mathematical Sciences, UiTM Kedah</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

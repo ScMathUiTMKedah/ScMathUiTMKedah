@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -790,6 +791,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1031,10 +1033,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1866,15 +1864,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1886,6 +1890,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1985,6 +2014,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2007,7 +2038,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2046,7 +2077,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2202,47 +2233,35 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#project-objectives">PROJECT OBJECTIVES</a></li>
-<li><a href="#project-outcomes">PROJECT OUTCOMES</a></li>
-<li><a href="#suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR
-PROJECT</a>
+<li><a href="#project-objectives" id="toc-project-objectives">PROJECT OBJECTIVES</a></li>
+<li><a href="#project-outcomes" id="toc-project-outcomes">PROJECT OUTCOMES</a></li>
+<li><a href="#suggested-guidelines-for-project" id="toc-suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR PROJECT</a>
 <ul>
-<li><a href="#group-members">1. GROUP MEMBERS</a></li>
-<li><a href="#source-of-data">2. SOURCE OF DATA</a></li>
-<li><a href="#cover-page">3. COVER PAGE:</a></li>
-<li><a href="#acknowledgement">4. ACKNOWLEDGEMENT</a></li>
-<li><a href="#standard-table-of-content">5. STANDARD TABLE OF
-CONTENT</a></li>
-<li><a href="#content-of-project">6. CONTENT OF PROJECT</a></li>
+<li><a href="#group-members" id="toc-group-members">1. GROUP MEMBERS</a></li>
+<li><a href="#source-of-data" id="toc-source-of-data">2. SOURCE OF DATA</a></li>
+<li><a href="#cover-page" id="toc-cover-page">3. COVER PAGE:</a></li>
+<li><a href="#acknowledgement" id="toc-acknowledgement">4. ACKNOWLEDGEMENT</a></li>
+<li><a href="#standard-table-of-content" id="toc-standard-table-of-content">5. STANDARD TABLE OF CONTENT</a></li>
+<li><a href="#content-of-project" id="toc-content-of-project">6. CONTENT OF PROJECT</a></li>
 </ul></li>
-<li><a href="#details-of-date-submission">DETAILS OF DATE
-SUBMISSION</a></li>
+<li><a href="#details-of-date-submission" id="toc-details-of-date-submission">DETAILS OF DATE SUBMISSION</a></li>
 </ul>
 </nav>
 </div>
 <h2 id="project-objectives">PROJECT OBJECTIVES</h2>
-<p>The main objective of this project is to expose the students to the
-application of statistics techniques towards on the primary/secondary
-data. Besides that, to overview the students to the Final Year Project
-report nature.</p>
+<p>The main objective of this project is to expose the students to the application of statistics techniques towards on the primary/secondary data. Besides that, to overview the students to the Final Year Project report nature.</p>
 <h2 id="project-outcomes">PROJECT OUTCOMES</h2>
 <p>At the end of the project, students should be able:<br />
 1. Describe the actual data.<br />
-2. Explain and analyze the appropriate statistics techniques in
-analyzing the actual data.<br />
+2. Explain and analyze the appropriate statistics techniques in analyzing the actual data.<br />
 3. Produce a good class project report.</p>
-<h2 id="suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR
-PROJECT</h2>
+<h2 id="suggested-guidelines-for-project">SUGGESTED GUIDELINES FOR PROJECT</h2>
 <h3 id="group-members">1. GROUP MEMBERS</h3>
-<p>Students are required to perform a group with 3 – 4 members. (The
-number of members per group depending on the number of students in the
-class and the number of class)</p>
+<p>Students are required to perform a group with 3 – 4 members. (The number of members per group depending on the number of students in the class and the number of class)</p>
 <h3 id="source-of-data">2. SOURCE OF DATA</h3>
-<p>Students are allowed to use primary / secondary data. There is no
-restricted on the number of sample size.</p>
+<p>Students are allowed to use primary / secondary data. There is no restricted on the number of sample size.</p>
 <h3 id="cover-page">3. COVER PAGE:</h3>
-<p>Cover page should include UiTM logo, report title, name, student
-number and group.</p>
+<p>Cover page should include UiTM logo, report title, name, student number and group.</p>
 <h3 id="acknowledgement">4. ACKNOWLEDGEMENT</h3>
 <h3 id="standard-table-of-content">5. STANDARD TABLE OF CONTENT</h3>
 <h3 id="content-of-project">6. CONTENT OF PROJECT</h3>
@@ -2262,15 +2281,14 @@ number and group.</p>
 </li>
 <li>Data Collection Method<br />
 </li>
-<li>The descriptions on the variables (variable, types of variable and
-level measurement) are given as follow.<br />
-Example : Insert Image Here<br />
+<li>The descriptions on the variables (variable, types of variable and level measurement) are given as follow.<br />
+Example :
+Insert Image Here<br />
 2.2 Method of analysis (Topic 2)<br />
 </li>
 </ul></li>
 <li>FINDINGS<br />
-It should include organizing and presenting data supported by numerical
-descriptive measures
+It should include organizing and presenting data supported by numerical descriptive measures
 <ul>
 <li>Use suitable chart/plot/table<br />
 </li>
@@ -2285,16 +2303,13 @@ descriptive measures
 </li>
 <li>Language : English Language<br />
 </li>
-<li>Length report : Minimum 8 pages including cover page and report
-content</li>
+<li>Length report : Minimum 8 pages including cover page and report content</li>
 </ul></li>
 </ol>
 <h2 id="details-of-date-submission">DETAILS OF DATE SUBMISSION</h2>
-<p>Please ensure to submit the hardcopy and softcopy (burn in CD)
-<strong>BEFORE OR ON WEEK 11.</strong></p>
+<p>Please ensure to submit the hardcopy and softcopy (burn in CD) <strong>BEFORE OR ON WEEK 11.</strong></p>
 <hr />
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

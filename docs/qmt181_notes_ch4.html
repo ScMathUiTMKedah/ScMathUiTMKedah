@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,20 +2223,19 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#chapter-4">CHAPTER 4</a>
+<li><a href="#chapter-4" id="toc-chapter-4">CHAPTER 4</a>
 <ul>
-<li><a href="#measures-of-central-tendency">Measures of Central
-Tendency</a>
+<li><a href="#measures-of-central-tendency" id="toc-measures-of-central-tendency">Measures of Central Tendency</a>
 <ul>
-<li><a href="#ungrouped-data">Ungrouped Data</a></li>
+<li><a href="#ungrouped-data" id="toc-ungrouped-data">Ungrouped Data</a></li>
 </ul></li>
-<li><a href="#measure-of-position">Measure of position</a>
+<li><a href="#measure-of-position" id="toc-measure-of-position">Measure of position</a>
 <ul>
-<li><a href="#quartiles">Quartiles</a></li>
-<li><a href="#grouped-data">GROUPED DATA</a></li>
+<li><a href="#quartiles" id="toc-quartiles">Quartiles</a></li>
+<li><a href="#grouped-data" id="toc-grouped-data">GROUPED DATA</a></li>
 </ul></li>
-<li><a href="#skewness">Skewness</a></li>
-<li><a href="#measures-of-dispersion">Measures of Dispersion</a></li>
+<li><a href="#skewness" id="toc-skewness">Skewness</a></li>
+<li><a href="#measures-of-dispersion" id="toc-measures-of-dispersion">Measures of Dispersion</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -2251,8 +2281,8 @@ For sample,<br />
 departments are 24, 13, 19, 26 and 11 respectively. What is the mean for
 the number of workers in a department?</p>
 <p>Total number of workers in five department is</p>
-<p>Mean for the number of workers in a department is Example 2 A sample
-of five executives received the following bonuses last year (in RM’000).
+<p>Mean for the number of workers in a department is Example 2 A sample of
+five executives received the following bonuses last year (in RM’000).
 14, 15, 17, 16, 15 Find the mean bonus of the five executives.</p>
 <p>The mean bonus is</p>
 <p>Therefore, the mean bonus of the five executives is RM15400</p>
@@ -2264,40 +2294,34 @@ median is the middle value of the data. However, if there is an even
 number of observations in the data, the median is the average of the two
 middle numbers.</p>
 <p><strong>Example 3</strong><br />
-Find the median for ages of seven preschool children. The ages are 1 3 4
-2 3 5 1</p>
+Find the median for ages of seven preschool children. The ages are
+1 3 4 2 3 5 1</p>
 <p><em>Solution:</em><br />
 1 1 2 3 3 4 5</p>
 <p>So, median age is 3 years old</p>
 <p><strong>Example 4</strong><br />
-The number of cloudy days for the top 6 cloudiest cities is shown. 209
-223 211 227 213 240<br />
+The number of cloudy days for the top 6 cloudiest cities is shown.
+209 223 211 227 213 240<br />
 Find the median.</p>
 <p><em>Solution:</em><br />
 209 211 213 223 227 240</p>
 <p>Finding median in a large number of observations If there are large
 number of observations, the median is determined by computing the term
 in an ordered array. For example, if we have 77 data,</p>
-<p>Location of median = The median is the 39th observation in the data
-set</p>
+<p>Location of median = The median is the 39th observation in the data set</p>
 <p><strong>Example 5</strong><br />
-A real estate broker intends to determine the median selling price
-(RM’000) of 10 houses listed below.<br />
+A real estate broker intends to determine the median selling price (RM’000) of 10 houses listed below.<br />
 67 105 148 5,250 91 116 167 95 122 189</p>
 <p><em>Solution:</em><br />
 Arrange data in ascending order.<br />
 67 91 95 105 116 122 148 167 189 5,250</p>
-<p>Location of median = <span
-class="math inline">\(\frac{10+1}{2}=5.5\)</span></p>
-<p>Median = <span
-class="math inline">\(\frac{116+122}{2}=119\)</span></p>
+<p>Location of median = <span class="math inline">\(\frac{10+1}{2}=5.5\)</span></p>
+<p>Median = <span class="math inline">\(\frac{116+122}{2}=119\)</span></p>
 <p>The price of RM119000 is a reasonable of the price of 10 houses.</p>
 <h4 id="mode">MODE</h4>
-<p>The mode is the value that occurs frequently in a data set. The mode
-is located by arranging the data in ascending or descending order.</p>
+<p>The mode is the value that occurs frequently in a data set. The mode is located by arranging the data in ascending or descending order.</p>
 <p><strong>Example 6</strong><br />
-The following data represent the duration (in days) of U.S. Space
-Shuttle voyages for the years 1992-1994. Find the mode<br />
+The following data represent the duration (in days) of U.S. Space Shuttle voyages for the years 1992-1994. Find the mode<br />
 8 9 9 14 8 8 10 7 6 9 7 8 10 14 11 8 14 11</p>
 <p><em>Solution:</em><br />
 Arrange the data in ascending order.<br />
@@ -2305,14 +2329,11 @@ Arrange the data in ascending order.<br />
 therefore, the mode is 8.</p>
 <h2 id="measure-of-position">Measure of position</h2>
 <aside>
-<a href="images/qmt181/Chapter%204%20Topic%202%20-%20MOP.pdf">Download
-Slides - Measures of Position</a>
+<a href="images/qmt181/Chapter%204%20Topic%202%20-%20MOP.pdf">Download Slides - Measures of Position</a>
 </aside>
-<p>Box-and-whisker plot provides a useful graphical representation of
-the data.</p>
+<p>Box-and-whisker plot provides a useful graphical representation of the data.</p>
 <h3 id="quartiles">Quartiles</h3>
-<p>The quartiles are descriptive measures that split the ordered data
-into four quarters with three dividers.</p>
+<p>The quartiles are descriptive measures that split the ordered data into four quarters with three dividers.</p>
 <center>
 First quartile (Q1)<br />
 Second quartile (Q2)<br />
@@ -2320,21 +2341,16 @@ Third quartile(Q3)
 </center>
 <p>Rules for obtaining the quartile values</p>
 <ol type="a">
-<li>If the positioning point is an integer, the numerical observation on
-the positioning point is chosen for the quartiles.<br />
+<li>If the positioning point is an integer, the numerical observation on the positioning point is chosen for the quartiles.<br />
 </li>
-<li>If the point is halfway between two integers, the average of their
-corresponding observations is selected.<br />
+<li>If the point is halfway between two integers, the average of their corresponding observations is selected.<br />
 </li>
-<li>If the positioning point is neither an integer nor a value halfway
-between two integer, proportionate between the two integers.</li>
+<li>If the positioning point is neither an integer nor a value halfway between two integer, proportionate between the two integers.</li>
 </ol>
 <p><strong>Example 7</strong></p>
-<p>The three-year annual returns of 14 low-risk funds arranged in
-ascending order are given as follows.</p>
+<p>The three-year annual returns of 14 low-risk funds arranged in ascending order are given as follows.</p>
 <center>
-9.77 11.35 12.46 13.80 15.47 17.48 18.37 18.47 18.61 20.72 21.49 22.47
-31.50 38.16
+9.77 11.35 12.46 13.80 15.47 17.48 18.37 18.47 18.61 20.72 21.49 22.47 31.50 38.16
 </center>
 <p>Find the first and third quartiles.</p>
 <p><em>Solution</em></p>
@@ -2354,39 +2370,29 @@ Q_1 = 21.49 + 0.25(22.47-21.49) = 21.735
 \]</span></p>
 <h3 id="grouped-data">GROUPED DATA</h3>
 <h4 id="mean-1">MEAN</h4>
-<p>For grouped data, each class interval is represented by the mid-point
-of the interval, X_i.</p>
+<p>For grouped data, each class interval is represented by the mid-point of the interval, X_i.</p>
 <p><strong>Example 8</strong><br />
-The table shows the years of working experience for 120 employees of
-Jimmy’s Company.</p>
+The table shows the years of working experience for 120 employees of Jimmy’s Company.</p>
 <p><em>Solution:</em></p>
 <h4 id="median-1">MEDIAN</h4>
 <p>For grouped data, median is calculated as follows.</p>
-<p>where <span class="math inline">\(n\)</span> = sample size,<br />
-<span class="math inline">\(L_m\)</span> = lower limit of the median
-class,<br />
-<span class="math inline">\(f_{m-1}\)</span> = cumulative frequency
-before the median class<br />
-<span class="math inline">\(f_m\)</span> = frequency of the median class
-and<br />
+<p>where
+<span class="math inline">\(n\)</span> = sample size,<br />
+<span class="math inline">\(L_m\)</span> = lower limit of the median class,<br />
+<span class="math inline">\(f_{m-1}\)</span> = cumulative frequency before the median class<br />
+<span class="math inline">\(f_m\)</span> = frequency of the median class and<br />
 <span class="math inline">\(c\)</span> = median class size</p>
 <p><strong>Example 9</strong><br />
 Using the data in example 8, compute the median</p>
 <p><em>Solution</em>:</p>
 <p>Step 1: Obtain the cumulative frequencies</p>
-<p>Step 2: Identify the class that contains the median and obtain the
-median location.</p>
+<p>Step 2: Identify the class that contains the median and obtain the median location.</p>
 <p>Step 3: Apply the formula</p>
 <h4 id="mode-1">MODE</h4>
 <p>The mode can be estimated by using histogram.</p>
-<p>Step 1: A histogram is drawn for the data and the class with the
-highest frequency (modal class) is identify.<br />
-Step 2: Two lines are drawn at the top of the column, one from the top
-right-hand corner to the top right-hand corner of the class before the
-modal class, and another from the top left-hand corner to the top
-left-hand corner of the column after the modal class.<br />
-Step 3: At the point of intersection, a vertical line is drawn towards
-the horizontal axis of the histogram.<br />
+<p>Step 1: A histogram is drawn for the data and the class with the highest frequency (modal class) is identify.<br />
+Step 2: Two lines are drawn at the top of the column, one from the top right-hand corner to the top right-hand corner of the class before the modal class, and another from the top left-hand corner to the top left-hand corner of the column after the modal class.<br />
+Step 3: At the point of intersection, a vertical line is drawn towards the horizontal axis of the histogram.<br />
 Step 4: The variable value is the mode of the distribution.</p>
 <p>Mode can also be calculated using the formula.</p>
 <p>where<br />
@@ -2398,13 +2404,9 @@ f2 = frequency of the class after the class containing mode</p>
 <p><strong>Example 10</strong><br />
 Using the data in example 8, compute the mode.</p>
 <p><em>Solution</em>:<br />
-The modal class is 9 – 12 since the frequency of the class is the
-highest.</p>
+The modal class is 9 – 12 since the frequency of the class is the highest.</p>
 <h2 id="skewness">Skewness</h2>
-<p>Measure the lack of symmetry in a data distribution The relationship
-between mean, median and mode Measure of position The position of
-grouped data can be measured by the first and the third quartile denoted
-as Q_1_ and Q_3_ respectively.</p>
+<p>Measure the lack of symmetry in a data distribution The relationship between mean, median and mode Measure of position The position of grouped data can be measured by the first and the third quartile denoted as Q_1_ and Q_3_ respectively.</p>
 <p>Method 1<br />
 The first (Q1) and third (Q3) quartiles</p>
 <p>Step 1: Obtain the cumulative frequencies<br />
@@ -2424,35 +2426,22 @@ Step 3: Find the first and third quartile</p>
     f3 = frequency of the first quartile class  
     C3 = third quartile class size  </code></pre>
 <p><strong>Example 11</strong><br />
-Table below shows the distribution of test scores obtained by 42
-students in a Statistics class. Calculate Q1 and Q3</p>
+Table below shows the distribution of test scores obtained by 42 students in a Statistics class. Calculate Q1 and Q3</p>
 <p>Step 1:<br />
-Step 2: Identify the location or position of the first and third
-quartiles<br />
+Step 2: Identify the location or position of the first and third quartiles<br />
 Step 3: The value of Q1 and Q3 are as follows</p>
 <p>Method 2 Using Ogive (cumulative frequency curve)</p>
-<p>Step 1: Mark off the first and third quartile location on the
-y-axis.<br />
-Step 2: From each of the quartile location marked on the y-axis, draw
-crosses the x-axis is the estimated quartile value.</p>
-<p>Exercise The speed of 120 cars that drove through a specific sharp
-corner on a federal road is given in the table below. Find mean, median
-and mode speed.</p>
+<p>Step 1: Mark off the first and third quartile location on the y-axis.<br />
+Step 2: From each of the quartile location marked on the y-axis, draw crosses the x-axis is the estimated
+quartile value.</p>
+<p>Exercise The speed of 120 cars that drove through a specific sharp corner on a federal road is given in the table below. Find mean, median and mode speed.</p>
 <h2 id="measures-of-dispersion">Measures of Dispersion</h2>
 <aside>
-<a href="images/qmt181/Chapter%204%20Topic%203%20-%20MOD.pdf">Download
-Slides - Measures of Dispersion</a>
+<a href="images/qmt181/Chapter%204%20Topic%203%20-%20MOD.pdf">Download Slides - Measures of Dispersion</a>
 </aside>
-<p>Measures of dispersion give us a value that can be used to describe a
-set of data as a whole. Just knowing the measures of central tendency
-value of a data set is not enough for us to describe the distribution of
-that data. The centralized measure does not provide information on
-whether the data is widely distributed or otherwise.<br />
-The measure of dispersion is based on the mean value. If the observed
-values are close to the mean of the distribution then the dispersion of
-the data is small and vice versa.</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Measures of dispersion give us a value that can be used to describe a set of data as a whole. Just knowing the measures of central tendency value of a data set is not enough for us to describe the distribution of that data. The centralized measure does not provide information on whether the data is widely distributed or otherwise.<br />
+The measure of dispersion is based on the mean value. If the observed values are close to the mean of the distribution then the dispersion of the data is small and vice versa.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

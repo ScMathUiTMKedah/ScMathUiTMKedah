@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,18 +2223,17 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#learning-outcomes">Learning Outcomes</a></li>
-<li><a href="#learning-videos">Learning Videos</a></li>
-<li><a href="#promissory-note">Promissory Note</a></li>
-<li><a href="#how-does-it-work">How does it work?</a>
+<li><a href="#learning-outcomes" id="toc-learning-outcomes">Learning Outcomes</a></li>
+<li><a href="#learning-videos" id="toc-learning-videos">Learning Videos</a></li>
+<li><a href="#promissory-note" id="toc-promissory-note">Promissory Note</a></li>
+<li><a href="#how-does-it-work" id="toc-how-does-it-work">How does it work?</a>
 <ul>
-<li><a href="#terms">Terms</a></li>
+<li><a href="#terms" id="toc-terms">Terms</a></li>
 </ul></li>
-<li><a href="#features-of-promissory-note">Features of Promissory
-Note</a></li>
-<li><a href="#bank-discount">Bank Discount</a></li>
-<li><a href="#practice-questions">Practice Questions</a></li>
-<li><a href="#acknowledgments">Acknowledgments</a></li>
+<li><a href="#features-of-promissory-note" id="toc-features-of-promissory-note">Features of Promissory Note</a></li>
+<li><a href="#bank-discount" id="toc-bank-discount">Bank Discount</a></li>
+<li><a href="#practice-questions" id="toc-practice-questions">Practice Questions</a></li>
+<li><a href="#acknowledgments" id="toc-acknowledgments">Acknowledgments</a></li>
 </ul>
 </nav>
 </div>
@@ -2223,8 +2253,7 @@ Note</a></li>
 </li>
 <li>compute the bank discount and proceeds, and<br />
 </li>
-<li>compute simple interest rate that is equivalent to discount
-rate.</li>
+<li>compute simple interest rate that is equivalent to discount rate.</li>
 </ul>
 <html>
 <title>
@@ -2242,19 +2271,19 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/bd_pn/Slide1.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide2.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide3.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide4.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide5.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide6.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide7.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide8.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide9.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide10.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide11.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide12.PNG" style="width:100%">
-<img class="mySlides" src="images/bd_pn/Slide13.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/bd_pn/Slide1.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide2.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide3.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide4.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide5.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide6.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide7.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide8.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide9.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide10.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide11.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide12.png" style="width:100%">
+<img class="mySlides" src="images/bd_pn/Slide13.png" style="width:100%"></p>
 </div>
 <div class="w3-center">
 <p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
@@ -2324,12 +2353,9 @@ function showDivs(n) {
 </thead>
 <tbody>
 <tr class="odd">
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/c8wewasHiXs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/KPM8N4iTRpg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/0WZL3563U3M" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/c8wewasHiXs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/KPM8N4iTRpg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/0WZL3563U3M" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
 </tr>
 </tbody>
 </table>
@@ -2346,64 +2372,33 @@ style="text-align: center;"><iframe width="150" height="150" src="https://www.yo
 </thead>
 <tbody>
 <tr class="odd">
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/LqpeAW9mDRM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/iplD5QuXbSg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/LqpeAW9mDRM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/iplD5QuXbSg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
 </tr>
 </tbody>
 </table>
 <h2 id="promissory-note">Promissory Note</h2>
 <blockquote>
-<p>Definition: A signed document containing a written promise to pay a
-sum of money at specified date with or without interest. There note can
-be with or without interest. In this course, the interest bearing note
-will be calculated as simple interest using Banker’s Rule.</p>
+<p>Definition:
+A signed document containing a written promise to pay a sum of money at specified date with or without interest.
+There note can be with or without interest. In this course, the interest bearing note will be calculated as simple interest using Banker’s Rule.</p>
 </blockquote>
 <figure>
-<img src="images/bd_pn/Burma_1926_Promissory_Note.jpg"
-alt="Source: https://en.m.wikipedia.org/wiki/promissory_note. A 1926 promissory note from the Imperial Bank of India" />
-<figcaption aria-hidden="true">Source: <a
-href="https://en.m.wikipedia.org/wiki/promissory_note"
-class="uri">https://en.m.wikipedia.org/wiki/promissory_note</a>. A 1926
-promissory note from the Imperial Bank of India</figcaption>
+<img src="images/bd_pn/Burma_1926_Promissory_Note.jpg" alt="Source: https://en.m.wikipedia.org/wiki/promissory_note. A 1926 promissory note from the Imperial Bank of India" />
+<figcaption aria-hidden="true">Source: <a href="https://en.m.wikipedia.org/wiki/promissory_note" class="uri">https://en.m.wikipedia.org/wiki/promissory_note</a>. A 1926 promissory note from the Imperial Bank of India</figcaption>
 </figure>
 <aside style="font-style:italic; color:blue; float:right" align="center">
-In China during the Han Dynasty promissory notes appeared in 118 BC and
-were made of leather.[14] The Romans may have used promissory notes in
-57 AD as a durable lightweight substance as evidence of a promise in
-that time have been found in London <a
-href="https://en.m.wikipedia.org/wiki/Promissory_note"><em>… read more
-at wikipedia</em></a>
+In China during the Han Dynasty promissory notes appeared in 118 BC and were made of leather.[14] The Romans may have used promissory notes in 57 AD as a durable lightweight substance as evidence of a promise in that time have been found in London <a href="https://en.m.wikipedia.org/wiki/Promissory_note"><em>… read more at wikipedia</em></a>
 </aside>
 <h2 id="how-does-it-work">How does it work?</h2>
 <p>Consider the following situation.</p>
 <blockquote>
-<p>Meet Chris. He is your loan officer. The bank where he works is
-willing to loan you money so you can purchase a building for your
-growing business. Of course, Chris won’t just hand you the RM500,000 in
-cash you need to purchase the building. That would be foolish, for how
-would Chris know that he would get that borrowed money back from
-you?<br />
-What Chris does is to write up a promissory note for you. This note is a
-promise of payment. Once you sign this note, you agree to pay back the
-money along with any additional fees involved by a specific date.</p>
+<p>Meet Chris. He is your loan officer. The bank where he works is willing to loan you money so you can purchase a building for your growing business. Of course, Chris won’t just hand you the RM500,000 in cash you need to purchase the building. That would be foolish, for how would Chris know that he would get that borrowed money back from you?<br />
+What Chris does is to write up a promissory note for you. This note is a promise of payment. Once you sign this note, you agree to pay back the money along with any additional fees involved by a specific date.</p>
 </blockquote>
 <h3 id="terms">Terms</h3>
-<p>This promissory note that Chris has you sign is not just a sticky
-note saying that you will pay back the RM500,000 at some time in the
-future. This note goes into detail. It contains the terms or conditions
-that you will follow to pay back this large amount. It includes the
-interest rate that the bank charges you for borrowing money. This is how
-the bank makes money off of this transaction. It also includes the
-payment’s terms, such as when you are going to make payments and when
-the final payment will be made and the loan fully paid off.</p>
-<p>In exchange for this loan, the bank also will keep the deed of
-ownership to the building until your loan is paid off. This is also
-specified in the promissory note. Once your loan is paid off, then the
-bank will give you the deed of ownership. But until then, the bank owns
-the building. This provides the bank with security in case you end up
-not paying them back.</p>
+<p>This promissory note that Chris has you sign is not just a sticky note saying that you will pay back the RM500,000 at some time in the future. This note goes into detail. It contains the terms or conditions that you will follow to pay back this large amount. It includes the interest rate that the bank charges you for borrowing money. This is how the bank makes money off of this transaction. It also includes the payment’s terms, such as when you are going to make payments and when the final payment will be made and the loan fully paid off.</p>
+<p>In exchange for this loan, the bank also will keep the deed of ownership to the building until your loan is paid off. This is also specified in the promissory note. Once your loan is paid off, then the bank will give you the deed of ownership. But until then, the bank owns the building. This provides the bank with security in case you end up not paying them back.</p>
 <p>You might see your promissory note written like this:</p>
 <ul>
 <li>Amount: RM500,000<br />
@@ -2416,84 +2411,54 @@ not paying them back.</p>
 </li>
 <li>Payoff Date: 30 years from today</li>
 </ul>
-<p>This promissory note is telling you that you have 30 years to pay off
-this loan. If you make a payment of RM2,684.11 every month for 30 years,
-you will have paid off your loan at the end of 30 years. This amount
-includes the annual interest rate of five percent.</p>
+<p>This promissory note is telling you that you have 30 years to pay off this loan. If you make a payment of RM2,684.11 every month for 30 years, you will have paid off your loan at the end of 30 years. This amount includes the annual interest rate of five percent.</p>
 <h2 id="features-of-promissory-note">Features of Promissory Note</h2>
-<p>When writing a promissory note, the following items has to be
-considered:</p>
+<p>When writing a promissory note, the following items has to be considered:</p>
 <ul>
 <li>Maker : The name of person that sign the note (debtor)<br />
 </li>
 <li>Payee : The name of person that receive the note (creditor)<br />
 </li>
-<li>Face Value : The amount stated on the note or the amount
-borrowed<br />
+<li>Face Value : The amount stated on the note or the amount borrowed<br />
 </li>
 <li>Date Issue : The date of the note is signed<br />
 </li>
-<li>Time (Term) : The length of period (must have if maturity date not
-stated)<br />
+<li>Time (Term) : The length of period (must have if maturity date not stated)<br />
 </li>
-<li>Interest rate : the rate charge for interest bearing note (simple
-interest)<br />
+<li>Interest rate : the rate charge for interest bearing note (simple interest)<br />
 </li>
 <li>Maturity Date : The date the debt must be paid (optional)<br />
 </li>
-<li>Maturity Value : The amount has to be paid including interest
-(optional)</li>
+<li>Maturity Value : The amount has to be paid including interest (optional)</li>
 </ul>
 <p>As illustration of the above features, see the picture below:</p>
 <figure>
-<img src="images/bd_pn/note2.png"
-alt="Source: https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html" />
-<figcaption aria-hidden="true">Source: <a
-href="https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html"
-class="uri">https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html</a></figcaption>
+<img src="images/bd_pn/note2.png" alt="Source: https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html" />
+<figcaption aria-hidden="true">Source: <a href="https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html" class="uri">https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html</a></figcaption>
 </figure>
-<p><font color="blue">How to find the maturity value for interest
-bearing note?</font></p>
-<p>In most situation, for an interest bearing note, the maturity value
-is not stated on the note. For this situation, the maturity value can be
-calculated using the simple interest amount formula, i.e.,</p>
+<p><font color="blue">How to find the maturity value for interest bearing note?</font></p>
+<p>In most situation, for an interest bearing note, the maturity value is not stated on the note. For this situation, the maturity value can be calculated using the simple interest amount formula, i.e.,</p>
 <p><span class="math display">\[
 S\ =\ P(1\ +\ rt)
 \]</span></p>
-<p><strong>Note:</strong> only simple interest using Banker’s Rule will
-be used in this lesson.</p>
+<p><strong>Note:</strong> only simple interest using Banker’s Rule will be used in this lesson.</p>
 <h2 id="bank-discount">Bank Discount</h2>
-<p>It is a common practice by the bank to deduct charges from a loan in
-advance. This charges is called bank discount. Note that in bank
-discount it is different from the case of simple interest. In simple
-interest, the amount of maturity value is more than the amount borrowed.
-In addition, normally in the beginning you have an amount that
-eventually will be more after certain time period, such that the present
-value is lower than the future value. However, in bank discount it is
-the other way around. Thus, in bank discount, the amount borrowed is
-actually the maturity value, not the principal or the present value.</p>
-<p>Consider a scenario where you borrow RM10,000 for 6 months from a
-bank that charged you a bank discount at a rate of 5% per annum. In this
-case, 5% of RM10,000 is RM500. So, the bank will deduct RM500 from the
-amount of loan RM10,000 in advance. Hence, you will only received
-RM9,500 from the loan you made with the bank.</p>
+<p>It is a common practice by the bank to deduct charges from a loan in advance. This charges is called bank discount. Note that in bank discount it is different from the case of simple interest. In simple interest, the amount of maturity value is more than the amount borrowed. In addition, normally in the beginning you have an amount that eventually will be more after certain time period, such that the present value is lower than the future value. However, in bank discount it is the other way around. Thus, in bank discount, the amount borrowed is actually the maturity value, not the principal or the present value.</p>
+<p>Consider a scenario where you borrow RM10,000 for 6 months from a bank that charged you a bank discount at a rate of 5% per annum. In this case, 5% of RM10,000 is RM500. So, the bank will deduct RM500 from the amount of loan RM10,000 in advance. Hence, you will only received RM9,500 from the loan you made with the bank.</p>
 <p>Thus,</p>
 <ul>
-<li>The money that the bank deduct in advanced is called <strong>Bank
-Discount</strong> - D = RM500<br />
+<li>The money that the bank deduct in advanced is called <strong>Bank Discount</strong> - D = RM500<br />
 </li>
-<li>The money left receives by the borrower is called
-<strong>Proceeds</strong> - Proceeds = RM9,500<br />
+<li>The money left receives by the borrower is called <strong>Proceeds</strong> - Proceeds = RM9,500<br />
 </li>
-<li>The <strong>maturity value</strong> is the value of the money
-actually borrowed - S = RM10,000</li>
+<li>The <strong>maturity value</strong> is the value of the money actually borrowed - S = RM10,000</li>
 </ul>
 So,<br />
+
 <center>
 <em>Maturity value = Proceeds + Bank Discount</em>
 </center>
-<p>To calculate the Bank Discount and Proceeds, we will use the
-following formula:</p>
+<p>To calculate the Bank Discount and Proceeds, we will use the following formula:</p>
 <p><span class="math display">\[
 \begin{aligned}
 D\ &amp;=\ Sdt \\
@@ -2506,40 +2471,28 @@ where,\ D\ &amp;=\ Bank\ discount \\
 <p>and,<br />
 <span class="math display">\[
 \begin{aligned}
-Proceeds,\ H\ &amp;=\ Maturity\ value\ –\ Bank\
-discount\\                              
+Proceeds,\ H\ &amp;=\ Maturity\ value\ –\ Bank\ discount\\                              
              H\ &amp;=\ S\ –\ D\\
              H\ &amp;=\ S\ –\ Sdt\\
              H\ &amp;=\ S( 1 -  dt)\\
 \end{aligned}
 \]</span></p>
-<p>Sometimes, bank charged for their service with simple interest rate
-in mind. So, they will find the <font color="blue"><em>equivalent
-discount (service charge) rate</em></font> to the intended simple
-interest rate that they want to obtain. Below are the two formulas that
-can be used to calculate these rates.</p>
+<p>Sometimes, bank charged for their service with simple interest rate in mind. So, they will find the <font color="blue"><em>equivalent discount (service charge) rate</em></font> to the intended simple interest rate that they want to obtain. Below are the two formulas that can be used to calculate these rates.</p>
 <p><span class="math display">\[
-r\ =\ \frac{d}{1\ -\ dt}\ \ \ \ \ \ \ \ and\ \ \ \ \ \ \ \ d\ =\
-\frac{r}{1\ +\ rt}
+r\ =\ \frac{d}{1\ -\ dt}\ \ \ \ \ \ \ \ and\ \ \ \ \ \ \ \ d\ =\ \frac{r}{1\ +\ rt}
 \]</span></p>
 <h2 id="practice-questions">Practice Questions</h2>
 <p><em>Question 1</em><br />
-Farid owned a note dated 9 Aug 2001 without interest for RM676. He
-discounted the note at 6% and received proceeds of RM670.37. When was
-the maturity date of the note if the note was discounted on 14 Sept
-2001?</p>
+Farid owned a note dated 9 Aug 2001 without interest for RM676. He discounted the note at 6% and received proceeds of RM670.37. When was the maturity date of the note if the note was discounted on 14 Sept 2001?</p>
 <aside>
 <strong>Ans: 3 Nov 2001</strong>
 </aside>
 <hr />
 <p><em>Question 2</em><br />
-Abu received a 180 day promissory note worth RM4500 at 8.5% simple
-interest on 14th August 1999 from Sahara. However, on 24th November 1999
-Abu sold the note to a bank at the discount rate of 7.5%.<br />
+Abu received a 180 day promissory note worth RM4500 at 8.5% simple interest on 14th August 1999 from Sahara. However, on 24th November 1999 Abu sold the note to a bank at the discount rate of 7.5%.<br />
 i. Find the discount term.<br />
 ii. Find the proceeds.<br />
-iii. Find the equivalent simple interest rate that is charged by the
-bank.</p>
+iii. Find the equivalent simple interest rate that is charged by the bank.</p>
 <aside>
 <strong>Answers:</strong><br />
 i. <strong>78 days</strong><br />
@@ -2548,21 +2501,15 @@ iii. <strong>7.62%</strong>
 </aside>
 <hr />
 <p><em>Question 3</em><br />
-Ann received a 100 day promissory note with simple interest of 8%. The
-maturity date of the note was on 5th December 1997. On 1st October 1997,
-Ann discounted the note to a bank with a discount rate of 10% and
-received proceeds of RM8012. Find the face value of the note.</p>
+Ann received a 100 day promissory note with simple interest of 8%. The maturity date of the note was on 5th December 1997. On 1st October 1997, Ann discounted the note to a bank with a discount rate of 10% and received proceeds of RM8012. Find the face value of the note.</p>
 <aside>
 <strong>Answer: RM7981.94</strong>
 </aside>
 <hr />
 <p><em>Question 4</em><br />
-A promissory note dated 5th July 1998 was discounted 30 days before
-maturity at a discount rate of 6%. The proceeds obtained was
-RM2487.50.<br />
+A promissory note dated 5th July 1998 was discounted 30 days before maturity at a discount rate of 6%. The proceeds obtained was RM2487.50.<br />
 i. Find the maturity value of the note.<br />
-ii. If the note was kept for 10 days after 5th July 1998, when was the
-discount date?<br />
+ii. If the note was kept for 10 days after 5th July 1998, when was the discount date?<br />
 iii. Find the term of the note.<br />
 iv. Find the face value of the note if the interest rate is 6.5%.</p>
 <aside>
@@ -2574,81 +2521,50 @@ iv. Find the face value of the note if the interest rate is 6.5%.</p>
 </aside>
 <hr />
 <p><em>Question 5</em><br />
-On 16 March 2009, Samy received a 120-day promissory note with simple
-interest rate of 11% per annum. On 12 May 2009, he discounted the note
-at a discount rate of 10% and received proceeds of RM2,978.86. Find
-the:<br />
+On 16 March 2009, Samy received a 120-day promissory note with simple interest rate of 11% per annum. On 12 May 2009, he discounted the note at a discount rate of 10% and received proceeds of RM2,978.86. Find the:<br />
 i. maturity date <strong>(14th July 2009)</strong><br />
 ii. maturity value <strong>(RM3031.92)</strong><br />
 iii. value of bank discount <strong>(RM53.06)</strong><br />
 iv. face value. <strong>(RM2924.68)</strong></p>
 <hr />
 <p><em>Question 6</em><br />
-Fahrin received a 100-day promissory note on 17th June 2008 with simple
-interest rate of 5% per annum. After 40 days, he discounted the note at
-a discount rate of 3% and received proceeds of RM12,188.75. Find:<br />
+Fahrin received a 100-day promissory note on 17th June 2008 with simple interest rate of 5% per annum. After 40 days, he discounted the note at a discount rate of 3% and received proceeds of RM12,188.75. Find:<br />
 i. the maturity date. <strong>(25th September 2008)</strong><br />
 ii. the maturity value. <strong>(RM12250)</strong><br />
 iii. the face value. <strong>(RM12082.19)</strong><br />
-iv. the amount of interest received by Fahrin.
-<strong>(RM106.56)</strong></p>
+iv. the amount of interest received by Fahrin. <strong>(RM106.56)</strong></p>
 <hr />
 <p><em>Question 7</em><br />
-A 5-month promissory note with an interest rate of 10% would mature on
-25th September 2008 with a maturity value of RM4200. The note was
-discounted 2 months before the maturity date and the proceeds received
-was RM4151. Find:<br />
+A 5-month promissory note with an interest rate of 10% would mature on 25th September 2008 with a maturity value of RM4200. The note was discounted 2 months before the maturity date and the proceeds received was RM4151. Find:<br />
 i. the face value. <strong>(RM4032)</strong><br />
 ii. the discount amount charged. <strong>(RM49)</strong><br />
 iii. the discount rate charged. <strong>(7%)</strong><br />
-iv. the simple interest rate that is equivalent to the discount rate in
-(iii). <strong>(7.08%)</strong></p>
+iv. the simple interest rate that is equivalent to the discount rate in (iii). <strong>(7.08%)</strong></p>
 <hr />
 <p><em>Question 8</em><br />
-Aznil received a 150-day promissory note with a face value of RM10,000
-dated 5 January 2007. The maturity value was RM10,375. He later
-discounted the note on 30 April 2007 at a discount rate of 7.6%.
-Find:<br />
+Aznil received a 150-day promissory note with a face value of RM10,000 dated 5 January 2007. The maturity value was RM10,375. He later discounted the note on 30 April 2007 at a discount rate of 7.6%. Find:<br />
 i. the maturity date of the note. <strong>(4th June 2007)</strong><br />
 ii. the interest rate of the note. <strong>(9%)</strong><br />
 iii. the proceeds received. <strong>(RM10298.34)</strong></p>
 <hr />
 <p><em>Question 9</em><br />
-Manja Enterprise received a 5-month promissory note valued at RM10000
-with an interest rate of X%. The note matures on 6 October 2007 with a
-maturity value of RM 10237.50. On 11th August 2007 Manja Enterprise
-discounted the note at a bank at the rate of 7%. Find:<br />
+Manja Enterprise received a 5-month promissory note valued at RM10000 with an interest rate of X%. The note matures on 6 October 2007 with a maturity value of RM 10237.50. On 11th August 2007 Manja Enterprise discounted the note at a bank at the rate of 7%. Find:<br />
 i. the date of the note <strong>(6th May 2007) </strong><br />
 ii. the interest rate X% <strong>(5.7%)</strong><br />
 iii. the discount term <strong>(56 days)</strong><br />
 iv. the proceeds received. <strong>(RM10126.03)</strong></p>
 <hr />
 <p><em>Question 10</em><br />
-Ziman received a 100-day promissory note for RM5,000 dated 10th
-September 2005.The simple interest charged was 6.5%. He later discounted
-the note on 30th October 2005 and received proceeds of RM5030.19.
-Find:<br />
-i. the maturity date of the note <strong>(19th December
-2005)</strong><br />
+Ziman received a 100-day promissory note for RM5,000 dated 10th September 2005.The simple interest charged was 6.5%. He later discounted the note on 30th October 2005 and received proceeds of RM5030.19. Find:<br />
+i. the maturity date of the note <strong>(19th December 2005)</strong><br />
 ii. the maturity value of the note <strong>(RM5090.28)</strong><br />
 iii. the discount rate. <strong>(8.50%)</strong></p>
 <h2 class="appendix" id="acknowledgments">Acknowledgments</h2>
-<p>Some of the notes above are taken from online course <a
-href="https://study.com/academy/course/business-math.html">Business 110:
-Math Class from Study.com</a></p>
-<p>Promissory Note: Terms &amp; Calculations. (2015, January 3).
-Retrieved from <a
-href="https://study.com/academy/lesson/promissory-note-terms-calculations.html"
-class="uri">https://study.com/academy/lesson/promissory-note-terms-calculations.html</a>.</p>
-<p>A 1926 promissory note from the Imperial Bank of India, Rangoon,
-Burma for 20,000 rupees plus interest. Retrieved from <a
-href="https://en.m.wikipedia.org/wiki/promissory_note"
-class="uri">https://en.m.wikipedia.org/wiki/promissory_note</a>.</p>
-<p>News-and-Views Promissory Note ; The Detail. Retrieved from <a
-href="https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html"
-class="uri">https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html</a>.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Some of the notes above are taken from online course <a href="https://study.com/academy/course/business-math.html">Business 110: Math Class from Study.com</a></p>
+<p>Promissory Note: Terms &amp; Calculations. (2015, January 3). Retrieved from <a href="https://study.com/academy/lesson/promissory-note-terms-calculations.html" class="uri">https://study.com/academy/lesson/promissory-note-terms-calculations.html</a>.</p>
+<p>A 1926 promissory note from the Imperial Bank of India, Rangoon, Burma for 20,000 rupees plus interest. Retrieved from <a href="https://en.m.wikipedia.org/wiki/promissory_note" class="uri">https://en.m.wikipedia.org/wiki/promissory_note</a>.</p>
+<p>News-and-Views Promissory Note ; The Detail. Retrieved from <a href="https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html" class="uri">https://nazarsudhakar.blogspot.com/2014/02/promissory-note-details.html</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

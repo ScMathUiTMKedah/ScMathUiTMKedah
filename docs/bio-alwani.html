@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -787,6 +788,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1028,10 +1030,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1863,15 +1861,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1883,6 +1887,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1982,6 +2011,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2004,7 +2035,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2043,7 +2074,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2193,16 +2224,12 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#a.-profil-pensyarah">A. Profil Pensyarah</a></li>
-<li><a href="#b.-kelayakan-akademik">B. Kelayakan Akademik</a></li>
-<li><a href="#c.-kursus-pengajaran">C. Kursus Pengajaran</a></li>
-<li><a href="#d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
-<li><a
-href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
-Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
-Kerja</a></li>
-<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
-Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
+<li><a href="#a.-profil-pensyarah" id="toc-a.-profil-pensyarah">A. Profil Pensyarah</a></li>
+<li><a href="#b.-kelayakan-akademik" id="toc-b.-kelayakan-akademik">B. Kelayakan Akademik</a></li>
+<li><a href="#c.-kursus-pengajaran" id="toc-c.-kursus-pengajaran">C. Kursus Pengajaran</a></li>
+<li><a href="#d.-pengalaman-kerja" id="toc-d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
+<li><a href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja" id="toc-e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</a></li>
+<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir" id="toc-f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
 </ul>
 </nav>
 </div>
@@ -2225,15 +2252,10 @@ a column separator --></p>
 <p><strong>SITI NUR ALWANI SALLEH (PhD)</strong><br />
 <em>Universiti Teknologi MARA<br />
 Kedah Branch Campus</em></p>
-<p>Siti Nur Alwani Salleh, is a senior lecturer at the Faculty of
-Computer Science and Mathematics, Universiti Teknologi MARA (UiTM),
-Kedah Branch Campus, Malaysia.</p>
-<p><strong>Total Cites:</strong> 167 , <strong>h Index:</strong> 6 ,
-<strong>i10 Index:</strong> 5</p>
+<p>Siti Nur Alwani Salleh, is a senior lecturer at the Faculty of Computer Science and Mathematics, Universiti Teknologi MARA (UiTM), Kedah Branch Campus, Malaysia.</p>
+<p><strong>Total Cites:</strong> 266 , <strong>h Index:</strong> 9 , <strong>i10 Index:</strong> 8</p>
 <center>
-<p><a
-href="https://scholar.google.com/citations?hl=en&amp;user=qVPi6kYAAAAJ"><img
-src="scholar_citations_5EiQMz0AAAAJ&amp;hl.png" width="350" /></a></p>
+<p><a href="https://scholar.google.com/citations?hl=en&amp;user=qVPi6kYAAAAJ"><img src="scholar_citations_5EiQMz0AAAAJ&amp;hl.png" width="350" /></a></p>
 </center>
 </div>
 </div>
@@ -2367,40 +2389,33 @@ src="scholar_citations_5EiQMz0AAAAJ&amp;hl.png" width="350" /></a></p>
 <tbody>
 <tr class="odd">
 <td style="text-align: center;">TUTOR UNIVERSITI</td>
-<td style="text-align: center;">JABATAN MATEMATIK, UNIVERSITI PUTRA
-MALAYSIA</td>
+<td style="text-align: center;">JABATAN MATEMATIK, UNIVERSITI PUTRA MALAYSIA</td>
 <td style="text-align: center;">2016-2020</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">GURU TUISYEN (DARJAH 1-6, TINGKATAN
-1-3)</td>
-<td style="text-align: center;">PUSAT TUISYEN MATHS POWER, PRESINT 16,
-PUTRAJAYA</td>
+<td style="text-align: center;">GURU TUISYEN (DARJAH 1-6, TINGKATAN 1-3)</td>
+<td style="text-align: center;">PUSAT TUISYEN MATHS POWER, PRESINT 16, PUTRAJAYA</td>
 <td style="text-align: center;">2017-2019</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">HOME TUTOR (TINGKATAN 4-5)</td>
-<td style="text-align: center;">PUSAT TUISYEN MATHS POWER, PRESINT 16,
-PUTRAJAYA</td>
+<td style="text-align: center;">PUSAT TUISYEN MATHS POWER, PRESINT 16, PUTRAJAYA</td>
 <td style="text-align: center;">2017-2018</td>
 </tr>
 </tbody>
 </table>
-<h3
-id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
-Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
-Kerja</h3>
+<h3 id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</h3>
 <h4 id="pembentangan-kertas-kerja">1. Pembentangan Kertas Kerja</h4>
 <ol type="1">
 <li></li>
 </ol>
 <h4 id="penyelidikan">2. Penyelidikan</h4>
-<table>
+<table style="width:97%;">
 <colgroup>
-<col style="width: 23%" />
-<col style="width: 33%" />
+<col style="width: 22%" />
+<col style="width: 32%" />
 <col style="width: 12%" />
-<col style="width: 30%" />
+<col style="width: 29%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -2440,11 +2455,7 @@ Kerja</h3>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin and
-Fadzilah Md Ali. Magnetic Field Effect on Nanofluid Flow and Heat
-Transfer past a Moving Horizontal Thin Needle with Stability Analysis.
-In Embracing Mathematical Diversity, 182-193 (2019). ISBN
-978-967-2395-08-9.</td>
+<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin and Fadzilah Md Ali. Magnetic Field Effect on Nanofluid Flow and Heat Transfer past a Moving Horizontal Thin Needle with Stability Analysis. In Embracing Mathematical Diversity, 182-193 (2019). ISBN 978-967-2395-08-9.</td>
 <td style="text-align: center;">Penulis</td>
 <td style="text-align: center;">UPM Press</td>
 <td style="text-align: center;">Selangor Malaysia</td>
@@ -2453,9 +2464,9 @@ In Embracing Mathematical Diversity, 182-193 (2019). ISBN
 </tbody>
 </table>
 <h5 id="ii.-artikelrencana">ii. Artikel/Rencana</h5>
-<table>
+<table style="width:99%;">
 <colgroup>
-<col style="width: 72%" />
+<col style="width: 71%" />
 <col style="width: 16%" />
 <col style="width: 2%" />
 <col style="width: 4%" />
@@ -2472,61 +2483,43 @@ In Embracing Mathematical Diversity, 182-193 (2019). ISBN
 </thead>
 <tbody>
 <tr class="odd">
-<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin, Fadzilah
-Md Ali and Ioan Pop. Stability Analysis of Mixed Convection Flow towards
-a Moving Thin Needle in Nanofluid. In Applied Sciences, 8:842 (2018),
-Q3. </td>
+<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin, Fadzilah Md Ali and Ioan Pop. Stability Analysis of Mixed Convection Flow towards a Moving Thin Needle in Nanofluid. In Applied Sciences, 8:842 (2018), Q3.</td>
 <td style="text-align: center;">Applied Sciences</td>
 <td style="text-align: center;">8</td>
 <td style="text-align: center;">MDPI</td>
 <td style="text-align: center;">2018</td>
 </tr>
 <tr class="even">
-<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin, Fadzilah
-Md Ali and Ioan Pop. Magnetohydrodynamics Flow past a Moving Vertical
-Thin Needle in a Nanofluid with Stability Analysis. In Energies, 11:3297
-(2018), Q2.</td>
+<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin, Fadzilah Md Ali and Ioan Pop. Magnetohydrodynamics Flow past a Moving Vertical Thin Needle in a Nanofluid with Stability Analysis. In Energies, 11:3297 (2018), Q2.</td>
 <td style="text-align: center;">Energies</td>
 <td style="text-align: center;">11</td>
 <td style="text-align: center;">MDPI</td>
 <td style="text-align: center;">2018</td>
 </tr>
 <tr class="odd">
-<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin and
-Fadzilah Md Ali. Numerical Analysis of Boundary Layer Flow adjacent to a
-Thin Needle in Nanofluid with the Presence of Heat Source and Chemical
-Reaction. In Symmetry, 11:543 (2019), Q2.</td>
+<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin and Fadzilah Md Ali. Numerical Analysis of Boundary Layer Flow adjacent to a Thin Needle in Nanofluid with the Presence of Heat Source and Chemical Reaction. In Symmetry, 11:543 (2019), Q2.</td>
 <td style="text-align: center;">Symmetry</td>
 <td style="text-align: center;">11</td>
 <td style="text-align: center;">MDPI</td>
 <td style="text-align: center;">2019</td>
 </tr>
 <tr class="even">
-<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin and
-Fadzilah Md Ali. Slip Effect on Mixed Convection Flow Past a Thin Needle
-in Nanofluid Using Buongiorno’s Model. In Journal of Advanced Research
-in Fluid Mechanics and Thermal Sciences, 59:243-253 (2019), Scopus.</td>
-<td style="text-align: center;">Journal of Advanced Research in Fluid
-Mechanics and Thermal Sciences</td>
+<td>Siti Nur Alwani Salleh, Norfifah Bachok, Norihan Md Arifin and Fadzilah Md Ali. Slip Effect on Mixed Convection Flow Past a Thin Needle in Nanofluid Using Buongiorno’s Model. In Journal of Advanced Research in Fluid Mechanics and Thermal Sciences, 59:243-253 (2019), Scopus.</td>
+<td style="text-align: center;">Journal of Advanced Research in Fluid Mechanics and Thermal
+Sciences</td>
 <td style="text-align: center;">59</td>
 <td style="text-align: center;">Akademia Baru</td>
 <td style="text-align: center;">2019</td>
 </tr>
 <tr class="odd">
-<td>Siti Nur Alwani Salleh, Norfifah Bachok, Fadzilah Md Ali and Norihan
-Md Arifin. Analysis of Heat and Mass Transfer for Second Order Slip Flow
-on a Thin Needle using a Two phase Nanofluid Model. In Symmetry, 12:1176
-(2020), Q2.</td>
+<td>Siti Nur Alwani Salleh, Norfifah Bachok, Fadzilah Md Ali and Norihan Md Arifin. Analysis of Heat and Mass Transfer for Second Order Slip Flow on a Thin Needle using a Two phase Nanofluid Model. In Symmetry, 12:1176 (2020), Q2.</td>
 <td style="text-align: center;">Symmetry</td>
 <td style="text-align: center;">12</td>
 <td style="text-align: center;">MDPI</td>
 <td style="text-align: center;">2020</td>
 </tr>
 <tr class="even">
-<td>Siti Nur Alwani Salleh, Norfifah Bachok, Fadzilah Md Ali and Norihan
-Md Arifin. Influence of Soret and Dufour on Forced Convection Flow
-towards a Moving Thin Needle considering Buongiorno’s Nanofluid Model.
-In Alexandria Engineering Journal, 59:3897- 3906 (2020), Q1.</td>
+<td>Siti Nur Alwani Salleh, Norfifah Bachok, Fadzilah Md Ali and Norihan Md Arifin. Influence of Soret and Dufour on Forced Convection Flow towards a Moving Thin Needle considering Buongiorno’s Nanofluid Model. In Alexandria Engineering Journal, 59:3897- 3906 (2020), Q1.</td>
 <td style="text-align: center;">Alexandria Engineering Journal</td>
 <td style="text-align: center;">59</td>
 <td style="text-align: center;">Elsevier</td>
@@ -2541,11 +2534,10 @@ In Alexandria Engineering Journal, 59:3897- 3906 (2020), Q1.</td>
 </tr>
 </tbody>
 </table>
-<h5 id="iii.-pembentangan-kertas-kerja">iii. Pembentangan Kertas
-Kerja</h5>
-<table>
+<h5 id="iii.-pembentangan-kertas-kerja">iii. Pembentangan Kertas Kerja</h5>
+<table style="width:99%;">
 <colgroup>
-<col style="width: 61%" />
+<col style="width: 60%" />
 <col style="width: 25%" />
 <col style="width: 7%" />
 <col style="width: 5%" />
@@ -2560,75 +2552,51 @@ Kerja</h5>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Stability Analysis of a Rotating Flow toward a Shrinking Permeable
-Surface in Nanofluid. Published in Malaysian Journal of Science,
-Scopus.</td>
-<td style="text-align: center;">3rd International Conference on
-Mathematical Sciences and Statistics (ICMSS2018)</td>
+<td>Stability Analysis of a Rotating Flow toward a Shrinking Permeable Surface in Nanofluid. Published in Malaysian Journal of Science, Scopus.</td>
+<td style="text-align: center;">3rd International Conference on Mathematical Sciences and Statistics (ICMSS2018)</td>
 <td style="text-align: center;">Le Meridien, Putrajaya</td>
 <td style="text-align: center;">2018</td>
 </tr>
 <tr class="even">
-<td>Stability Analysis of Solutions on Boundary Layer Flow Past a Moving
-Thin Needle in a Nanofluid with Slip Effect. Published in ASM Science
-Journal, Scopus.</td>
-<td style="text-align: center;">International Quantitative Research and
-Applications Conference 2018 (IQRAC2018)</td>
+<td>Stability Analysis of Solutions on Boundary Layer Flow Past a Moving Thin Needle in a Nanofluid with Slip Effect. Published in ASM Science Journal, Scopus.</td>
+<td style="text-align: center;">International Quantitative Research and Applications Conference 2018 (IQRAC2018)</td>
 <td style="text-align: center;">Kuching, Sarawak</td>
 <td style="text-align: center;">2018</td>
 </tr>
 <tr class="odd">
-<td>Effect of Buoyancy Force on the Flow and Heat Transfer around a Thin
-Needle in Al2O3-Cu Hybrid Nanofluid. Published in CFD Letters,
-Scopus.</td>
-<td style="text-align: center;">3rd International Symposium on Fluid
-Mechanics and Thermal Sciences (3rd IS-FMTS 2019)</td>
+<td>Effect of Buoyancy Force on the Flow and Heat Transfer around a Thin Needle in Al2O3-Cu Hybrid Nanofluid. Published in CFD Letters, Scopus.</td>
+<td style="text-align: center;">3rd International Symposium on Fluid Mechanics and Thermal Sciences (3rd IS-FMTS 2019)</td>
 <td style="text-align: center;">The Everly Putrajaya</td>
 <td style="text-align: center;">2019</td>
 </tr>
 <tr class="even">
-<td>Magnetic Field Effect on Nanofluid Flow and Heat Transfer past a
-Moving Horizontal Thin Needle with Stability Analysis. Published in
-Embracing Mathematical Diversity, Book Chapter, UPM Press.</td>
-<td style="text-align: center;">Seminar on Mathematical Sciences (SOMS
-2019)</td>
+<td>Magnetic Field Effect on Nanofluid Flow and Heat Transfer past a Moving Horizontal Thin Needle with Stability Analysis. Published in Embracing Mathematical Diversity, Book Chapter, UPM Press.</td>
+<td style="text-align: center;">Seminar on Mathematical Sciences (SOMS 2019)</td>
 <td style="text-align: center;">Pusat Asasi UPM</td>
 <td style="text-align: center;">2019</td>
 </tr>
 <tr class="odd">
-<td>Stability Analysis of Nanofluid Flow past a Moving Thin Needle
-subject to Convective Surface Boundary Conditions. Published in AIP
-Conference Proceedings, Scopus.</td>
-<td style="text-align: center;">International Conference on Mathematical
-Sciences and Technology 2018 (MathTech 2018)</td>
+<td>Stability Analysis of Nanofluid Flow past a Moving Thin Needle subject to Convective Surface Boundary Conditions. Published in AIP Conference Proceedings, Scopus.</td>
+<td style="text-align: center;">International Conference on Mathematical Sciences and Technology 2018 (MathTech 2018)</td>
 <td style="text-align: center;">Hotel Equatorial Penang</td>
 <td style="text-align: center;">2019</td>
 </tr>
 <tr class="even">
-<td>Numerical Study on Flow of a Hybrid Nanofluid due to a Vertical Thin
-Needle with Slip Effect. Published in AIP Conference Proceedings,
-Scopus.</td>
-<td style="text-align: center;">Recent Advances in Mathematical Sciences
-and its Applications (RAMSA-2020)</td>
+<td>Numerical Study on Flow of a Hybrid Nanofluid due to a Vertical Thin Needle with Slip Effect. Published in AIP Conference Proceedings, Scopus.</td>
+<td style="text-align: center;">Recent Advances in Mathematical Sciences and its Applications (RAMSA-2020)</td>
 <td style="text-align: center;">Noida, India</td>
 <td style="text-align: center;">2020</td>
 </tr>
 <tr class="odd">
-<td>Flow and Wall Heat Transfer due to a Continuously Moving Slender
-Needle in Hybrid Nanofluid with Stability Analysis. Published in Journal
-of Advanced Research in Fluid Mechanics and Thermal Sciences,
-Scopus.</td>
-<td style="text-align: center;">International Conference on Recent
-Advances in Applied Mathematics 2020 (ICRAAM2020)</td>
+<td>Flow and Wall Heat Transfer due to a Continuously Moving Slender Needle in Hybrid Nanofluid with Stability Analysis. Published in Journal of Advanced Research in Fluid Mechanics and Thermal Sciences, Scopus.</td>
+<td style="text-align: center;">International Conference on Recent Advances in Applied Mathematics 2020 (ICRAAM2020)</td>
 <td style="text-align: center;">Kuala Lumpur</td>
 <td style="text-align: center;">2020</td>
 </tr>
 </tbody>
 </table>
-<h3 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
-Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h3>
-<h4 id="jawatan-pentadbiran-akademik">1. Jawatan Pentadbiran /
-Akademik</h4>
+<h3 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h3>
+<h4 id="jawatan-pentadbiran-akademik">1. Jawatan Pentadbiran / Akademik</h4>
 <table>
 <thead>
 <tr class="header">
@@ -2645,13 +2613,12 @@ Akademik</h4>
 </tr>
 </tbody>
 </table>
-<h4 id="jawatankuasa-di-dalamdi-luar-uitm">2. Jawatankuasa Di Dalam/Di
-Luar UiTM</h4>
-<table style="width:100%;">
+<h4 id="jawatankuasa-di-dalamdi-luar-uitm">2. Jawatankuasa Di Dalam/Di Luar UiTM</h4>
+<table style="width:97%;">
 <colgroup>
-<col style="width: 27%" />
+<col style="width: 26%" />
 <col style="width: 24%" />
-<col style="width: 23%" />
+<col style="width: 22%" />
 <col style="width: 24%" />
 </colgroup>
 <thead>
@@ -2683,7 +2650,7 @@ Luar UiTM</h4>
 </tr>
 <tr class="even">
 <td style="text-align: center;">Unit POSTGRAD</td>
-<td style="text-align: center;">AJK </td>
+<td style="text-align: center;">AJK</td>
 <td style="text-align: center;">01/01/2021</td>
 <td style="text-align: center;">31/12/2021</td>
 </tr>
@@ -2701,8 +2668,7 @@ Luar UiTM</h4>
 </tr>
 </tbody>
 </table>
-<h4 id="sumbangan-profesionalmasyarakat">3. Sumbangan
-Profesional/Masyarakat</h4>
+<h4 id="sumbangan-profesionalmasyarakat">3. Sumbangan Profesional/Masyarakat</h4>
 <table>
 <colgroup>
 <col style="width: 47%" />
@@ -2727,14 +2693,13 @@ Profesional/Masyarakat</h4>
 </tr>
 </tbody>
 </table>
-<h4 id="keahlian-dalam-badan-profesional">4. Keahlian Dalam Badan
-Profesional</h4>
-<table style="width:100%;">
+<h4 id="keahlian-dalam-badan-profesional">4. Keahlian Dalam Badan Profesional</h4>
+<table style="width:97%;">
 <colgroup>
-<col style="width: 39%" />
+<col style="width: 38%" />
 <col style="width: 9%" />
-<col style="width: 14%" />
-<col style="width: 11%" />
+<col style="width: 13%" />
+<col style="width: 10%" />
 <col style="width: 11%" />
 <col style="width: 13%" />
 </colgroup>
@@ -2750,8 +2715,7 @@ Profesional</h4>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">Persatuan Sains Matematik Malaysia
-(PERSAMA)</td>
+<td style="text-align: center;">Persatuan Sains Matematik Malaysia (PERSAMA)</td>
 <td style="text-align: center;">SS2021-5</td>
 <td style="text-align: center;">Seumur Hidup</td>
 <td style="text-align: center;">Ahli Biasa</td>
@@ -2760,8 +2724,7 @@ Profesional</h4>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

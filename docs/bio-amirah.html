@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -787,6 +788,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1028,10 +1030,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1863,15 +1861,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1883,6 +1887,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1982,6 +2011,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2004,7 +2035,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2043,7 +2074,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2193,27 +2224,21 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#a.-profil-pensyarah">A. Profil Pensyarah</a></li>
-<li><a href="#b.-kelayakan-akademik">B. Kelayakan Akademik</a></li>
-<li><a href="#c.-kursus-pengajaran">C. Kursus Pengajaran</a>
+<li><a href="#a.-profil-pensyarah" id="toc-a.-profil-pensyarah">A. Profil Pensyarah</a></li>
+<li><a href="#b.-kelayakan-akademik" id="toc-b.-kelayakan-akademik">B. Kelayakan Akademik</a></li>
+<li><a href="#c.-kursus-pengajaran" id="toc-c.-kursus-pengajaran">C. Kursus Pengajaran</a>
 <ul>
-<li><a href="#kursus-yang-diajar">Kursus yang Diajar</a></li>
-<li><a href="#kursus-yang-boleh-diajar">Kursus yang boleh
-diajar</a></li>
+<li><a href="#kursus-yang-diajar" id="toc-kursus-yang-diajar">Kursus yang Diajar</a></li>
+<li><a href="#kursus-yang-boleh-diajar" id="toc-kursus-yang-boleh-diajar">Kursus yang boleh diajar</a></li>
 </ul></li>
-<li><a href="#d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
-<li><a
-href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
-Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
-Kerja</a>
+<li><a href="#d.-pengalaman-kerja" id="toc-d.-pengalaman-kerja">D. Pengalaman Kerja</a></li>
+<li><a href="#e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja" id="toc-e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</a>
 <ul>
-<li><a href="#pembentangan-kertas-kerja">1. Pembentangan Kertas
-Kerja</a></li>
-<li><a href="#penyelidikan">2. Penyelidikan</a></li>
-<li><a href="#penerbitan">3. Penerbitan</a></li>
+<li><a href="#pembentangan-kertas-kerja" id="toc-pembentangan-kertas-kerja">1. Pembentangan Kertas Kerja</a></li>
+<li><a href="#penyelidikan" id="toc-penyelidikan">2. Penyelidikan</a></li>
+<li><a href="#penerbitan" id="toc-penerbitan">3. Penerbitan</a></li>
 </ul></li>
-<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
-Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
+<li><a href="#f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir" id="toc-f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</a></li>
 </ul>
 </nav>
 </div>
@@ -2236,9 +2261,7 @@ a column separator --></p>
 <p><strong>Amirah Hazwani Abdul Rahim</strong><br />
 <em>Universiti Teknologi MARA<br />
 Kedah Branch Campus</em></p>
-<p>Amirah Hazwani Abdul Rahim, is a senior lecturer at the Faculty of
-Computer Science and Mathematics, Universiti Teknologi MARA (UiTM),
-Kedah Branch Campus, Malaysia.</p>
+<p>Amirah Hazwani Abdul Rahim, is a senior lecturer at the Faculty of Computer Science and Mathematics, Universiti Teknologi MARA (UiTM), Kedah Branch Campus, Malaysia.</p>
 </div>
 </div>
 <h2 id="a.-profil-pensyarah">A. Profil Pensyarah</h2>
@@ -2276,8 +2299,7 @@ Kedah Branch Campus, Malaysia.</p>
 <td style="text-align: center;">JUN 2010</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">BACHELOR OF SCIENCES (HONOURS)
-MATHEMATICS</td>
+<td style="text-align: center;">BACHELOR OF SCIENCES (HONOURS) MATHEMATICS</td>
 <td style="text-align: center;">UNIVERSITI PUTRA MALAYSIA</td>
 <td style="text-align: center;">2008</td>
 </tr>
@@ -2301,8 +2323,7 @@ MATHEMATICS</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">MAT111</td>
-<td style="text-align: center;">MATHEMATICS WITH BUSINESS
-APLICATION</td>
+<td style="text-align: center;">MATHEMATICS WITH BUSINESS APLICATION</td>
 <td style="text-align: center;">BA118</td>
 </tr>
 <tr class="odd">
@@ -2317,8 +2338,7 @@ APLICATION</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">STA404</td>
-<td style="text-align: center;">STATISTICAL METHOD FOR SOCIAL
-SCIENCES</td>
+<td style="text-align: center;">STATISTICAL METHOD FOR SOCIAL SCIENCES</td>
 <td style="text-align: center;">AM228 AC220</td>
 </tr>
 <tr class="even">
@@ -2379,30 +2399,21 @@ SCIENCES</td>
 </table>
 <p><br />
 </p>
-<h2
-id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E.
-Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas
-Kerja</h2>
+<h2 id="e.-aktiviti-penyelidikan-penulisan-pengkaryaan-pembentangan-kertas-kerja">E. Aktiviti Penyelidikan / Penulisan / Pengkaryaan / Pembentangan Kertas Kerja</h2>
 <h3 id="pembentangan-kertas-kerja">1. Pembentangan Kertas Kerja</h3>
 <ol type="1">
-<li><p>THE EFFECT OF DIFFERENT SAMPLING METHODS ON IMBALANCED DATASET IN
-BANRUPTCY PREDICTION MODEL</p></li>
-<li><p>COMPARISON ANALYSIS : LARGE DATA CLASSIFICATION USING PLS-DA AND
-DECISION TREES</p></li>
-<li><p>SMOTE APPROACH TO IMBALANCED DATASET IN LOGISTIC REGRESSION
-ANALYSIS</p></li>
-<li><p>POCKET LEARNING : CENTRAL TENDENCY AND COEFFICIENT OF VARIATION
-SNAPSHOT</p></li>
-<li><p>STUDENTS’ PERCEPTION ON STATISTICS ONLINE ASSESSMENT:
-eSTA404</p></li>
-<li><p>PARTIAL LEAST SQUARES BASED FINANCIAL DISTRESS CLASSIFYING MODEL
-OF SMALL CONSTRUCTION FIRMS</p></li>
+<li><p>THE EFFECT OF DIFFERENT SAMPLING METHODS ON IMBALANCED DATASET IN BANRUPTCY PREDICTION MODEL</p></li>
+<li><p>COMPARISON ANALYSIS : LARGE DATA CLASSIFICATION USING PLS-DA AND DECISION TREES</p></li>
+<li><p>SMOTE APPROACH TO IMBALANCED DATASET IN LOGISTIC REGRESSION ANALYSIS</p></li>
+<li><p>POCKET LEARNING : CENTRAL TENDENCY AND COEFFICIENT OF VARIATION SNAPSHOT</p></li>
+<li><p>STUDENTS’ PERCEPTION ON STATISTICS ONLINE ASSESSMENT: eSTA404</p></li>
+<li><p>PARTIAL LEAST SQUARES BASED FINANCIAL DISTRESS CLASSIFYING MODEL OF SMALL CONSTRUCTION FIRMS</p></li>
 </ol>
 <h3 id="penyelidikan">2. Penyelidikan</h3>
-<table>
+<table style="width:99%;">
 <colgroup>
-<col style="width: 67%" />
-<col style="width: 14%" />
+<col style="width: 66%" />
+<col style="width: 13%" />
 <col style="width: 5%" />
 <col style="width: 13%" />
 </colgroup>
@@ -2416,30 +2427,25 @@ OF SMALL CONSTRUCTION FIRMS</p></li>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">Excellend Fund - Partial Least Squares
-Based Financial Distressed Classifying Model of Small Construction
-Firms</td>
+<td style="text-align: center;">Excellend Fund - Partial Least Squares Based Financial Distressed Classifying Model of Small Construction Firms</td>
 <td style="text-align: center;">RM5,000</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">2013-2014</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">Partial Least Squares Based Bankruptcy
-Classification Model of Malaysian Small Firms</td>
+<td style="text-align: center;">Partial Least Squares Based Bankruptcy Classification Model of Malaysian Small Firms</td>
 <td style="text-align: center;">RM54,590</td>
 <td style="text-align: center;">RAGS</td>
 <td style="text-align: center;">2013-2015</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">Performance of Bankruptcy Prediction
-Model on Imbalanced Dataset</td>
+<td style="text-align: center;">Performance of Bankruptcy Prediction Model on Imbalanced Dataset</td>
 <td style="text-align: center;">RM1,000</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">2017-2018</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">Belief Function Level of Evidence As A
-Novel Measure of Distance To Default</td>
+<td style="text-align: center;">Belief Function Level of Evidence As A Novel Measure of Distance To Default</td>
 <td style="text-align: center;">RM80,630</td>
 <td style="text-align: center;">FRGS</td>
 <td style="text-align: center;">1/9/2019 - 30/5/2023</td>
@@ -2448,8 +2454,7 @@ Novel Measure of Distance To Default</td>
 </table>
 <h3 id="penerbitan">3. Penerbitan</h3>
 <ol type="i">
-<li>Judul Buku/Bab Peranan Penerbit Negara/Negeri Penerbit Tarikh
-Diterbit</li>
+<li>Judul Buku/Bab Peranan Penerbit Negara/Negeri Penerbit Tarikh Diterbit</li>
 </ol>
 <!-- -->
 <ol type="1">
@@ -2460,8 +2465,7 @@ Diterbit</li>
 <ol start="2" type="i">
 <li>Artikel/Rencana</li>
 </ol>
-<p>Tajuk Artikel/Rencana Nama Jurnal/Majalah Jid/Bil Penerbit Tarikh
-Diterbit</p>
+<p>Tajuk Artikel/Rencana Nama Jurnal/Majalah Jid/Bil Penerbit Tarikh Diterbit</p>
 <ol type="1">
 <li></li>
 <li></li>
@@ -2474,8 +2478,7 @@ Diterbit</p>
 <ol type="1">
 <li></li>
 </ol>
-<h2 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F.
-Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h2>
+<h2 id="f.-aktiviti-pentadbiran-dalam-tempoh-3-tahun-terakhir">F. Aktiviti Pentadbiran (dalam tempoh 3 tahun terakhir)</h2>
 <p>Nama Jawatan Tarikh<br />
 Dari Hingga<br />
 1</p>
@@ -2527,12 +2530,10 @@ Dari Hingga<br />
 <ol start="4" type="1">
 <li>Keahlian Dalam Badan Profesional</li>
 </ol>
-<p>Nama Badan Profesional/Kebajikan No. Ahli Jenis Keahlian Peranan
-Tarikh<br />
+<p>Nama Badan Profesional/Kebajikan No. Ahli Jenis Keahlian Peranan Tarikh<br />
 Dari Hingga<br />
 1.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

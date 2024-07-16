@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,12 +2223,12 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#learning-videos">Learning Videos</a></li>
-<li><a href="#mathematics-of-retailing">Mathematics of Retailing</a>
+<li><a href="#learning-videos" id="toc-learning-videos">Learning Videos</a></li>
+<li><a href="#mathematics-of-retailing" id="toc-mathematics-of-retailing">Mathematics of Retailing</a>
 <ul>
-<li><a href="#markup">Markup</a></li>
-<li><a href="#markdown">Markdown</a></li>
-<li><a href="#acknowledgments">Acknowledgments</a></li>
+<li><a href="#markup" id="toc-markup">Markup</a></li>
+<li><a href="#markdown" id="toc-markdown">Markdown</a></li>
+<li><a href="#acknowledgments" id="toc-acknowledgments">Acknowledgments</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -2221,29 +2252,29 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/mr/Slide1.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide2.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide3.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide4.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide5.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide6.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide7.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide8.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide9.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide10.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide11.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide12.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide13.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide14.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide15.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide16.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide17.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide18.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide19.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide20.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide21.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide22.PNG" style="width:100%">
-<img class="mySlides" src="images/mr/Slide23.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/mr/Slide1.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide2.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide3.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide4.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide5.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide6.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide7.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide8.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide9.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide10.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide11.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide12.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide13.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide14.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide15.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide16.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide17.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide18.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide19.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide20.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide21.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide22.png" style="width:100%">
+<img class="mySlides" src="images/mr/Slide23.png" style="width:100%"></p>
 </div>
 <div class="w3-center">
 <p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
@@ -2321,10 +2352,8 @@ function showDivs(n) {
 </thead>
 <tbody>
 <tr class="odd">
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/KRYatZS5e1w" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/ikUaaHKOXVo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/KRYatZS5e1w" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/ikUaaHKOXVo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
 </tr>
 </tbody>
 </table>
@@ -2343,12 +2372,9 @@ style="text-align: center;"><iframe width="150" height="150" src="https://www.yo
 </thead>
 <tbody>
 <tr class="odd">
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/PCLWUgRgXOo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/OgGJaANh1e0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/5FQOZk50E2Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/PCLWUgRgXOo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/OgGJaANh1e0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/5FQOZk50E2Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
 </tr>
 </tbody>
 </table>
@@ -2365,69 +2391,29 @@ style="text-align: center;"><iframe width="150" height="150" src="https://www.yo
 </thead>
 <tbody>
 <tr class="odd">
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/cfNk6aV2kdQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
-<td
-style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/vupDwSIC3Yc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/cfNk6aV2kdQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
+<td style="text-align: center;"><iframe width="150" height="150" src="https://www.youtube.com/embed/vupDwSIC3Yc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></td>
 </tr>
 </tbody>
 </table>
 <h1 id="mathematics-of-retailing">Mathematics of Retailing</h1>
 <blockquote>
-<p><strong>A T-Shirt Business</strong> Shalon has a t-shirt business
-where she sells her own line of designer shirts. She is in it for the
-money. But in order to make money from selling her t-shirts, she needs
-to make sure her prices are at the right price point both in terms of
-making money and giving her customers a good deal. What she needs to
-balance is her markup, how much to increase her prices, and her
-markdown, how much to decrease prices.</p>
+<p><strong>A T-Shirt Business</strong>
+Shalon has a t-shirt business where she sells her own line of designer shirts. She is in it for the money. But in order to make money from selling her t-shirts, she needs to make sure her prices are at the right price point both in terms of making money and giving her customers a good deal. What she needs to balance is her markup, how much to increase her prices, and her markdown, how much to decrease prices.</p>
 </blockquote>
 <h2 id="markup">Markup</h2>
-<p>To calculate her markup, Shalon needs to take into consideration
-things like the cost of her time spent designing the shirts, the cost to
-manufacture the shirt, and the cost of keeping the store open. After all
-these costs are calculated, then she needs to figure out how much more
-she needs to add so she can make a good living from her t-shirt
-business.</p>
-<p>Say, for instance, after considering all the factors we mentioned,
-that the total cost to make each shirt for Shalon is RM10. Of course,
-Shalon wants to make a profit from selling each shirt, so she marks up
-her shirt price to RM30. How much of a markup is this? Let’s calculate
-it. RM30 is RM20 more than RM10. So dividing RM20 by RM10, we get 20/10
-= 2. Changing this into a percentage, we see that Shalon has a markup of
-200%.</p>
-<p>Shalon wants to make sure she is competitive with other t-shirt
-businesses in town, so she does some investigating of her own. She
-visits another shop and she finds that this shop has a markup of 100%.
-If the manufacturing cost of the product is RM10, how much is this shop
-selling the shirts for?</p>
-<p>We can calculate this by multiplying the RM10 with the 100% to find
-how much our increase is. Changing the 100% to a decimal, we get 1 for
-our decimal. Multiplying the 10 with the 1, we find that this shop has
-increased their prices by RM10 per shirt. So the shirts here cost RM10 +
-RM10 = RM20.</p>
-<p>Hmm, Shalon is thinking that her prices might be a bit steep for the
-customers in the neighborhood based on her investigations.</p>
+<p>To calculate her markup, Shalon needs to take into consideration things like the cost of her time spent designing the shirts, the cost to manufacture the shirt, and the cost of keeping the store open. After all these costs are calculated, then she needs to figure out how much more she needs to add so she can make a good living from her t-shirt business.</p>
+<p>Say, for instance, after considering all the factors we mentioned, that the total cost to make each shirt for Shalon is RM10. Of course, Shalon wants to make a profit from selling each shirt, so she marks up her shirt price to RM30. How much of a markup is this? Let’s calculate it. RM30 is RM20 more than RM10. So dividing RM20 by RM10, we get 20/10 = 2. Changing this into a percentage, we see that Shalon has a markup of 200%.</p>
+<p>Shalon wants to make sure she is competitive with other t-shirt businesses in town, so she does some investigating of her own. She visits another shop and she finds that this shop has a markup of 100%. If the manufacturing cost of the product is RM10, how much is this shop selling the shirts for?</p>
+<p>We can calculate this by multiplying the RM10 with the 100% to find how much our increase is. Changing the 100% to a decimal, we get 1 for our decimal. Multiplying the 10 with the 1, we find that this shop has increased their prices by RM10 per shirt. So the shirts here cost RM10 + RM10 = RM20.</p>
+<p>Hmm, Shalon is thinking that her prices might be a bit steep for the customers in the neighborhood based on her investigations.</p>
 <h2 id="markdown">Markdown</h2>
-<p>Now she is considering how much to mark down her prices. Her starting
-price is RM30. If she wants to decrease her prices to RM20, how much of
-a markdown does she need? To calculate this, we first see how much of a
-difference we have. We have a difference of RM30 - RM20 = RM10. So, the
-markdown is RM10/RM30 = 0.3333 or roughly 33%.</p>
-<p>Shalon can do this two ways. She can either offer a 33% off coupon to
-all her customers or she can decrease her prices without offering
-coupons. Even if she sells a shirt for RM20, she is still making
-profit.</p>
+<p>Now she is considering how much to mark down her prices. Her starting price is RM30. If she wants to decrease her prices to RM20, how much of a markdown does she need? To calculate this, we first see how much of a difference we have. We have a difference of RM30 - RM20 = RM10. So, the markdown is RM10/RM30 = 0.3333 or roughly 33%.</p>
+<p>Shalon can do this two ways. She can either offer a 33% off coupon to all her customers or she can decrease her prices without offering coupons. Even if she sells a shirt for RM20, she is still making profit.</p>
 <h2 class="appendix" id="acknowledgments">Acknowledgments</h2>
-<p>Some of the notes above are taken from online course <a
-href="https://study.com/academy/course/business-math.html">Business 110:
-Math Class from Study.com</a><br />
-Markup &amp; Markdown: Calculation &amp; Examples. (2014, December 10).
-Retrieved from <a
-href="https://study.com/academy/lesson/markup-markdown-calculation-examples.html"
-class="uri">https://study.com/academy/lesson/markup-markdown-calculation-examples.html</a>.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Some of the notes above are taken from online course <a href="https://study.com/academy/course/business-math.html">Business 110: Math Class from Study.com</a><br />
+Markup &amp; Markdown: Calculation &amp; Examples. (2014, December 10). Retrieved from <a href="https://study.com/academy/lesson/markup-markdown-calculation-examples.html" class="uri">https://study.com/academy/lesson/markup-markdown-calculation-examples.html</a>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

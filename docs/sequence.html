@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,32 +2223,25 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#introduction-to-sequence">Introduction to
-sequence</a></li>
-<li><a href="#what-is-a-sequence">What is a sequence?</a></li>
-<li><a href="#arithmetic-sequence">Arithmetic sequence</a>
+<li><a href="#introduction-to-sequence" id="toc-introduction-to-sequence">Introduction to sequence</a></li>
+<li><a href="#what-is-a-sequence" id="toc-what-is-a-sequence">What is a sequence?</a></li>
+<li><a href="#arithmetic-sequence" id="toc-arithmetic-sequence">Arithmetic sequence</a>
 <ul>
-<li><a href="#finding-the-nth-term">Finding the nth term</a></li>
-<li><a href="#finding-the-sum-of-the-first-n-terms">Finding the sum of
-the first n terms</a></li>
+<li><a href="#finding-the-nth-term" id="toc-finding-the-nth-term">Finding the nth term</a></li>
+<li><a href="#finding-the-sum-of-the-first-n-terms" id="toc-finding-the-sum-of-the-first-n-terms">Finding the sum of the first n terms</a></li>
 </ul></li>
-<li><a href="#geometric-sequence">Geometric sequence</a>
+<li><a href="#geometric-sequence" id="toc-geometric-sequence">Geometric sequence</a>
 <ul>
-<li><a href="#finding-the-nth-term-1">Finding the nth term</a></li>
-<li><a href="#finding-the-sum-of-the-first-n-terms-1">Finding the sum of
-the first n terms</a></li>
+<li><a href="#finding-the-nth-term-1" id="toc-finding-the-nth-term-1">Finding the nth term</a></li>
+<li><a href="#finding-the-sum-of-the-first-n-terms-1" id="toc-finding-the-sum-of-the-first-n-terms-1">Finding the sum of the first n terms</a></li>
 </ul></li>
-<li><a href="#exercises">Exercises</a></li>
+<li><a href="#exercises" id="toc-exercises">Exercises</a></li>
 </ul>
 </nav>
 </div>
 <blockquote>
-<p>Ya Allah! Kami memohon kepadaMu Ya Allah, berilah kami iman yang
-sempurna, ilmu yang memberi manfaat, rezeki yang halal, anak yang soleh
-dan solehah, rumahtangga yang bahagia, usia yang berkat, doa yang
-mustajab, hajat yang tertunai, kesihatan yang berterusan, hutang yang
-terbayar, keselamatan dan kesejahteraan di dunia dan akhirat. Aamiin Ya
-Rabbal’alamiin</p>
+<p>Ya Allah! Kami memohon kepadaMu Ya Allah, berilah kami iman yang sempurna, ilmu yang memberi manfaat, rezeki yang halal, anak yang soleh dan solehah, rumahtangga yang bahagia, usia yang berkat, doa yang mustajab, hajat yang tertunai, kesihatan yang berterusan, hutang yang terbayar, keselamatan dan kesejahteraan di dunia dan akhirat.
+Aamiin Ya Rabbal’alamiin</p>
 </blockquote>
 <html>
 <title>
@@ -2235,33 +2259,33 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/Sequence/Slide1.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide2.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide3.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide4.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide5.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide6.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide7.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide8.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide9.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide10.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide11.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide12.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide13.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide14.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide15.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide16.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide17.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide18.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide19.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide20.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide21.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide22.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide23.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide24.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide25.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide26.PNG" style="width:100%">
-<img class="mySlides" src="images/Sequence/Slide27.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/Sequence/Slide1.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide2.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide3.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide4.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide5.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide6.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide7.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide8.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide9.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide10.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide11.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide12.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide13.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide14.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide15.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide16.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide17.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide18.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide19.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide20.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide21.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide22.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide23.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide24.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide25.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide26.png" style="width:100%">
+<img class="mySlides" src="images/Sequence/Slide27.png" style="width:100%"></p>
 </div>
 <div class="w3-center">
 <p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
@@ -2330,41 +2354,23 @@ function showDivs(n) {
 <a href="files/slides/sequence.pdf">Download Learning Slides</a>
 </aside>
 <h2 id="introduction-to-sequence">Introduction to sequence</h2>
-<p>In general, sequence is just simply a set of values that is written
-in such a way the values follows certain specific order or rule. A
-sequence can either be a finite set of numbers or an infinite set of
-numbers. A sequence is said to be infinite if there exist no end values
-and the numbers can continues infinitely. On the other hand, a finite is
-such that the set of numbers has and end value or stop at certain
-length. In this chapter, students will be introduced to two type of
-sequence; <strong>Arithmetic Sequence</strong> and <strong>Geometric
-Sequence</strong>. For both types, students will be exposed on the
-concepts of the <span class="math inline">\(n^{th}\ term\)</span> of a
-sequence and the <span class="math inline">\(sum\ of\ the\
-first\)</span> <span class="math inline">\(n^{th}\ term\)</span> of a
-sequence. Finally, students will be exposed on how to apply the concepts
-of arithmetic and geometric sequences to some common problems in daily
-life.</p>
+<p>In general, sequence is just simply a set of values that is written in such a way the values follows certain specific order or rule. A sequence can either be a finite set of numbers or an infinite set of numbers. A sequence is said to be infinite if there exist no end values and the numbers can continues infinitely. On the other hand, a finite is such that the set of numbers has and end value or stop at certain length. In this chapter, students will be introduced to two type of sequence; <strong>Arithmetic Sequence</strong> and <strong>Geometric Sequence</strong>. For both types, students will be exposed on the concepts of the <span class="math inline">\(n^{th}\ term\)</span> of a sequence and the <span class="math inline">\(sum\ of\ the\ first\)</span> <span class="math inline">\(n^{th}\ term\)</span> of a sequence. Finally, students will be exposed on how to apply the concepts of arithmetic and geometric sequences to some common problems in daily life.</p>
 <h2 id="what-is-a-sequence">What is a sequence?</h2>
-<p>Sequence can be defined as a set of numbers which are written in
-specific order or following a specific rule. For example,<br />
+<p>Sequence can be defined as a set of numbers which are written in specific order or following a specific rule. For example,<br />
 <span class="math display">\[
 \begin{aligned}
 &amp;0,\ 2,\ 4,\ 6,\ 8,\ …  \\
 &amp;1,\ 3,\ 9,\ 27,\ …  \\
 &amp;17,\ 12,\ 7,\ 2,\ -3,\ -8,\ -13.
 \end{aligned}
-\]</span> The three sets of numbers above are an example of sequence
-since between adjacent values, it follows certain order or rule.</p>
+\]</span>
+The three sets of numbers above are an example of sequence since between adjacent values, it follows certain order or rule.</p>
 <h2 id="arithmetic-sequence">Arithmetic sequence</h2>
 <p>Consider this sequence</p>
 <center>
 <span class="math inline">\(5, 13, 21, 29,…\)</span>
 </center>
-<p>It starts with a particular first term, and to get the next term, add
-a fixed value to the previous term. In the above set of values, we add 8
-to get the next term. The difference between consecutive terms is a
-constant.<br />
+<p>It starts with a particular first term, and to get the next term, add a fixed value to the previous term. In the above set of values, we add 8 to get the next term. The difference between consecutive terms is a constant.<br />
 i.e.,</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -2374,11 +2380,7 @@ i.e.,</p>
 \end{aligned}
 \]</span></p>
 <p><em>Definition</em><br />
-An arithmetic progression is a sequence where each new term after the
-first is obtained by adding a constant <span
-class="math inline">\(d\)</span>, called the common difference, to the
-preceding term. If the first term of the sequence is <span
-class="math inline">\(a\)</span> then the arithmetic progression is</p>
+An arithmetic progression is a sequence where each new term after the first is obtained by adding a constant <span class="math inline">\(d\)</span>, called the common difference, to the preceding term. If the first term of the sequence is <span class="math inline">\(a\)</span> then the arithmetic progression is</p>
 <center>
 <span class="math inline">\(a, a + d, a + 2d, a + 3d,...\)</span>
 </center>
@@ -2388,12 +2390,8 @@ T_n = a + (n − 1)d
 \]</span></p>
 <h3 id="finding-the-nth-term">Finding the nth term</h3>
 <p><em>Example 1</em><br />
-Write down the first five terms of the Arithmetic Sequence with first
-term 8 and common difference 7. So, here we have <span
-class="math inline">\(a = 8\)</span> and <span class="math inline">\(d =
-7\)</span>.<br />
-Using the general formula of <span class="math inline">\(n^{th}\)</span>
-term,<br />
+Write down the first five terms of the Arithmetic Sequence with first term 8 and common difference 7. So, here we have <span class="math inline">\(a = 8\)</span> and <span class="math inline">\(d = 7\)</span>.<br />
+Using the general formula of <span class="math inline">\(n^{th}\)</span> term,<br />
 <span class="math display">\[
 \begin{aligned}
 T_n &amp;= a + (n - 1)d \\
@@ -2404,15 +2402,10 @@ T_4 &amp;= a + 3d = 8 + 3(7) = 29 \\
 T_5 &amp;= a + 4d = 8 + 4(7) = 36 \\
 \end{aligned}
 \]</span></p>
-<p>The sequence is <span class="math inline">\(8, 15, 22, 29,
-36,…\)</span></p>
+<p>The sequence is <span class="math inline">\(8, 15, 22, 29, 36,…\)</span></p>
 <p><em>Example 2</em><br />
-Write down the first five terms of the Arithmetic Sequence with first
-term 2 and common difference −5. So, here we have <span
-class="math inline">\(a = 2\)</span> and <span class="math inline">\(d =
--5\)</span>.<br />
-Using the general formula of <span class="math inline">\(n^{th}\)</span>
-term,</p>
+Write down the first five terms of the Arithmetic Sequence with first term 2 and common difference −5. So, here we have <span class="math inline">\(a = 2\)</span> and <span class="math inline">\(d = -5\)</span>.<br />
+Using the general formula of <span class="math inline">\(n^{th}\)</span> term,</p>
 <p><span class="math display">\[
 \begin{aligned}
 T_n &amp;= a + (n - 1)d \\
@@ -2423,15 +2416,9 @@ T_4 &amp;= a + 3d = 2 + 3(-5) = -13 \\
 T_5 &amp;= a + 4d = 2 + 4(-5) = -18 \\
 \end{aligned}
 \]</span></p>
-<p>The sequence is <span class="math inline">\(2, -3, -8, -13,
--18,…\)</span></p>
-<h3 id="finding-the-sum-of-the-first-n-terms">Finding the sum of the
-first n terms</h3>
-<p>The sum of the terms of an arithmetic progression gives an arithmetic
-series. If the starting value is <span class="math inline">\(a\)</span>
-and the common difference is <span class="math inline">\(d\)</span> then
-the sum of the first <span class="math inline">\(n\)</span> terms is
-given by,</p>
+<p>The sequence is <span class="math inline">\(2, -3, -8, -13, -18,…\)</span></p>
+<h3 id="finding-the-sum-of-the-first-n-terms">Finding the sum of the first n terms</h3>
+<p>The sum of the terms of an arithmetic progression gives an arithmetic series. If the starting value is <span class="math inline">\(a\)</span> and the common difference is <span class="math inline">\(d\)</span> then the sum of the first <span class="math inline">\(n\)</span> terms is given by,</p>
 <p><span class="math display">\[
 S_n = \frac{n}{2}[2a + (n - 1)d]
 \]</span></p>
@@ -2440,10 +2427,7 @@ S_n = \frac{n}{2}[2a + (n - 1)d]
 <center>
 <span class="math inline">\(1, 3, 5, 7, 9,...\)</span>
 </center>
-<p>Here, we have <span class="math inline">\(a = 1\)</span>, <span
-class="math inline">\(d = 2\)</span>, and <span class="math inline">\(n
-= 50\)</span>. Use the formula <span class="math inline">\(S_n =
-\frac{n}{2}[2a + (n - 1)d]\)</span>, we get</p>
+<p>Here, we have <span class="math inline">\(a = 1\)</span>, <span class="math inline">\(d = 2\)</span>, and <span class="math inline">\(n = 50\)</span>. Use the formula <span class="math inline">\(S_n = \frac{n}{2}[2a + (n - 1)d]\)</span>, we get</p>
 <p><span class="math display">\[
 \begin{aligned}
 S_50 &amp;= \frac{50}{2}[2(1) + (50-1)(2)] \\
@@ -2453,17 +2437,13 @@ S_50 &amp;= \frac{50}{2}[2(1) + (50-1)(2)] \\
 \end{aligned}
 \]</span></p>
 <p><em>Example 4</em><br />
-An arithmetic progression has 3 as its first term. Also, the sum of the
-first 8 terms is twice the sum of the first 5 terms. Find the common
-difference.</p>
-<p>Here, we are given <span class="math inline">\(a = 3\)</span> and
-<span class="math inline">\(S_8 = 2S5\)</span>.<br />
+An arithmetic progression has 3 as its first term. Also, the sum of the first 8 terms is twice the sum of the first 5 terms. Find the common difference.</p>
+<p>Here, we are given <span class="math inline">\(a = 3\)</span> and <span class="math inline">\(S_8 = 2S5\)</span>.<br />
 Thus,</p>
 <p><span class="math display">\[
 \begin{aligned}
 S_8 &amp;= 2S_5 \\
-\frac{8}{2}[2(3)+(8-1)d] &amp;=
-2\bigg{[}\frac{5}{2}[2(3)+(5-1)d]\bigg{]} \\
+\frac{8}{2}[2(3)+(8-1)d] &amp;= 2\bigg{[}\frac{5}{2}[2(3)+(5-1)d]\bigg{]} \\
 4[6+7d] &amp;= 5[6+4d] \\
 24+28d &amp;= 30+20d \\
 8d &amp;= 6 \\
@@ -2471,77 +2451,50 @@ d &amp;= \frac{3}{4}
 \end{aligned}
 \]</span></p>
 <h2 id="geometric-sequence">Geometric sequence</h2>
-<p>A geometric progression, or GP, is a sequence where each new term
-after the first is obtained by multiplying the preceding term by a
-constant <span class="math inline">\(r\)</span>, called the <em>common
-ratio</em>.</p>
+<p>A geometric progression, or GP, is a sequence where each new term after the first is obtained by multiplying the preceding term by a constant <span class="math inline">\(r\)</span>, called the <em>common ratio</em>.</p>
 <h3 id="finding-the-nth-term-1">Finding the nth term</h3>
-<p>If the first term of the sequence is <span
-class="math inline">\(a\)</span> then the geometric progression is</p>
+<p>If the first term of the sequence is <span class="math inline">\(a\)</span> then the geometric progression is</p>
 <center>
 <span class="math inline">\(a,\ ar,\ ar_2,\ ar_3,\ ...\)</span>
 </center>
 <p>where the n-th term is given by<br />
 <span class="math display">\[T_n\ =\ ar^{n-1}\]</span></p>
-<h3 id="finding-the-sum-of-the-first-n-terms-1">Finding the sum of the
-first n terms</h3>
-<p>The sum of the terms of a geometric progression gives a geometric
-series. If the starting value is <span class="math inline">\(a\)</span>
-and the common ratio is <span class="math inline">\(r\)</span> then the
-sum of the first <span class="math inline">\(n\)</span> terms is<br />
+<h3 id="finding-the-sum-of-the-first-n-terms-1">Finding the sum of the first n terms</h3>
+<p>The sum of the terms of a geometric progression gives a geometric series. If the starting value is <span class="math inline">\(a\)</span> and the common ratio is <span class="math inline">\(r\)</span> then the sum of the first <span class="math inline">\(n\)</span> terms is<br />
 <span class="math display">\[
 \begin{aligned}
-S_n\ &amp;=\ a\bigg(\ \frac{r^n\ -\ 1}{r\ -\ 1}\ \bigg)\ \ \ where\ r\
-&gt;\ 1 \\
+S_n\ &amp;=\ a\bigg(\ \frac{r^n\ -\ 1}{r\ -\ 1}\ \bigg)\ \ \ where\ r\ &gt;\ 1 \\
 \\
-S_n\ &amp;=\ a\bigg(\ \frac{1\ -\ r^n}{1\ -\ r}\ \bigg)\ \ \ where\ r\
-&lt;\ 1 \\
+S_n\ &amp;=\ a\bigg(\ \frac{1\ -\ r^n}{1\ -\ r}\ \bigg)\ \ \ where\ r\ &lt;\ 1 \\
 \end{aligned}
 \]</span></p>
 <h2 id="exercises">Exercises</h2>
 <ol type="1">
-<li><p>Find the sum of the first 23 terms of the AP <span
-class="math inline">\(4, −3, −10,...\)</span></p></li>
-<li><p>An arithmetic series has first term 4 and common difference <span
-class="math inline">\(\frac{1}{2}\)</span>. Find,</p>
+<li><p>Find the sum of the first 23 terms of the AP <span class="math inline">\(4, −3, −10,...\)</span></p></li>
+<li><p>An arithmetic series has first term 4 and common difference <span class="math inline">\(\frac{1}{2}\)</span>. Find,</p>
 <ol type="i">
 <li><p>the sum of the first 20 terms,</p></li>
 <li><p>the sum of the first 100 terms.</p></li>
 </ol></li>
-<li><p>Find the sum of the arithmetic series with first term 1, common
-difference 3, and last term 100.</p></li>
-<li><p>The sum of the first 20 terms of an arithmetic series is
-identical to the sum of the first 22 terms. If the common difference is
-−2, find the first term.</p></li>
-<li><p>Write down the first five terms of the geometric progression
-which has first term 1 and common ratio 12.</p></li>
-<li><p>Find the 10th and 20th terms of the GP with first term 3 and
-common ratio 2.</p></li>
+<li><p>Find the sum of the arithmetic series with first term 1, common difference 3, and last term 100.</p></li>
+<li><p>The sum of the first 20 terms of an arithmetic series is identical to the sum of the first 22 terms. If the common difference is −2, find the first term.</p></li>
+<li><p>Write down the first five terms of the geometric progression which has first term 1 and common ratio 12.</p></li>
+<li><p>Find the 10th and 20th terms of the GP with first term 3 and common ratio 2.</p></li>
 <li><p>Find the 7th term of the GP 2, −6, 18, …,</p></li>
-<li><p>Find the sum of the first five terms of the GP with first term 3
-and common ratio 2.</p></li>
-<li><p>Find the sum of the first 20 terms of the GP with first term 3
-and common ratio 1.5.</p></li>
-<li><p>The sum of the first 3 terms of a geometric series is <span
-class="math inline">\(\frac{37}{8}\)</span>. The sum of the first six
-terms is <span class="math inline">\(\frac{3367}{512}\)</span>. Find the
-first term and common ratio.</p></li>
-<li><p>How many terms in the GP 4, 3.6, 3.24, … are needed so that the
-sum exceeds 35?</p></li>
+<li><p>Find the sum of the first five terms of the GP with first term 3 and common ratio 2.</p></li>
+<li><p>Find the sum of the first 20 terms of the GP with first term 3 and common ratio 1.5.</p></li>
+<li><p>The sum of the first 3 terms of a geometric series is <span class="math inline">\(\frac{37}{8}\)</span>. The sum of the first six terms is <span class="math inline">\(\frac{3367}{512}\)</span>. Find the first term and common ratio.</p></li>
+<li><p>How many terms in the GP 4, 3.6, 3.24, … are needed so that the sum exceeds 35?</p></li>
 </ol>
-<p><font color="red"><strong>Past Semester Exam
-Questions</strong></font></p>
+<p><font color="red"><strong>Past Semester Exam Questions</strong></font></p>
 <p><em>MAC 2015</em><br />
-The 4th term of a geometric sequence is -96 and the 9th term is -3.
-Find:<br />
+The 4th term of a geometric sequence is -96 and the 9th term is -3. Find:<br />
 a. the common ratio and the first term<br />
 b. the sum of the first five terms.</p>
 <p><em>SEPT 2014</em><br />
-a. Given a sequence: 10, 30, 90, 270, 810, 2430….., find the sum of the
-first 10 terms</p>
+a. Given a sequence: 10, 30, 90, 270, 810, 2430….., find the sum of the first 10 terms</p>
 <ol start="2" type="a">
-<li>The fourth term of an arithmetic sequence is less than the fifth
-term by 3. The seventh term is three times the fifth term. Find
+<li>The fourth term of an arithmetic sequence is less than the fifth term by 3. The seventh term is three times the fifth term. Find
 <ol type="i">
 <li>the common difference and the first term<br />
 </li>
@@ -2554,12 +2507,9 @@ a. Determine the number of terms for the following sequence:</p>
 71, 65, 59, …, -13
 </center>
 <ol start="2" type="a">
-<li>The fifth term of a geometric sequence is 504 and the first term is
-8064. Determine the common ratio and the sum of the first ten terms of
-the sequence. Assume that the common ratio is positive.</li>
+<li>The fifth term of a geometric sequence is 504 and the first term is 8064. Determine the common ratio and the sum of the first ten terms of the sequence. Assume that the common ratio is positive.</li>
 </ol>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -789,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1030,10 +1032,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1865,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1885,6 +1889,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1984,6 +2013,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2006,7 +2037,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2045,7 +2076,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -2061,7 +2092,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
          h6 {font-size: 12px;}
          code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
          pre:not([class]) { background-color: white }</style>
-  <script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
   <link href="site_libs/bootstrap-select-1.12.1/dist/css/bootstrap-select.min.css" rel="stylesheet" />
   <script src="site_libs/bootstrap-select-1.12.1/dist/js/bootstrap-select.min.js"></script>
   <script src="site_libs/bsselect-binding-0.1.0/bsselect.js"></script>
@@ -2214,25 +2245,22 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#lecturers-timetable">Lecturer’s Timetable</a></li>
-<li><a href="#class-representatives">Class Representatives</a></li>
+<li><a href="#lecturers-timetable" id="toc-lecturers-timetable">Lecturer’s Timetable</a></li>
+<li><a href="#class-representatives" id="toc-class-representatives">Class Representatives</a></li>
 </ul>
 </nav>
 </div>
 <h3 id="lecturers-timetable">Lecturer’s Timetable</h3>
-<h4 id="session-20214-click-details-to-display-content">Session 20214
-(click <strong>details</strong> to display content)</h4>
+<h4 id="session-20214-click-details-to-display-content">Session 20214 (click <strong>details</strong> to display content)</h4>
 <details>
 <center>
 <embed src="./files/20214/jadual1.pdf" type="application/pdf" width="100%" height="550px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/jadual.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/jadual.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
-<h4 id="session-20212-click-details-to-display-content">Session 20212
-(click <strong>details</strong> to display content)</h4>
+<h4 id="session-20212-click-details-to-display-content">Session 20212 (click <strong>details</strong> to display content)</h4>
 <details>
 <div class="layout-chunk" data-layout="l-body">
 
@@ -2266,16 +2294,13 @@ If you can’t view the pdf file, click on the file’s link -
 
   });</script>
 </html>
-<div id="htmlwidget-a7c063a8618bd8141bb2" style="width:624px;height:384px;" class="bsselect html-widget" width="624" height="384"></div>
+<div id="htmlwidget-a7c063a8618bd8141bb2" style="width:624px;height:384px;" class="bsselect html-widget html-fill-item-overflow-hidden" width="624" height="384"></div>
 <script type="application/json" data-for="htmlwidget-a7c063a8618bd8141bb2">{"x":[],"evals":[],"jsHooks":[]}</script>
 </div>
 </details>
 <hr />
 <h3 id="class-representatives">Class Representatives</h3>
-<h4
-id="session---20214-click-on-the-program-name-to-display-content">Session
-- 20214 (click on the <strong>program name</strong> to display
-content)</h4>
+<h4 id="session---20214-click-on-the-program-name-to-display-content">Session - 20214 (click on the <strong>program name</strong> to display content)</h4>
 <details>
 <summary>
 AC110
@@ -2283,8 +2308,7 @@ AC110
 <center>
 <embed src="./files/20214/wakil_kelas/AC110.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/AC110.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/AC110.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2295,8 +2319,7 @@ AC220
 <center>
 <embed src="./files/20214/wakil_kelas/AC220.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/AC220.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/AC220.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2307,8 +2330,7 @@ AM110 &amp; AM228
 <center>
 <embed src="./files/20214/wakil_kelas/AM110 & AM228.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/AM110 & AM228.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/AM110 & AM228.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2319,8 +2341,7 @@ BA111
 <center>
 <embed src="./files/20214/wakil_kelas/BA111.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA111.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA111.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2331,8 +2352,7 @@ BA118
 <center>
 <embed src="./files/20214/wakil_kelas/BA118.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA118.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA118.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2343,8 +2363,7 @@ BA119
 <center>
 <embed src="./files/20214/wakil_kelas/BA119.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA119.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA119.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2355,8 +2374,7 @@ BA242
 <center>
 <embed src="./files/20214/wakil_kelas/BA242.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA242.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA242.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2367,8 +2385,7 @@ BA243
 <center>
 <embed src="./files/20214/wakil_kelas/BA243.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA243.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA243.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2379,8 +2396,7 @@ BA244
 <center>
 <embed src="./files/20214/wakil_kelas/BA244.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA244.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA244.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2391,8 +2407,7 @@ BA249
 <center>
 <embed src="./files/20214/wakil_kelas/BA249.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA249.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA249.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2403,8 +2418,7 @@ BA250
 <center>
 <embed src="./files/20214/wakil_kelas/BA250.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/BA250.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/BA250.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
@@ -2415,13 +2429,11 @@ CS110
 <center>
 <embed src="./files/20214/wakil_kelas/CS110.pdf" type="application/pdf" width="100%" height="660px" />
 <p>
-If you can’t view the pdf file, click on the file’s link -
-<a href="./files/20214/wakil_kelas/CS110.pdf">Download PDF!</a>
+If you can’t view the pdf file, click on the file’s link - <a href="./files/20214/wakil_kelas/CS110.pdf">Download PDF!</a>
 </p>
 </center>
 </details>
-<h4 id="session---20212-click-details-to-display-content">Session -
-20212 (click <strong>details</strong> to display content)</h4>
+<h4 id="session---20212-click-details-to-display-content">Session - 20212 (click <strong>details</strong> to display content)</h4>
 <details>
 <div class="layout-chunk" data-layout="l-body">
 
@@ -2447,12 +2459,11 @@ If you can’t view the pdf file, click on the file’s link -
 
   });</script>
 </html>
-<div id="htmlwidget-0e1b13e3bcf66785ef68" style="width:624px;height:384px;" class="bsselect html-widget" width="624" height="384"></div>
+<div id="htmlwidget-0e1b13e3bcf66785ef68" style="width:624px;height:384px;" class="bsselect html-widget html-fill-item-overflow-hidden" width="624" height="384"></div>
 <script type="application/json" data-for="htmlwidget-0e1b13e3bcf66785ef68">{"x":[],"evals":[],"jsHooks":[]}</script>
 </div>
 </details>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

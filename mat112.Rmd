@@ -139,16 +139,16 @@ This module does not have other references
 
 ## Support Materials
 
-| Past Semester Exam Papers | Answer Scheme |  
-|:-------------------------:|:-------------:|  
-| [June 2019](files/support document/mat112/MAT112 June 2019.PDF) | [Answer Scheme June 2019](files/support document/mat112/MAT112 SKEMA JUNE 2019.pdf) |  
-| [Dec 2018](files/support document/mat112/MAT112 Dec 2018.PDF) | [Answer Scheme Dec 2018](files/support document/mat112/MAT112 SKEMA DEC 2018.pdf) |  
-| [Jan 2018](files/support document/mat112/MAT112 Jan 2018.PDF) | [Answer Scheme Jan 2018](files/support document/mat112/MAT112 SKEMA JAN 2018.pdf) |  
+<!-- | Past Semester Exam Papers | Answer Scheme |   -->
+<!-- |:-------------------------:|:-------------:|   -->
+<!-- | [June 2019](files/support document/mat112/MAT112 June 2019.PDF) | [Answer Scheme June 2019](files/support document/mat112/MAT112 SKEMA JUNE 2019.pdf) |   -->
+<!-- | [Dec 2018](files/support document/mat112/MAT112 Dec 2018.PDF) | [Answer Scheme Dec 2018](files/support document/mat112/MAT112 SKEMA DEC 2018.pdf) |   -->
+<!-- | [Jan 2018](files/support document/mat112/MAT112 Jan 2018.PDF) | [Answer Scheme Jan 2018](files/support document/mat112/MAT112 SKEMA JAN 2018.pdf) |   -->
 
 
-**Past Test Paper With Answers**  
-[Test 2 Dec 2019](files/support document/mat112/Test 2 Dec 2019.pdf)  
-[Test 1 Nov 2019](files/support document/mat112/Test 1 Nov 2019.pdf)  
+<!-- **Past Test Paper With Answers**   -->
+<!-- [Test 2 Dec 2019](files/support document/mat112/Test 2 Dec 2019.pdf)   -->
+<!-- [Test 1 Nov 2019](files/support document/mat112/Test 1 Nov 2019.pdf)   -->
 
 **Workshops Questions With Answers**  
 [Nov 2019 Session 1](files/support document/mat112/BENGKEL MAT112 NOV 2019 SESI 1.pdf) [Answers](files/support document/mat112/Answer MAT112 Workshop Nov 2019 Session 1.pdf)  

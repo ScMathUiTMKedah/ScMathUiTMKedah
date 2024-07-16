@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,19 +2223,15 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#background">Background</a></li>
-<li><a href="#time-value-of-money">Time value of money</a></li>
-<li><a href="#what-is-compound-interest">What is compound
-interest?</a></li>
-<li><a href="#important-terms-use-in-compound-interest">Important terms
-use in compound interest</a></li>
-<li><a href="#compound-interest-formula">Compound interest
-formula</a></li>
-<li><a href="#determining-the-value-of-m">Determining the value of <span
-class="math inline">\(m\)</span></a></li>
-<li><a href="#present-value">Present Value</a></li>
-<li><a href="#exercises">Exercises</a></li>
-<li><a href="#acknowledgements">Acknowledgements</a></li>
+<li><a href="#background" id="toc-background">Background</a></li>
+<li><a href="#time-value-of-money" id="toc-time-value-of-money">Time value of money</a></li>
+<li><a href="#what-is-compound-interest" id="toc-what-is-compound-interest">What is compound interest?</a></li>
+<li><a href="#important-terms-use-in-compound-interest" id="toc-important-terms-use-in-compound-interest">Important terms use in compound interest</a></li>
+<li><a href="#compound-interest-formula" id="toc-compound-interest-formula">Compound interest formula</a></li>
+<li><a href="#determining-the-value-of-m" id="toc-determining-the-value-of-m">Determining the value of <span class="math inline">\(m\)</span></a></li>
+<li><a href="#present-value" id="toc-present-value">Present Value</a></li>
+<li><a href="#exercises" id="toc-exercises">Exercises</a></li>
+<li><a href="#acknowledgements" id="toc-acknowledgements">Acknowledgements</a></li>
 </ul>
 </nav>
 </div>
@@ -2226,18 +2253,18 @@ W3.CSS
 Learning Slides
 </h2>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/compound/Slide1.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide2.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide3.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide4.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide5.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide6.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide7.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide8.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide9.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide10.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide11.PNG" style="width:100%">
-<img class="mySlides" src="images/compound/Slide12.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/compound/Slide1.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide2.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide3.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide4.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide5.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide6.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide7.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide8.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide9.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide10.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide11.png" style="width:100%">
+<img class="mySlides" src="images/compound/Slide12.png" style="width:100%"></p>
 </div>
 <div class="w3-center">
 <p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
@@ -2291,66 +2318,32 @@ function showDivs(n) {
 <a href="files/slides/compound.pdf">Download Learning Slides</a>
 </aside>
 <h3 id="background">Background</h3>
-<p>In this chapter students will be introduced on the concepts of time
-value of money. In addition, students will learn how use the compound
-amount formula to find the future value, compound interest, and present
-value of investments and loans.</p>
+<p>In this chapter students will be introduced on the concepts of time value of money. In addition, students will learn how use the compound amount formula to find the future value, compound interest, and present value of investments and loans.</p>
 <h3 id="time-value-of-money">Time value of money</h3>
 <blockquote>
-<p>The time value of money (TVM) is the concept that money you have now
-is worth more than the identical sum in the future due to its potential
-earning capacity. This core principle of finance holds that provided
-money can earn interest, any amount of money is worth more the sooner it
-is received. TVM is also sometimes referred to as present discounted
-value.<br />
-The time value of money draws from the idea that rational investors
-prefer to receive money today rather than the same amount of money in
-the future because of money’s potential to grow in value over a given
-period of time. For example, money deposited into a savings account
-earns a certain interest rate and is therefore said to be compounding in
-value (Chan, 2020).</p>
+<p>The time value of money (TVM) is the concept that money you have now is worth more than the identical sum in the future due to its potential earning capacity. This core principle of finance holds that provided money can earn interest, any amount of money is worth more the sooner it is received. TVM is also sometimes referred to as present discounted value.<br />
+The time value of money draws from the idea that rational investors prefer to receive money today rather than the same amount of money in the future because of money’s potential to grow in value over a given period of time. For example, money deposited into a savings account earns a certain interest rate and is therefore said to be compounding in value (Chan, 2020).</p>
 </blockquote>
 <p><em>Key Takeaways</em></p>
 <ol type="1">
-<li><p>Time value of money is based on the idea that people would rather
-have money today than in the future.</p></li>
-<li><p>Given that money can earn compound interest, it is more valuable
-in the present rather than the future.</p></li>
-<li><p>The formula for computing time value of money considers the
-payment now, the future value, the interest rate, and the time
-frame.</p></li>
-<li><p>The number of compounding periods during each time frame is an
-important determinant in the time value of money formula as
-well.</p></li>
+<li><p>Time value of money is based on the idea that people would rather have money today than in the future.</p></li>
+<li><p>Given that money can earn compound interest, it is more valuable in the present rather than the future.</p></li>
+<li><p>The formula for computing time value of money considers the payment now, the future value, the interest rate, and the time frame.</p></li>
+<li><p>The number of compounding periods during each time frame is an important determinant in the time value of money formula as well.</p></li>
 </ol>
 <h3 id="what-is-compound-interest">What is compound interest?</h3>
-<p>In compound interest, interest is earned on both the principal and
-any interest that has been earned previously. In this situation each
-time the interest is calculated, it is based on the new principal value
-that include the previous amount of interest. Thus, the interest is
-calculated on the current value of principal at the time of
-calculation.<br />
+<p>In compound interest, interest is earned on both the principal and any interest that has been earned previously. In this situation each time the interest is calculated, it is based on the new principal value that include the previous amount of interest. Thus, the interest is calculated on the current value of principal at the time of calculation.<br />
 The process is illustrated in the table shown below.</p>
 <center>
 <img src="images/compound/image2.png" />
 </center>
-<p>This is a bit different from simple interest as illustrated in the
-image shown below.</p>
+<p>This is a bit different from simple interest as illustrated in the image shown below.</p>
 <center>
-<img src="images/compound/image1.jpg"
-data-caption="Simple Interest vs Compound Interest" />
+<img src="images/compound/image1.jpg" data-caption="Simple Interest vs Compound Interest" />
 </center>
-<h3 id="important-terms-use-in-compound-interest">Important terms use in
-compound interest</h3>
+<h3 id="important-terms-use-in-compound-interest">Important terms use in compound interest</h3>
 <h3 id="compound-interest-formula">Compound interest formula</h3>
-<p>The mathematical formula for calculating compound interest depends on
-several factors These factors include the amount of money deposited
-called the principal (<span class="math inline">\(P\)</span>), the
-annual interest rate <span class="math inline">\(k\)</span> (in decimal
-form), the numberof times the money is compounded per year (<span
-class="math inline">\(m\)</span>), and the number of years (<span
-class="math inline">\(t\)</span>) the money is left in the bank These
-factors lead to the formula,</p>
+<p>The mathematical formula for calculating compound interest depends on several factors These factors include the amount of money deposited called the principal (<span class="math inline">\(P\)</span>), the annual interest rate <span class="math inline">\(k\)</span> (in decimal form), the numberof times the money is compounded per year (<span class="math inline">\(m\)</span>), and the number of years (<span class="math inline">\(t\)</span>) the money is left in the bank These factors lead to the formula,</p>
 <p><span class="math display">\[
 \begin {aligned}
 S\ &amp;=\ P(1+i)^n \\
@@ -2361,23 +2354,18 @@ i\ &amp;=\ \frac{k}{m} \\
 n\ &amp;=\ mt
 \end {aligned}
 \]</span><br />
-Thus, the compound interest can be calculated by subtracting the
-compound amount, S from the initial principal, P.</p>
+Thus, the compound interest can be calculated by subtracting the compound amount, S from the initial principal, P.</p>
 <p><span class="math display">\[
 \begin {aligned}
 I\ = S\ -\ P
 \end {aligned}
 \]</span></p>
-<h3 id="determining-the-value-of-m">Determining the value of <span
-class="math inline">\(m\)</span></h3>
-<p>Given the interest of <span class="math inline">\(k\%\)</span>
-compounded <span class="math inline">\(m\)</span>, the value of <span
-class="math inline">\(m\)</span> is shown in the table below:</p>
+<h3 id="determining-the-value-of-m">Determining the value of <span class="math inline">\(m\)</span></h3>
+<p>Given the interest of <span class="math inline">\(k\%\)</span> compounded <span class="math inline">\(m\)</span>, the value of <span class="math inline">\(m\)</span> is shown in the table below:</p>
 <table>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><span class="math inline">\(k\%\)</span>
-compounded <span class="math inline">\(m\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(k\%\)</span> compounded <span class="math inline">\(m\)</span></th>
 <th style="text-align: center;">m</th>
 </tr>
 </thead>
@@ -2417,165 +2405,92 @@ compounded <span class="math inline">\(m\)</span></th>
 </tbody>
 </table>
 <p><em>Note:</em> *Banker’s Rule</p>
-<p><strong>Example</strong> if interest is <span
-class="math inline">\(3.5\%\)</span> compounded monthly, the <span
-class="math inline">\(k = 3.5\%\)</span> and <span
-class="math inline">\(m = 12\)</span>.</p>
+<p><strong>Example</strong> if interest is <span class="math inline">\(3.5\%\)</span> compounded monthly, the <span class="math inline">\(k = 3.5\%\)</span> and <span class="math inline">\(m = 12\)</span>.</p>
 <h3 id="present-value">Present Value</h3>
-<p>The following formula can be used to find the present value of a
-compound amount. In genearal, the present value is simply the intial
-principal of investment or loan.</p>
+<p>The following formula can be used to find the present value of a compound amount. In genearal, the present value is simply the intial principal of investment or loan.</p>
 <p><span class="math display">\[
 P\ =\ \frac{S}{(1+i)^n}\ = S(1+i)^{-n}
 \]</span></p>
 <p><strong>Important Keywords</strong><br />
-<span class="math inline">\(P\)</span> —&gt; saved, invested, borrowed,
-deposited<br />
-<span class="math inline">\(S\)</span> —&gt; total payment, total
-savings, accumulated amount</p>
+<span class="math inline">\(P\)</span> —&gt; saved, invested, borrowed, deposited<br />
+<span class="math inline">\(S\)</span> —&gt; total payment, total savings, accumulated amount</p>
 <h3 id="exercises">Exercises</h3>
 <ol type="1">
-<li><p>8 years ago, RMX was invested at a bank that offered an interest
-rate of 8% compounded semi-annually. If the balance in the account today
-is RM5,618.95,</p>
+<li><p>8 years ago, RMX was invested at a bank that offered an interest rate of 8% compounded semi-annually. If the balance in the account today is RM5,618.95,</p>
 <ol type="i">
 <li>Find the value of X. <strong>[RM3000]</strong><br />
 </li>
-<li>If another RM2,000 is added in the same account today, find the
-amount at the end of the next 2 years. <strong>[RM8913.09]</strong></li>
+<li>If another RM2,000 is added in the same account today, find the amount at the end of the next 2 years. <strong>[RM8913.09]</strong></li>
 </ol></li>
-<li><p>If Farahin invested RM2000 and after t years, she got RM6250 with
-interest 5.5% compounded every six months. How long was the investment?
-<strong>[21 years]</strong></p></li>
-<li><p>RM20,000 is invested in an investment fund that pays 6%
-compounded annually for 10 years.</p>
+<li><p>If Farahin invested RM2000 and after t years, she got RM6250 with interest 5.5% compounded every six months. How long was the investment? <strong>[21 years]</strong></p></li>
+<li><p>RM20,000 is invested in an investment fund that pays 6% compounded annually for 10 years.</p>
 <ol type="i">
 <li>Find the compound amount. <strong>[RM35816.95]</strong><br />
 </li>
 <li>Find the interest earned. <strong>[RM15816.95]</strong></li>
 </ol></li>
-<li><p>Abu invested RM30,000 in a trust fund at 7% compounded
-semi-annually. He invests another RM30,000 in a mutual fund at 7% simple
-interest.</p>
+<li><p>Abu invested RM30,000 in a trust fund at 7% compounded semi-annually. He invests another RM30,000 in a mutual fund at 7% simple interest.</p>
 <ol type="i">
-<li>Find the maturity value for each investment at the end of 3 years.
-<strong>[Trust Fund = RM36877.66; Mutual Fund = RM36300]</strong><br />
+<li>Find the maturity value for each investment at the end of 3 years. <strong>[Trust Fund = RM36877.66; Mutual Fund = RM36300]</strong><br />
 </li>
-<li>How much does the interest amount differ?
-<strong>[RM577.66]</strong></li>
+<li>How much does the interest amount differ? <strong>[RM577.66]</strong></li>
 </ol></li>
-<li><p>First Bank offers an interest of 7.5% compounded semi-annually
-while AZ Bank offers an interest of 7% compounded monthly.</p>
+<li><p>First Bank offers an interest of 7.5% compounded semi-annually while AZ Bank offers an interest of 7% compounded monthly.</p>
 <ol type="i">
-<li>Find the effective rate corresponding to the given nominal rate for
-each bank. If Ahmad wants to invest his money, which bank should he
-invests his money in?<br />
+<li>Find the effective rate corresponding to the given nominal rate for each bank. If Ahmad wants to invest his money, which bank should he invests his money in?<br />
 </li>
-<li>A man invests RM10, 000 in AZ bank for 5.5 years. What is the amount
-of interest obtained when the investment period ends?</li>
+<li>A man invests RM10, 000 in AZ bank for 5.5 years. What is the amount of interest obtained when the investment period ends?</li>
 </ol></li>
-<li><p>Amirul deposited RM1,000 in a savings account at 3% compounded
-monthly. Find the number of months required if he wanted the amount in
-the account to become RM2,000. <strong>[277.6 months]</strong></p></li>
-<li><p>Find the nominal rate compounded every two months which is
-equivalent to 10% compounded semi-annually. <strong>[k
-=9.84%]</strong></p></li>
-<li><p>A sum of money, RM Z was deposited in a savings account with
-interest 8% compounded quarterly. After one year, RM2000 was withdrawn.
-Three years after the withdrawal, the balance was RM 12865.29. Find the
-value of Z. <strong>[RM11219.35]</strong></p></li>
-<li><p>Wan Ahmad deposited RM14,000 into an account at an interest rate
-of 8% compounded monthly. Two years later he withdrew RM10,000 from the
-account. Find:</p>
+<li><p>Amirul deposited RM1,000 in a savings account at 3% compounded monthly. Find the number of months required if he wanted the amount in the account to become RM2,000. <strong>[277.6 months]</strong></p></li>
+<li><p>Find the nominal rate compounded every two months which is equivalent to 10% compounded semi-annually. <strong>[k =9.84%]</strong></p></li>
+<li><p>A sum of money, RM Z was deposited in a savings account with interest 8% compounded quarterly. After one year, RM2000 was withdrawn. Three years after the withdrawal, the balance was RM 12865.29. Find the value of Z. <strong>[RM11219.35]</strong></p></li>
+<li><p>Wan Ahmad deposited RM14,000 into an account at an interest rate of 8% compounded monthly. Two years later he withdrew RM10,000 from the account. Find:</p>
 <ol type="i">
-<li>the amount left in his account just after the
-withdrawal.<strong>(RM6420.43)</strong><br />
-ii the amount in the account 8 years after the
-withdrawal.<strong>(RM12150.39)</strong><br />
+<li>the amount left in his account just after the withdrawal.<strong>(RM6420.43)</strong><br />
+ii the amount in the account 8 years after the withdrawal.<strong>(RM12150.39)</strong><br />
 </li>
-<li>the effective rate which is equivalent to the nominal rate
-above.<strong>(8.3%)</strong></li>
+<li>the effective rate which is equivalent to the nominal rate above.<strong>(8.3%)</strong></li>
 </ol></li>
-<li><p>Find the future value and the interest earned if RM2,000 is
-invested for 3 years at 6% compounded monthly.<strong>(S = RM2393.36, I
-= RM393.36)</strong></p></li>
-<li><p>Haris invested RM4000 into an account that paid 8% compounded
-semi-annually. He intends to keep the account untouched for six years.
-However, after 4 years he is in need of money and had to withdraw RM
-1,600 from the account.</p>
+<li><p>Find the future value and the interest earned if RM2,000 is invested for 3 years at 6% compounded monthly.<strong>(S = RM2393.36, I = RM393.36)</strong></p></li>
+<li><p>Haris invested RM4000 into an account that paid 8% compounded semi-annually. He intends to keep the account untouched for six years. However, after 4 years he is in need of money and had to withdraw RM 1,600 from the account.</p>
 <ol type="i">
-<li>Find the amount left in the account six years after the initial
-investment. (RM4532.36)<br />
+<li>Find the amount left in the account six years after the initial investment. (RM4532.36)<br />
 </li>
-<li>Find the effective rate which is equivalent to the nominal rate
-above.(8.16%)</li>
+<li>Find the effective rate which is equivalent to the nominal rate above.(8.16%)</li>
 </ol></li>
-<li><p>Imran opened a savings account which offers an interest rate of
-8% compounded quarterly with an initial deposit of RM2000. One and half
-years later, he deposited RM3000 into the same account. Find the amount
-accumulated two and a half years after the initial
-deposit.<strong>(RM5685.29)</strong></p></li>
-<li><p>Fasha borrowed RM3000 at 6% compounded semi-annually for four
-years. Find the amount of interest
-charged.<strong>(RM800.31)</strong></p></li>
-<li><p>RM600 is invested for 4 years 10 months. This investment is
-offered an interest rate of 9% compounded every three months for the
-first 2 years and 7% compounded monthly for the rest of the period.
-Calculate,</p>
+<li><p>Imran opened a savings account which offers an interest rate of 8% compounded quarterly with an initial deposit of RM2000. One and half years later, he deposited RM3000 into the same account. Find the amount accumulated two and a half years after the initial deposit.<strong>(RM5685.29)</strong></p></li>
+<li><p>Fasha borrowed RM3000 at 6% compounded semi-annually for four years. Find the amount of interest charged.<strong>(RM800.31)</strong></p></li>
+<li><p>RM600 is invested for 4 years 10 months. This investment is offered an interest rate of 9% compounded every three months for the first 2 years and 7% compounded monthly for the rest of the period. Calculate,</p>
 <ol type="i">
-<li>the amount at the end of the investment period.
-<strong>(RM873.66)</strong><br />
+<li>the amount at the end of the investment period. <strong>(RM873.66)</strong><br />
 </li>
 <li>the interest earned.<strong>(RM273.66)</strong></li>
 </ol></li>
-<li><p>Abdullah can invest his money either in Fund A that gives 9%
-interest compounded quarterly or in Fund B that gives 9% simple interest
-per year. If Abdullah wishes to invest RM50,000 for one year, which fund
-do you suggest him to invest in? Show your calculation.<strong>(Fund A :
-S = RM54654.17, Fund B : S = RM54500, Fund A)</strong></p></li>
-<li><p>RM X was deposited in a savings account at 4.8% interest
-compounded monthly. 56 months later, RM4200 was withdrawn from the
-account and the balance was RM3903.32. Find the value of
-X.<strong>(RM6480)</strong></p></li>
-<li><p>5 years ago, Aswad invested RM5660 in a bank at a rate of 12%
-compounded monthly. Find:</p>
+<li><p>Abdullah can invest his money either in Fund A that gives 9% interest compounded quarterly or in Fund B that gives 9% simple interest per year. If Abdullah wishes to invest RM50,000 for one year, which fund do you suggest him to invest in? Show your calculation.<strong>(Fund A : S = RM54654.17, Fund B : S = RM54500, Fund A)</strong></p></li>
+<li><p>RM X was deposited in a savings account at 4.8% interest compounded monthly. 56 months later, RM4200 was withdrawn from the account and the balance was RM3903.32. Find the value of X.<strong>(RM6480)</strong></p></li>
+<li><p>5 years ago, Aswad invested RM5660 in a bank at a rate of 12% compounded monthly. Find:</p>
 <ol type="i">
 <li>the amount in the account today <strong>(RM10282.50)</strong><br />
 </li>
-<li>the number of years required if Aswad wanted the amount in the
-account to become RM22344.26. <strong>(RM11.5 years)</strong></li>
+<li>the number of years required if Aswad wanted the amount in the account to become RM22344.26. <strong>(RM11.5 years)</strong></li>
 </ol></li>
-<li><p>A year ago Talib saved RM5000 in an account that pays interest
-8.5% compounded semi-annually. Today, he saved another RM X into the
-same account. Find the value of X if he wants to accumulate RM10,000 one
-year from today. <strong>(RM3767.24)</strong></p></li>
-<li><p>Mariam can save her money either at 9% compounded quarterly in
-Bank P or at 8.5% compounded monthly in Bank Q.</p>
+<li><p>A year ago Talib saved RM5000 in an account that pays interest 8.5% compounded semi-annually. Today, he saved another RM X into the same account. Find the value of X if he wants to accumulate RM10,000 one year from today. <strong>(RM3767.24)</strong></p></li>
+<li><p>Mariam can save her money either at 9% compounded quarterly in Bank P or at 8.5% compounded monthly in Bank Q.</p>
 <ol type="i">
-<li>Find the effective rate for each of the nominal
-rates.<strong>(8.84%)</strong><br />
+<li>Find the effective rate for each of the nominal rates.<strong>(8.84%)</strong><br />
 </li>
-<li>Which rate yields more interest? <strong>(9% compounded quarterly /
-re = 9.31% in bank P)</strong></li>
+<li>Which rate yields more interest? <strong>(9% compounded quarterly / re = 9.31% in bank P)</strong></li>
 </ol></li>
-<li><p>Five years ago, Farez invested RM17000 into his account at k%
-compounded quarterly. Now the account balance has accumulated to RM
-21262.76.</p>
+<li><p>Five years ago, Farez invested RM17000 into his account at k% compounded quarterly. Now the account balance has accumulated to RM 21262.76.</p>
 <ol type="i">
-<li>Find the interest rate k% compounded quarterly.
-<strong>(4.5%)</strong><br />
+<li>Find the interest rate k% compounded quarterly. <strong>(4.5%)</strong><br />
 </li>
-<li>Calculate the compound amount if the investment is extended for
-another two years. <strong>(RM23253.48)</strong></li>
+<li>Calculate the compound amount if the investment is extended for another two years. <strong>(RM23253.48)</strong></li>
 </ol></li>
 </ol>
 <h2 class="appendix" id="acknowledgements">Acknowledgements</h2>
-<p>Chan, J. (2020). <em>Time Value of Money (TVM)</em>. Retrieved from
-<a href="https://www.investopedia.com/terms/t/timevalueofmoney.asp"
-class="uri">https://www.investopedia.com/terms/t/timevalueofmoney.asp</a>
-on March 8, 2020.</p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>Chan, J. (2020). <em>Time Value of Money (TVM)</em>. Retrieved from <a href="https://www.investopedia.com/terms/t/timevalueofmoney.asp" class="uri">https://www.investopedia.com/terms/t/timevalueofmoney.asp</a> on March 8, 2020.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

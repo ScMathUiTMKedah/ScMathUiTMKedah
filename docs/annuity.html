@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,6 +787,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1029,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,15 +1860,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1882,6 +1886,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1981,6 +2010,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2003,7 +2034,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2042,7 +2073,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2192,13 +2223,11 @@ Event
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#learning-outcomes">Learning Outcomes</a></li>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#future-value-of-an-annuity">Future Value of an
-Annuity</a></li>
-<li><a href="#present-value-of-an-annuity">Present Value of an
-Annuity</a></li>
-<li><a href="#application-of-annuity">Application of Annuity</a></li>
+<li><a href="#learning-outcomes" id="toc-learning-outcomes">Learning Outcomes</a></li>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#future-value-of-an-annuity" id="toc-future-value-of-an-annuity">Future Value of an Annuity</a></li>
+<li><a href="#present-value-of-an-annuity" id="toc-present-value-of-an-annuity">Present Value of an Annuity</a></li>
+<li><a href="#application-of-annuity" id="toc-application-of-annuity">Application of Annuity</a></li>
 </ul>
 </nav>
 </div>
@@ -2212,11 +2241,9 @@ Annuity</a></li>
 </li>
 <li>find the present value of annuity,<br />
 </li>
-<li>solve for annuity payment, R, the number of payments, n, and the
-interest rate, I, and<br />
+<li>solve for annuity payment, R, the number of payments, n, and the interest rate, I, and<br />
 </li>
-<li>identify the problems where the present value and the future value
-of the annuity formula can be appropriately applied.</li>
+<li>identify the problems where the present value and the future value of the annuity formula can be appropriately applied.</li>
 </ul>
 <html>
 <title>
@@ -2234,20 +2261,20 @@ Learning Slides
 </h2>
 </div>
 <div class="w3-content" style="max-width:800px">
-<p><img class="mySlides" src="images/annuity/Slide1.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide2.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide3.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide4.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide5.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide6.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide7.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide8.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide9.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide10.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide11.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide12.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide13.PNG" style="width:100%">
-<img class="mySlides" src="images/annuity/Slide14.PNG" style="width:100%"></p>
+<p><img class="mySlides" src="images/annuity/Slide1.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide2.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide3.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide4.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide5.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide6.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide7.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide8.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide9.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide10.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide11.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide12.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide13.png" style="width:100%">
+<img class="mySlides" src="images/annuity/Slide14.png" style="width:100%"></p>
 </div>
 <div class="w3-center">
 <p><button class="w3-button w3-light-grey" onclick="plusDivs(-1)">Prev</button>
@@ -2303,78 +2330,44 @@ function showDivs(n) {
 <a href="files/slides/annuity.pdf">Download Learning Slides</a>
 </aside>
 <h2 id="introduction">Introduction</h2>
-<p>An annuity is a sequence of payments made at regular time intervals.
-The time period in which these payments are made is called the term of
-the annuity while payment period is interval between annuity
-payments.</p>
-<p>An annuity in which the payments are made at the end of each payment
-period is called an ordinary annuity An annuity in which the payment
-period coincides wit the interest compounding period is called a simple
-annuity.</p>
-<p>Annuities considered here have terms given by fixed time intervals,
-periodic payments equal in size, payments made at the end of the payment
-periods, and payment periods coincide with the interest compounding
-period.</p>
-<p>Example of annuity includes house rents, mortgage payments,
-instalment payments on automobiles, and interest payments on money
-invested.</p>
+<p>An annuity is a sequence of payments made at regular time intervals. The time period in which these payments are made is called the term of the annuity while payment period is interval between annuity payments.</p>
+<p>An annuity in which the payments are made at the end of each payment period is called an ordinary annuity
+An annuity in which the payment period coincides wit the interest compounding period is called a simple annuity.</p>
+<p>Annuities considered here have terms given by fixed time intervals, periodic payments equal in size, payments made at the end of the payment periods, and payment periods coincide with the interest compounding period.</p>
+<p>Example of annuity includes house rents, mortgage payments, instalment payments on automobiles, and interest payments on money invested.</p>
 <h2 id="future-value-of-an-annuity">Future Value of an Annuity</h2>
-<p>The future value <span class="math inline">\(S\)</span> of an annuity
-of <span class="math inline">\(n\)</span> payments of <span
-class="math inline">\(R\)</span> ringgits each, paid at the end of each
-investment period into an account that earns interest at the rate of
-<span class="math inline">\(i\)</span> per period, is given by</p>
+<p>The future value <span class="math inline">\(S\)</span> of an annuity of <span class="math inline">\(n\)</span> payments of <span class="math inline">\(R\)</span> ringgits each, paid at the end of each investment period into an account that earns interest at the rate of <span class="math inline">\(i\)</span> per period, is given by</p>
 <p><span class="math display">\[
 S\ =\ R\bigg[\frac{(1\ +\ i)^n\ -\ 1}{i}\bigg]  
 \]</span></p>
-<p>Then, to find the amount of interest paid or earned can be found by
-subtracting the total amount paid from the future value, i.e.,</p>
+<p>Then, to find the amount of interest paid or earned can be found by subtracting the total amount paid from the future value, i.e.,</p>
 <p><span class="math display">\[
 I\ =\ S\ -\ nR  
 \]</span></p>
 <h2 id="present-value-of-an-annuity">Present Value of an Annuity</h2>
-<p>The present value <span class="math inline">\(P\)</span> of an
-annuity of <span class="math inline">\(n\)</span> payments of <span
-class="math inline">\(R\)</span> ringgits each, paid at the end of each
-investment period into an account that earns interest at the rate of
-<span class="math inline">\(i\)</span> per period, is</p>
+<p>The present value <span class="math inline">\(P\)</span> of an annuity of <span class="math inline">\(n\)</span> payments of <span class="math inline">\(R\)</span> ringgits each, paid at the end of each investment period into an account that earns interest at the rate of <span class="math inline">\(i\)</span> per period, is</p>
 <p><span class="math display">\[
 A\ =\ R\bigg[\frac{1\ -\ (1\ +\ i)^{-n}}{i}\bigg]  
 \]</span></p>
-<p>Then, to find the amount of interest paid or earned can be found by
-subtracting the present value from the total amount paid, i.e.,</p>
+<p>Then, to find the amount of interest paid or earned can be found by subtracting the present value from the total amount paid, i.e.,</p>
 <p><span class="math display">\[
 I\ =\ nR\ -\ A  
 \]</span></p>
 <h2 id="application-of-annuity">Application of Annuity</h2>
-<p>The application of annuity include the concept of taking a loan from
-a financial institution, purchasing item through instalment, etc.</p>
+<p>The application of annuity include the concept of taking a loan from a financial institution, purchasing item through instalment, etc.</p>
 <blockquote>
-<p>Consider a scenario where you want to buy a house worth RM250,000
-cash price from a house developer. Since you don’t have that much money,
-a bank offers a loan, 90% of the cash price at certain interest rate
-paid through equal payment for certain duration of time. Thus, in this
-case you will have to pay the developer 10% of the cash price as down
-payment, while the balance 90% will be paid by the bank to the developer
-for the remaining amount. All you need to do now is to repay the loan to
-the bank by instalment.</p>
+<p>Consider a scenario where you want to buy a house worth RM250,000 cash price from a house developer. Since you don’t have that much money, a bank offers a loan, 90% of the cash price at certain interest rate paid through equal payment for certain duration of time. Thus, in this case you will have to pay the developer 10% of the cash price as down payment, while the balance 90% will be paid by the bank to the developer for the remaining amount. All you need to do now is to repay the loan to the bank by instalment.</p>
 </blockquote>
 <p>Here we have,<br />
-Down Payment (DP) = % x Cash Price (CP) = 10% x 250,000 = 25,000 Balance
-(A) = CP – DP = 250,000 – 25,000 = <strong>RM 225,000</strong> &lt;–
-This is the amount that you have to loan from a bank</p>
+Down Payment (DP) = % x Cash Price (CP) = 10% x 250,000 = 25,000
+Balance (A) = CP – DP = 250,000 – 25,000 = <strong>RM 225,000</strong> &lt;– This is the amount that you have to loan from a bank</p>
 <p>Two (2) important comcepts to remember:</p>
 <ol type="1">
-<li>When you have late payments –&gt; use formula <span
-class="math inline">\(S\)</span> (keywords: failed to pay or
-arrears).<br />
+<li>When you have late payments –&gt; use formula <span class="math inline">\(S\)</span> (keywords: failed to pay or arrears).<br />
 </li>
-<li>When you want to pay early –&gt; use formula <span
-class="math inline">\(A\)</span> (keywords: settle the debt/loan
-immediately).</li>
+<li>When you want to pay early –&gt; use formula <span class="math inline">\(A\)</span> (keywords: settle the debt/loan immediately).</li>
 </ol>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
