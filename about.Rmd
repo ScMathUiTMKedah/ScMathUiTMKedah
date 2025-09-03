@@ -14,13 +14,21 @@ knitr::opts_chunk$set(echo = FALSE)
 # https://rstudio.github.io/distill/website.html
 ```
 
-|![](images/fazillah_bosli.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
+|![](images/ida_normaya.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
 |:-----:|
-| **Fazillah Bosli** |    
-| Course Coordinator, Senior Lecturer |   
-| Mgmt. Mathematics |  
-| fazillah@uitm.edu.my |  
-| <a href="https://expert.uitm.edu.my/profile.php?id=I7coKSJ7wWgTShTnEUhQevgsZVH+CTCOPaPYW7bOwBE=" target="_blank">View Profile</a> |  
+| **Ida Normaya Mohd Nasir (Dr.)** |    
+| Head of Center of Studies, Senior Lecturer |    
+| Statistics |  
+| normaya@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=RGAZeruxsBbbu4iKM5gF+D+xzXbrTXqKbCDt2EqmV2k=" target="_blank">View Profile</a> |  
+
+|![](images/nora_baizura.png)|  
+|:-----:|
+| **Nora Baizura Mohd Isa** |    
+| Course Coordinator, Lecturer |    
+| Mathematics |  
+| norabaizura@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=HBRkvV2TGl/s7d7mVKPaMowvUnBmtMLGsdE3lyqpxrI=" target="_blank">View Profile</a> |  
 
 :::::: {style="display: flex; "}
 
@@ -134,13 +142,13 @@ a column separator -->
 :::
 
 ::: {.column width="30%"}
-|![](images/ida_normaya.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
+|![](images/fazillah_bosli.jpg){width="50%" height="50%" style="display: rounded-circle; margin: 0 auto"}|  
 |:-----:|
-| **Ida Normaya Mohd Nasir (Dr.)** |    
-| Senior Lecturer |    
-| Statistics |  
-| normaya@uitm.edu.my |  
-| <a href="https://expert.uitm.edu.my/profile.php?id=RGAZeruxsBbbu4iKM5gF+D+xzXbrTXqKbCDt2EqmV2k=" target="_blank">View Profile</a> |  
+| **Fazillah Bosli** |    
+| Senior Lecturer |   
+| Mgmt. Mathematics |  
+| fazillah@uitm.edu.my |  
+| <a href="https://expert.uitm.edu.my/profile.php?id=I7coKSJ7wWgTShTnEUhQevgsZVH+CTCOPaPYW7bOwBE=" target="_blank">View Profile</a> |  
 :::
 
 ::: {.column width="5%"}

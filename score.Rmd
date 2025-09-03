@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::include_url("https://cskedah.uitm.edu.my/score/")
 ```
 
-[Visit the Practice Exercise Page <- Click Here](https://cskedah.uitm.edu.my/score/)
+[Visit the Practice Exercise Page <- Click Here](https://uitmkdh.fwh.is/MAT112PQ/)
 
 ## Contributors {.appendix}
 
